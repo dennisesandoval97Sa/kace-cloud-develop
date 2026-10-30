@@ -51,6 +51,17 @@ export const SERVICE_MANIFEST = [
     // ─────────────────────────────────────────────────────
 
     {
+        directory: 'kace_cloud_api_quick_links',
+        basePath: 'quick-links',
+        skipDefaultRoutes: true,
+        customRoutes: [
+            { method: 'GET', resource: '/' },
+            { method: 'POST', resource: '/' },
+            { method: 'GET', resource: '/{id}/delete' },
+        ],
+    },
+
+    {
         directory: 'kace_cloud_api_folio_configurations',
         basePath: 'folio-configurations',
         customRoutes: [
