@@ -1,0 +1,40 @@
+{
+    "phase": "F1-R",
+    "description": "Vertical slice de lectura para `cases` — valida framework end-to-end.",
+    "scenarios": [
+        {
+            "id": "cases-view-by-id",
+            "service": "cases",
+            "endpointId": "view-by-id",
+            "idTable": "cases",
+            "endpoint": "GET /cases/{id}",
+            "script": "scenarios/cases/view-by-id.js",
+            "mutating": false
+        },
+        {
+            "id": "cases-view-list",
+            "service": "cases",
+            "endpointId": "view-list",
+            "endpoint": "GET /cases",
+            "script": "scenarios/cases/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "cases-search-post",
+            "service": "cases",
+            "endpointId": "search",
+            "endpoint": "POST /cases/view/search",
+            "script": "scenarios/cases/search-post.js",
+            "mutating": false
+        },
+        {
+            "id": "cases-available-states",
+            "service": "case-available-states",
+            "endpointId": "view-by-id",
+            "idTable": "cases",
+            "endpoint": "GET /case-available-states/{id}",
+            "script": "scenarios/cases/available-states.js",
+            "mutating": false
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+node_modules/
+coverage/
+tables.config.json
+.env
+
+# Root .gitignore has a bare `config/` pattern matching any dir named config at any depth; un-ignore ours.
+!src/config/
+!tests/config/

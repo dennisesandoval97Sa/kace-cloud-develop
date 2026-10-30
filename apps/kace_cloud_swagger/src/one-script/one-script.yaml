@@ -1,0 +1,300 @@
+one-script:
+    get:
+        tags:
+            - One Script
+        summary: Get all OneScripts
+        responses:
+            '200':
+                description: Returns a list of OneScripts
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/OneScriptsCollection'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+    post:
+        tags:
+            - One Script
+        summary: Create a OneScript instance
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/CreateOneScript'
+        responses:
+            '201':
+                description: OneScript instance created succesfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/created_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+one-script_id:
+    get:
+        tags:
+            - One Script
+        summary: Fetch a OneScript by ID
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        responses:
+            '200':
+                descripcion: Return a OneScript instance
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                message:
+                                    $ref: '#/components/schemas/message'
+                                data:
+                                    $ref: '#/components/schemas/OneScript'
+                                metadata:
+                                    type: object
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+    post:
+        tags:
+            - One Script
+        summary: Update a OneScript instance
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UpdateOneScript'
+        responses:
+            '200':
+                description: OneScript instance updated succesfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+one-script_delete:
+    get:
+        tags:
+            - One Script
+        summary: Delete a OneScript instance
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        responses:
+            '200':
+                description: OneScript instance deleted succesfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+one-script_search:
+    post:
+        tags:
+            - One Script
+        summary: Search OneScript instances by a specific field and value
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/SearchCollection'
+        responses:
+            '200':
+                description: Returns a list of OneScripts which match with the search
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/OneScriptsCollection'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+    schemas:
+        message:
+            type: string
+            example: Success
+        name:
+            type: string
+            example: example name
+        url:
+            type: string
+            example: http://example.com
+        url_api:
+            type: string
+            example: http://example.com/api
+        schema_id:
+            type: string
+            format: uuid
+            nullable: true
+        onescript_reference_id:
+            type: string
+            format: uuid
+            description: ID del formulario OneScript. Obligatorio al crear; en la actualización es opcional (se conserva el valor actual si se omite) pero no admite null.
+            example: 3f1c2d4e-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+        onescript_reference_id_response:
+            type: string
+            format: uuid
+            nullable: true
+            description: ID del formulario OneScript. Puede ser null en registros creados antes de que el campo fuera obligatorio.
+            example: 3f1c2d4e-5a6b-4c7d-8e9f-0a1b2c3d4e5f
+        updated_by:
+            type: string
+            format: uuid
+        created_by:
+            type: string
+            format: uuid
+        Created:
+            type: object
+            properties:
+                created_at:
+                    $ref: '../common/fields.yaml#/schemas/created_at'
+                created_by:
+                    $ref: '../common/fields.yaml#/schemas/created_by'
+        Updated:
+            type: object
+            properties:
+                updated_at:
+                    $ref: '../common/fields.yaml#/schemas/updated_at'
+                updated_by:
+                    $ref: '../common/fields.yaml#/schemas/updated_by'
+        Deleted:
+            type: object
+            properties:
+                deleted_at:
+                    $ref: '../common/fields.yaml#/schemas/deleted_at'
+                deleted_by:
+                    $ref: '../common/fields.yaml#/schemas/deleted_by'
+        OneScriptBase:
+            type: object
+            properties:
+                name:
+                    $ref: '#/components/schemas/name'
+                url:
+                    $ref: '#/components/schemas/url'
+                url_api:
+                    $ref: '#/components/schemas/url_api'
+                schema_id:
+                    $ref: '#/components/schemas/schema_id'
+        OneScript:
+            allOf:
+                - type: object
+                  properties:
+                      id:
+                          $ref: '../common/fields.yaml#/schemas/id'
+                      onescript_reference_id:
+                          $ref: '#/components/schemas/onescript_reference_id_response'
+                - $ref: '#/components/schemas/OneScriptBase'
+                - $ref: '#/components/schemas/Created'
+                - $ref: '#/components/schemas/Updated'
+                - $ref: '#/components/schemas/Deleted'
+        OneScriptsCollection:
+            type: object
+            properties:
+                message:
+                    $ref: '#/components/schemas/message'
+                data:
+                    type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/OneScript'
+                metadata:
+                    type: object
+                    properties:
+                        count:
+                            type: object
+                            properties:
+                                count:
+                                    type: string
+                                    example: '1'
+        CreateOneScript:
+            allOf:
+                - type: object
+                  required:
+                      - onescript_reference_id
+                  properties:
+                      id:
+                          $ref: '../common/fields.yaml#/schemas/id'
+                          readOnly: true
+                      onescript_reference_id:
+                          $ref: '#/components/schemas/onescript_reference_id'
+                - $ref: '#/components/schemas/OneScriptBase'
+                - type: object
+                  properties:
+                      created_at:
+                          $ref: '../common/fields.yaml#/schemas/created_at'
+                      created_by:
+                          $ref: '#/components/schemas/created_by'
+        UpdateOneScript:
+            allOf:
+                - $ref: '#/components/schemas/OneScriptBase'
+                - type: object
+                  properties:
+                      onescript_reference_id:
+                          $ref: '#/components/schemas/onescript_reference_id'
+                      updated_at:
+                          $ref: '../common/fields.yaml#/schemas/updated_at'
+                      updated_by:
+                          $ref: '#/components/schemas/updated_by'
+        SearchCollection:
+            type: object
+            properties:
+                filter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            field:
+                                type: string
+                                example: name
+                            operator:
+                                type: string
+                                example: like
+                            value:
+                                type: string
+                                example: example name
+                            type:
+                                type: string
+                                example: AND
+                relationship:
+                    type: array
+                    items:
+                limit:
+                    type: integer
+                    example: 10
+                offset:
+                    type: integer
+                    example: 0

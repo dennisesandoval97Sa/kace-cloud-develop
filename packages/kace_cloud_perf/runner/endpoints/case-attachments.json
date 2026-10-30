@@ -1,0 +1,42 @@
+{
+    "service": "case-attachments",
+    "postmanFolder": "Case attachments",
+    "endpoints": [
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/case-attachments",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/case-attachments/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/case-attachments/search",
+            "requiresId": false,
+            "body": {
+                "filter": [
+                    {
+                        "field": "description",
+                        "operator": "like",
+                        "value": "description example",
+                        "type": "AND"
+                    },
+                    {
+                        "field": "description",
+                        "operator": "like",
+                        "value": "description example",
+                        "type": "AND"
+                    }
+                ],
+                "limit": 10,
+                "offset": 0
+            }
+        }
+    ]
+}

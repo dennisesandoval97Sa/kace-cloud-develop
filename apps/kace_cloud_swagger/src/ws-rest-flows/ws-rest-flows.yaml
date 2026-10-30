@@ -1,0 +1,329 @@
+wsRestFlows:
+  get:
+    tags:
+      - WS rest flows
+    summary: Get all WSRestFlow instances
+    responses:
+      '200':
+        description: A list of WSRestFlows
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WSRestFlowsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post: 
+    tags: 
+      - WS rest flows
+    summary: Create a new WSRestFlow instance
+    description: | 
+      Crea un nuevo flujo de trabajo con el diagrama de flujo definido en json_diagram_properties
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Created"
+    responses:
+      '201':
+        description: WSRestFlow created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+wsRestFlow_id:
+  get:
+    tags:
+      - WS rest flows
+    summary: Fetch a WSRestFlow instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: WSRestFlow instance fetched successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WSRestFlow"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post: 
+    tags: 
+      - WS rest flows
+    summary: Update WSRestFlow instance 
+    description: | 
+      Actualiza un flujo de trabajo existente
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Updated"
+    responses:
+      '200':
+        description: WSRestFlow instance updated successfully
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+wsRestFlow_delete:
+  get:
+    tags:
+      - WS rest flows
+    summary: Delete WSRestFlow instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: WSRestFlow deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+wsRestFlows_search:
+  post:
+    tags:
+      - WS rest flows
+    summary: Search WSRestFlows by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: WSRestFlow instances fetched successfully
+        content:
+          application/json:
+            schema:
+              data:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WSRestFlow"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+wsRestFlows_list:
+  get:
+    tags:
+      - WS rest flows
+    summary: Get WS Rest Flows as select options
+    description: Returns all WS Rest Flows mapped as select options (`value`/`label`).
+    responses:
+        '200':
+          description: A list of flows (select options)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ws_rest_flows_select_collection'
+              examples:
+                ok:
+                  summary: Example
+                  value:
+                    data:
+                      items:
+                        - value: "e6aea5d9-c640-4f55-82ca-9fc1af955f3f"
+                          label: "Customer Onboarding Flow"
+                        - value: "a4b02c17-2bb7-49b8-8d5c-8e21dfb40b42"
+                          label: "Payments Sync Flow"
+                    metadata:
+                      count: 2
+        '404':
+          $ref: '../common/fields.yaml#/schemas/not_found_response'
+        '403':
+          description: Sin permiso para leer el recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                forbidden:
+                  value:
+                    message: "You do not have permission to read this resource."
+        '500':
+          $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    WSRestFlowBase:
+      type: object
+      properties:
+        description:
+          type: string
+          maxLength: 255
+          example: "Description of the WSRestFlow"
+        external_code:
+          type: string
+          maxLength: 255
+          example: "FLOW_CODE_001"
+        json_diagram_properties:
+          type: object
+          required:
+            - nodes
+          properties:
+            nodes:
+              type: array
+              minItems: 1
+              items:
+                type: object
+              example: [{id: "node1", type: "start", label: "Inicio", position: {x: 100, y: 100}}]
+            edges:
+              type: array
+              items:
+                type: object
+              example: [{id: "edge1", source: "node1", target: "node2"}]
+        is_active:
+          type: boolean
+          example: true
+        
+    
+    WSRestFlow:
+      allOf:
+        - type: object
+          properties:
+            id:  
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/WSRestFlowBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    
+    WSRestFlowsCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items: 
+            $ref: "#/components/schemas/WSRestFlow"
+
+    Created:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/WSRestFlowBase"
+        - type: object
+          properties:
+            created_at:
+              $ref: "../common/fields.yaml#/schemas/created_at"
+            created_by:
+              type: string
+              format: uuid
+    
+    Updated:
+      allOf:
+        - $ref: "#/components/schemas/WSRestFlowBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              type: string
+              format: uuid
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: description
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: example description
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+    ws_rest_flows_select_item:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Flow ID (UUID)
+        label:
+          type: string
+          description: Human-readable flow name (e.g., flow.display_name)
+      required: [value, label]
+
+    ws_rest_flows_select_data:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ws_rest_flows_select_item'
+      required: [items]
+
+    ws_rest_flows_select_collection:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ws_rest_flows_select_data'
+        metadata:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 2
+          required: [count]
+      required: [data, metadata]
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          nullable: true
+      required: [message]

@@ -1,0 +1,280 @@
+automationSetting:
+  get:
+    tags:
+      - Automation settings
+    summary: Get all Automation settings instances
+    responses:
+      '200':
+        description: A list of Automation settings
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AutomationSettingsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post: 
+    tags: 
+      - Automation settings
+    summary: Create a new Automation settings instance
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Created"
+    responses:
+      '201':
+        description: Automation settings created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+automationSetting_id:
+  get:
+    tags:
+      - Automation settings
+    summary: Fetch a Automation settings instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Automation settings instance fetched successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AutomationSettingsResponse"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post: 
+    tags: 
+      - Automation settings
+    summary: Update Automation settings instance 
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Updated"
+    responses:
+      '200':
+        description: Automation settings instance updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+automationSetting_delete:
+  get:
+    tags:
+      - Automation settings
+    summary: Delete Automation settings instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Automation settings deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+automationSettings_search:
+  post:
+    tags:
+      - Automation settings
+    summary: Search Automation settings by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Automation settings instances fetched successfully
+        content:
+          application/json:
+            schema:
+                  $ref: "#/components/schemas/AutomationSettingsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    AutomationSettingBase:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "91144557-8370-4b47-874b-9b84e3b8a56a"
+        description:
+          type: string
+          example: "Mock Automation Settings"
+        frequency:
+          type: string
+          example: "0 9 * * 1,4"
+        start_date:
+          type: string
+          format: date-time
+          example: "2025-05-06T13:48:27.507Z"
+        end_date:
+          type: string
+          format: date-time
+          example: "2025-05-10T13:48:27.507Z"
+
+    AutomationSetting:
+      allOf:
+        - type: object
+          properties:
+            id:  
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AutomationSettingBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    
+    AutomationSettingsCollection:
+      type: object
+      properties:
+        message:
+            $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+           type: object
+           properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/AutomationSetting"
+                properties:
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: "2025-05-06T13:48:27.507Z"
+                  updated_by:
+                    type: string
+                    example: "32aff2b1-fa12-4c98-8975-5acf9246fdaf"
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: "2025-05-06T13:48:27.507Z"
+                  created_by:
+                    type: string
+                    example: "32aff2b1-fa12-4c98-8975-5acf9246fdaf"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: '198'
+
+    AutomationSettingsResponse:
+      type: object
+      properties:
+        message:
+            $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+              $ref: "#/components/schemas/AutomationSetting"
+              properties:
+                updated_at:
+                  type: string
+                  format: date-time
+                  example: "2025-05-06T13:48:27.507Z"
+                updated_by:
+                  type: string
+                  example: "32aff2b1-fa12-4c98-8975-5acf9246fdaf"
+                created_at:
+                  type: string
+                  format: date-time
+                  example: "2025-05-06T13:48:27.507Z"
+                created_by:
+                  type: string
+                  example: "32aff2b1-fa12-4c98-8975-5acf9246fdaf"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: '198'
+    
+    Created:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AutomationSettingBase"
+    
+    Updated:
+      allOf:
+        - $ref: "#/components/schemas/AutomationSettingBase"
+    
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: frequency
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: 0 9 * * 1,4
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

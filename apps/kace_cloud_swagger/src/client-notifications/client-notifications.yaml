@@ -1,0 +1,304 @@
+client-notifications:
+  get:
+    tags:
+      - Client notifications
+    summary: Get all client notifications
+
+    responses:
+      '200':
+        description: Returns a list of client notifications
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientsNotificationsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Client notifications
+    summary: Create a client notification instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - client_id -> ID de un cliente (Clients)
+      - read_by -> ID de un usuario (Users)
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateClientsNotifications"
+    responses:
+      '201':
+        description: Client notifications instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+client-notifications_id:
+  get:
+    tags:
+      - Client notifications
+    summary:  Fetch a client notification by ID
+    parameters: 
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        descripcion: Return a client notification instance
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: "#/components/schemas/ClientsNotifications"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Client notifications
+    summary: Update a client notification instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - client_id -> ID de un cliente (Clients)
+      - read_by -> ID de un usuario (Users)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateClientsNotifications"
+    responses:
+      '200':
+        description: Client notification updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+client-notifications_delete:
+  get:
+    tags:
+      - Client notifications
+    summary: Delete a client notification instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Client notification instance eliminada con exito
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+client-notifications_search:
+  post:
+    tags:
+      - Client notifications
+    summary: Search client notification instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of client notifications which match with the search
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/ClientsNotificationsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+  schemas:
+    client_id:
+      type: string
+      format: uuid
+    subject:
+      type: string
+      example: this is a subject test
+    message:
+      type: string
+      example: this is a message test
+    start_date:
+      type: string
+      format: date
+    end_date:
+      type: string
+      format: date
+    is_read:
+      type: boolean
+      example: true
+    read_by:
+      oneOf:
+        - type: string
+          format: uuid
+        - type: "null"
+    is_active:
+      oneOf:
+        - type: number
+          enum: [0,1]
+        - type: boolean
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    ClientsNotificationsBase:
+      type: object
+      properties:
+        client_id:
+          $ref: "#/components/schemas/client_id"
+        subject:
+          $ref: "#/components/schemas/subject"
+        message:
+          $ref: "#/components/schemas/message"
+        start_date:
+          $ref: "#/components/schemas/start_date"
+        end_date:
+          $ref: "#/components/schemas/end_date"
+        is_read:
+          $ref: "#/components/schemas/is_read"
+        read_by:
+          $ref: "#/components/schemas/read_by"
+        is_active:
+          $ref: "#/components/schemas/is_active"
+    ClientsNotifications:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/ClientsNotificationsBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    ClientsNotificationsCollection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/ClientsNotifications"
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"
+
+    CreateClientsNotifications:
+        allOf:
+          - type: object  
+            properties:
+              id:
+                $ref: "../common/fields.yaml#/schemas/id"
+          - $ref: "#/components/schemas/ClientsNotificationsBase"
+          - type: object
+            properties:
+              created_at:
+                $ref: "../common/fields.yaml#/schemas/created_at"
+              created_by:
+                $ref: "#/components/schemas/created_by"
+    UpdateClientsNotifications:
+        allOf:
+        - $ref: "#/components/schemas/ClientsNotificationsBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: subject
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: subject example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

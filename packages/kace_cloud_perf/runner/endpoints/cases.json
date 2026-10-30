@@ -1,0 +1,41 @@
+{
+    "service": "cases",
+    "postmanFolder": "Cases",
+    "endpoints": [
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/cases",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/cases/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/cases/view/search",
+            "requiresId": false,
+            "body": {
+                "filter": [
+                    {
+                        "field": "deleted_at",
+                        "operator": "null",
+                        "value": "null",
+                        "type": "AND"
+                    }
+                ],
+                "relationship": null,
+                "order": {
+                    "field": "created_at",
+                    "direction": "desc"
+                },
+                "limit": 10,
+                "offset": 0
+            }
+        }
+    ]
+}

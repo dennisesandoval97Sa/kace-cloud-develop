@@ -1,0 +1,80 @@
+packages:
+    - packages/**
+    - apps/apiv1/**
+    - apps/asistencia_notificaciones_robotica
+    - apps/kace-saas
+    - apps/onescript_plugin_kace
+    - apps/workers/**
+    - '!**/cdk.out/**'
+    - '!**/node_modules/**'
+    - '!**/dist/**'
+onlyBuiltDependencies:
+    - aws-sdk
+    - bcrypt
+    - clientjs
+    - core-js
+    - esbuild
+    - sqlite3
+overrides:
+    # Bloque consolidado 2026-08-24 (politica DevSecOps §3.6/§3.7).
+    # REGLA DE MANTENIMIENTO: ante un aviso nuevo, EDITAR la entrada del paquete.
+    # No anadir una linea mas: el bloque anterior acumulaba 6 entradas de `tar`
+    # y 5 de `fast-xml-parser` encadenadas, imposibles de auditar.
+    '@conventional-changelog/git-client@<2.0.0': '^2.0.0'
+    '@isaacs/brace-expansion@<=5.0.0': '^5.0.1'
+    '@remix-run/router@<=1.23.1': '^1.23.2'
+    '@tootallnate/once@<3.0.1': '^3.0.1'
+    ajv@>=8.0.0 <8.18.0: 8.18.0
+    # El CLI debe ir a la par de la libreria: aws-cdk-lib 2.266 emite cloud
+    # assembly schema 54, que exige CLI >= 2.1138.0 (si no, `cdk synth` falla).
+    aws-cdk@<2.1138.0: '^2.1138.0'
+    aws-cdk-lib@>=2.0.0 <2.260.0: '^2.260.0'
+    axios@<1.20.0: '^1.20.0'
+    brace-expansion@>=1.0.0 <1.1.20: '^1.1.20'
+    brace-expansion@>=2.0.0 <2.1.6: '^2.1.6'
+    brace-expansion@>=5.0.0 <5.0.11: '^5.0.11'
+    diff@<4.0.4: '^4.0.4'
+    # Sale del rango de GHSA-mrv2-3pqr-j5jr (<=3.4.16). 3.4.17 se publicó 2026-10-12.
+    # Cubre kace-saas, onescript y el transitivo de formiojs (^3.0.5).
+    dompurify@<=3.4.16: '^3.4.17'
+    fast-xml-builder@>=1.0.0 <1.1.7: '^1.1.7'
+    fast-xml-parser@>=4.0.0-beta.3 <5.5.7: '^5.5.7'
+    flatted@<3.4.2: '^3.4.2'
+    # Sale del rango de CVE-2026-111755 y CVE-2026-111756 (<1.16.1). 1.16.1 se publicó 2026-10-01.
+    follow-redirects@<1.16.1: '^1.16.1'
+    form-data@>=4.0.0 <4.0.6: '^4.0.6'
+    glob@>=10.2.0 <10.5.0: '^10.5.0'
+    handlebars@>=4.0.0 <4.7.9: '^4.7.9'
+    # Sale del rango de CVE-2026-93748 (<=4.2.0). 4.3.0 se publicó 2026-10-04.
+    http-cache-semantics@<=4.2.0: '^4.3.0'
+    ip-address@>=10.0.0 <10.3.1: '^10.3.1'
+    joi@<17.13.7: '^17.13.7'
+    js-yaml@>=3.0.0 <3.15.2: '^3.15.2'
+    js-yaml@>=4.0.0 <4.3.2: '^4.3.2'
+    lodash@>=4.0.0 <4.18.0: '^4.18.0'
+    lodash-es@>=4.0.0 <4.18.0: '^4.18.0'
+    # Cruza de major a proposito: no hay parche 5.x para CVE-2026-85061 (fix 6.4.1).
+    # ~ y no ^: el objetivo es cerrar el CVE, no adelantar cinco minors sin cobertura.
+    maplibre-gl@<6.4.1: '~6.4.1'
+    minimatch@>=3.0.0 <3.1.4: 3.1.4
+    minimatch@>=5.0.0 <5.1.8: 5.1.8
+    minimatch@>=10.0.0 <10.2.3: 10.2.3
+    nanoid@>=3.0.0 <3.3.18: '^3.3.18'
+    # Cruza de major a proposito: GHSA-v53p-9fqp-m79j no tiene parche 9.x (fix 10.0.6).
+    nodemailer@<10.0.6: '^10.0.6'
+    path-to-regexp@<0.1.13: 0.1.13
+    picomatch@<2.3.2: '^2.3.2'
+    picomatch@>=4.0.0 <4.0.4: '^4.0.4'
+    postcss@>=8.0.0 <8.5.18: '^8.5.18'
+    proxy-addr@<2.0.8: '^2.0.8'
+    qs@>=6.7.0 <=6.14.1: '^6.14.2'
+    rollup@>=4.0.0 <4.59.0: '^4.59.0'
+    socket.io-parser@>=4.0.0 <4.2.7: '^4.2.7'
+    source-map-js@<1.2.2: '^1.2.2'
+    # Cruza de major a proposito: node-gyp/sqlite3 traen tar 6.x, sin parche disponible.
+    tar@<7.5.21: '^7.5.21'
+    test-exclude>minimatch: ^3.1.2
+    tmp@>=0.2.0 <0.2.6: '^0.2.6'
+    uuid: ^11.1.0
+    ws@>=8.0.0 <8.21.0: '^8.21.0'
+    yaml@>=2.0.0 <2.8.3: '^2.8.3'

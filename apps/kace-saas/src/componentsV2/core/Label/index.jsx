@@ -1,0 +1,1 @@
+../../../components/ui-shared/src/components/ui/label.jsx

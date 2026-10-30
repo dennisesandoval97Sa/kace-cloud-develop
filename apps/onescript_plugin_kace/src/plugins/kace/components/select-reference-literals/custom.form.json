@@ -1,0 +1,21 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "literal_id",
+      "type": "textfield",
+      "label": "Literal ID",
+      "placeholder": "6adb2852-af60-48b9-b590-593f33f4a6b4",
+      "description": "Identificador del tipo de literal usado en la jerarquía. Ejemplo: 6adb2852-af60-48b9-b590-593f33f4a6b4",
+      "input": true
+    },
+    {
+      "key": "refetchOnEveryOpen",
+      "type": "checkbox",
+      "label": "Volver a cargar opciones en cada apertura",
+      "input": true,
+      "defaultValue": false
+    }
+  ]
+}

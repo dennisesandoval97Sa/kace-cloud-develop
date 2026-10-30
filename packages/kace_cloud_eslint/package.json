@@ -1,0 +1,17 @@
+{
+    "name": "@kace/eslint-config",
+    "version": "1.26.1",
+    "main": "index.js",
+    "description": "Global eslint configuration for backend repositories",
+    "peerDependencies": {
+        "eslint": "^8.0.0"
+    },
+    "dependencies": {
+        "eslint-config-standard": "^17.0.0",
+        "eslint-plugin-import": "^2.0.0"
+    },
+    "packageManager": ">=pnpm@10.11.0",
+    "devDependencies": {
+        "prettier": "^3.3.3"
+    }
+}

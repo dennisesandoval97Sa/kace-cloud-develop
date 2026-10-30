@@ -1,0 +1,23 @@
+# Tests que oscilan entre corridas identicas. El trinquete los ignora en ambas
+# direcciones. Formato: una linea por test, con el nombre completo, y encima un
+# comentario con el motivo medido.
+#
+# Cada entrada es deuda: un test que no sabe lo que prueba. Este archivo debe
+# estar vacio para dar la fase por terminada.
+
+# Verde en la corrida 1 y rojo en la 2, sin cambios en el arbol. El grupo se
+# crea con max_cases_per_user=1, o sea una sola plaza, y el test da por hecho
+# que la disputan unicamente los dos casos que el propio `it` abre. En la
+# corrida 2 el servicio anoto `candidates_distinct=5`: habia casos abiertos de
+# otros `it` del mismo archivo compitiendo por esa plaza. La plaza se la llevo
+# un caso ajeno (`UserSlotAssignmentStrategy::execute assigned case ...,
+# remaining after=0` seguido de dos `automated-assignment.no-responsible-assigned`)
+# y `advisorCount` quedo en 0 en vez de 1. Depende del estado que dejan los
+# tests anteriores, no de la logica que dice probar.
+tests/actions-queue-executions/AutomatedGroupAssignmentService.test.js > AutomatedGroupAssignmentService — Integration capacity tracking across multiple actions in the same run (UserSlot) two ASIGNAR_GRUPO_POR_CODIGO_EXTERNO actions sharing the same group must respect max=1
+
+# Retirado: `ClientMother.dto()` y `dtoComercial()` ya no comparten el literal
+# fijo CC:123456, cada una deriva un `documento` de doce digitos aleatorio, asi
+# que el segundo cliente del archivo no puede chocar con el primero. Tres
+# corridas seguidas de `tests/clients/ClienstIntegration.test.js` dan verde en
+# `should create a Comercial Client` y cero "already exists".

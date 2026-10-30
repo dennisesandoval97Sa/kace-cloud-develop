@@ -1,0 +1,64 @@
+
+.queryBuilder {
+  @apply bg-background rounded-md border border-input
+}
+
+.queryBuilder [data-level]:not([data-level="0"])[data-rule-group-id] {
+  @apply border border-blueCustom rounded-md
+}
+
+.queryBuilder [data-level]:not([data-level="0"])[data-rule-id] {
+  @apply border border-yellowCustom rounded-md bg-yellowCustom/50 flex flex-col lg:flex-row p-4
+}
+
+.queryBuilder [data-level][data-rule-group-id]::before {
+  @apply border-l border-b border-red-400
+}
+
+.queryBuilder [data-level][data-rule-group-id]::after {
+  @apply border-l border-red-400
+}
+
+.queryBuilder [data-level]::before {
+  @apply border-l border-red-400
+}
+
+.queryBuilder [data-level]::after {
+  @apply border-t border-red-400
+}
+
+.ruleGroup-combinators {
+  @apply bg-background rounded-md px-2 py-1
+}
+
+.ruleGroup-addRule {
+  @apply bg-yellowCustom rounded-md px-2 h-7
+}
+
+.ruleGroup-addGroup {
+  @apply bg-blueCustom rounded-md px-2 h-7
+}
+
+.rule-fields {
+  @apply bg-background rounded-md px-2 py-1 ml-1
+}
+
+.rule-operators {
+  @apply bg-background rounded-md px-2 py-1
+}
+
+.rule-value {
+  @apply bg-background rounded-md px-2 py-1 ml-1 my-1
+}
+
+.rule-remove {
+  @apply w-7 h-7 flex justify-center items-center bg-redCustom text-lg rounded-md
+}
+
+.ruleGroup-remove {
+  @apply w-7 h-7 flex justify-center items-center bg-redCustom text-lg rounded-md
+}
+
+.ruleGroup-header {
+  @apply flex flex-col md:flex-row
+}

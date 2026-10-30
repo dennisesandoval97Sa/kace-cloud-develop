@@ -1,0 +1,131 @@
+case_session_durations:  
+  post:
+    tags:
+      - Case session durations
+    summary: Create a new case session duration
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseSessionDurationCreate'
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseSessionDuration'
+
+
+case_session_durations-id:
+ 
+  post:
+    tags:
+      - Case session durations
+    summary: Update a case session duration (POST with id)
+    security:
+      - ApiKeyAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Numeric or UUID ID of the session duration
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseSessionDurationUpdate'
+          examples:
+            curl-example:
+              summary: Example body matching provided curl (camelCase key)
+              value:
+                finishedAt: "2025-12-13T14:23:00.000Z"
+    responses:
+      '200':
+        description: Updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseSessionDuration'
+      '404':
+        description: Not found
+
+
+case_session_durations-delete:
+  get:
+    tags:
+      - Case session durations
+    summary: Delete a case session duration by ID
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Numeric or UUID ID of the session duration
+    responses:
+      '200':
+        description: Deleted successfully
+      '404':
+        description: Not found
+
+
+components:
+  schemas:
+    CaseSessionDuration:
+      type: object
+      properties:
+        id:
+          type: string
+        caseId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        elapsedTime:
+          type: string
+          nullable: true
+      
+    CaseSessionDurationCreate:
+      type: object
+      required:
+        - caseId
+        - startedAt
+      properties:
+        caseId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        startedAt:
+          type: string
+          format: date-time
+
+    CaseSessionDurationUpdate:
+      type: object
+      properties:
+        finishedAt:
+          type: string
+          format: date-time
+          nullable: false
+        eventType:
+          type: string
+          enum:
+            - PAUSED
+            - FINISHED
+        justification:
+          type: string
+          nullable: true

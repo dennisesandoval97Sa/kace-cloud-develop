@@ -1,0 +1,26 @@
+name: branch-naming
+
+on:
+    pull_request:
+        branches: [develop, master, 'release/**']
+
+permissions:
+    contents: read
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - name: Validar patrón §5.2 de la política DevSecOps
+              env:
+                  BRANCH: ${{ github.head_ref }}
+              run: |
+                  if [[ "$BRANCH" =~ ^(feature|bugfix|hotfix)/[A-Z]+-[0-9]+(-[a-z0-9-]+)?$ ]] ||
+                      [[ "$BRANCH" =~ ^release/[0-9]+\.[0-9]+\.[0-9]+$ ]] ||
+                      [[ "$BRANCH" == develop ]]; then
+                      echo "OK: $BRANCH"
+                  else
+                      echo "::error::La rama '$BRANCH' no cumple §5.2: (feature|bugfix|hotfix)/TICKET-123-descripcion o release/x.y.z"
+                      exit 1
+                  fi

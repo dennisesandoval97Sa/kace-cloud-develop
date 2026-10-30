@@ -1,0 +1,130 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "dependsOn",
+      "type": "textfield",
+      "label": "Depende del campo (key)",
+      "description": "Key del campo padre. Cuando su valor cambie, este campo recargará sus opciones y limpiará la selección actual si ya no es válida.",
+      "input": true
+    },
+    {
+      "key": "kaceApiResponseCacheFlagsPanel",
+      "type": "panel",
+      "title": "Caché HTTP del apiService (flags opcionales)",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "kaceApiResponseCacheFlagsDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"small text-muted mb-2\"><strong>Ámbito:</strong> use estas propiedades en la <code>config</code> de Axios <strong>solo</strong> cuando el script evaluado recibe <code>apiService</code> (p. ej. <code>kaceEngine.getService('apiService')</code>): Schema y <strong>Aux Cases Schema</strong> (onMount / onChange / onSubmit), Custom Select / Multiselect / Custom Multiselect (carga y onChange; con &quot;Refetch al abrir&quot; el proxy puede forzar <code>__kaceForceRefresh</code>), DataTable en <strong>datos iniciales</strong> por JS si llama API, <strong>acciones masivas</strong>, <code>modalInitCode</code> y &quot;Mostrar cuando&quot; del modal, Custom Submit / Natura, <strong>antes de enviar subcaso</strong>, scripts Hidden (post-auth / on-mount), <strong>Custom On Change</strong> de campos Kace cuando el motor está disponible.</p><p class=\"small text-muted mb-2\"><strong>No aplica</strong> a: condición de ocultar adjuntos (solo <code>data</code> / <code>row</code>); script de filtros de <strong>literales auxiliares</strong> (<code>selected_group</code>, <code>setFilters</code>); columnas o acciones del DataTable por JS que solo exponen <code>setColumns</code> / <code>setActions</code>; <code>onClick</code> de fila (<code>row</code>, <code>rowIndex</code>).</p><p class=\"font-weight-bold mb-2\">En <code>apiService.get(url, config)</code> y <code>apiService.post(url, body, config)</code></p><p class=\"small text-muted mb-2\">Anexe en la <strong>raíz</strong> de <code>config</code>:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Propiedad</th><th>Efecto</th></tr></thead><tbody><tr><td><code>__kaceForceRefresh: true</code></td><td>No usa la entrada de caché; va a red y, si la respuesta es 2xx, <strong>actualiza</strong> la caché (clave: tenant + método + URL + params/body serializado).</td></tr><tr><td><code>__kaceBypassCache: true</code></td><td>Esa petición no lee ni escribe caché.</td></tr><tr><td><code>__kaceCacheRead: true</code> <span class=\"text-muted\">(solo POST)</span></td><td>Permite caché en POST fuera de la lista blanca por URL (lecturas idempotentes). Los POST de búsqueda/listado habituales ya son elegibles por convención.</td></tr><tr><td><code>__singleFlight: false</code></td><td>Desactiva deduplicación de peticiones idénticas en curso.</td></tr></tbody></table><p class=\"small text-muted mb-2\"><strong>GET:</strong> caché activa salvo <code>__kaceBypassCache</code> / <code>__kaceForceRefresh</code>. <strong>POST:</strong> solo 2xx en URLs de lectura (o con <code>__kaceCacheRead: true</code>). No se cachean mutaciones (p. ej. <code>/cases/auxiliary</code>).</p><p class=\"small text-muted mb-0\"><strong>Invalidación:</strong> al guardar caso/subcaso el motor invalida entradas relacionadas; use <code>__kaceForceRefresh</code> si necesita datos recién escritos al instante.</p>"
+        }
+      ]
+    },
+    {
+      "key": "customMultiselectCodePanel",
+      "type": "panel",
+      "title": "Carga de opciones",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "customMultiselectCodeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Variables disponibles en el script:</p><p class=\"small text-muted mb-2\">Se ejecuta al montar y al evento <code>kaceAuthData</code>. Opciones: array de <code>{ label, value }</code> (deduplicadas por <code>value</code>). Con <code>component.multiple === true</code> permite varias opciones; si es <code>false</code>, selección única. Valor guardado: array de <code>{ label, value }</code>. Valores precargados ausentes en la lista se reflejan con opciones temporales.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">kaceEngine</span></td><td>Motor Kace; <code>kaceEngine.getService('nombre')</code>.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">apiService</span></td><td>Servicio API de Kace.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">url_api</span></td><td>URL base de la API.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">data</span></td><td>Datos del formulario (submission).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">kaceSelectPage</span></td><td>Página base 1 si scroll infinito o búsqueda remota.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">kaceRemoteSearchTerm</span></td><td>Término estable (debounce) si búsqueda remota.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">kaceSelectPageSize</span></td><td>Tamaño de página del builder.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">setOptions</span></td><td><code>(opciones)</code> o <code>(opciones, &#123; append: true &#125;)</code>; deduplicación por <code>value</code>.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">setLoading</span></td><td><code>(boolean)</code> estado de carga.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">handlerClear</span></td><td>Vacía selección y opciones cargadas.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">updateValue</span></td><td>Actualiza el valor del componente en Form.io.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">setSelected</span></td><td><code>(seleccionados)</code> fuerza el array seleccionado y sincroniza el valor (avanzado).</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table>"
+        },
+        {
+          "key": "code",
+          "type": "textarea",
+          "label": "JavaScript",
+          "description": "Carga de opciones. Use las variables de la tabla anterior.",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10,
+          "validate": {
+            "javascript": true
+          }
+        }
+      ]
+    },
+    {
+      "key": "lazySelectBehaviorPanel",
+      "type": "panel",
+      "title": "Comportamiento de carga",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "refetchOnEveryOpen",
+          "type": "checkbox",
+          "label": "Refetch al abrir y en eventos",
+          "description": "Si está activo, vuelve a ejecutar el script al abrir el desplegable y en kaceAuthData / redraw. Si está desactivado, reutiliza caché tras la primera carga exitosa salvo invalidación por auth/reset.",
+          "input": true,
+          "defaultValue": false
+        }
+      ]
+    },
+    {
+      "key": "kaceScriptSelectRemotePanel",
+      "type": "panel",
+      "title": "Scroll infinito y búsqueda remota",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "infiniteScroll",
+          "type": "checkbox",
+          "label": "Scroll infinito (paginación vía script)",
+          "description": "Activa página en el script (kaceSelectPage) y setOptions con { append: true } para acumular.",
+          "input": true,
+          "defaultValue": false
+        },
+        {
+          "key": "remoteSearch",
+          "type": "checkbox",
+          "label": "Búsqueda remota",
+          "description": "El término estable (debounce) llega como kaceRemoteSearchTerm al script.",
+          "input": true,
+          "defaultValue": false
+        },
+        {
+          "key": "pageSize",
+          "type": "number",
+          "label": "Tamaño de página (script)",
+          "description": "Expuesto al script como kaceSelectPageSize cuando aplica scroll.",
+          "input": true,
+          "defaultValue": 20
+        }
+      ]
+    },
+    {
+      "key": "customMultiselectOnChangePanel",
+      "type": "panel",
+      "title": "Al cambiar la selección (onChange)",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "customMultiselectOnChangeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Variables disponibles en el script:</p><p class=\"small text-muted mb-2\">Se ejecuta al cambiar la selección. Mismas que en “Carga de opciones” para la lógica de opciones y valor.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">kaceEngine</span></td><td>Motor Kace.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">apiService</span></td><td>Servicio API.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">url_api</span></td><td>URL base.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">data</span></td><td>Datos del formulario.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">setOptions</span></td><td>Actualizar lista de opciones.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">updateValue</span></td><td>Actualizar valor en Form.io.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">setSelected</span></td><td>Forzar selección y valor (array de <code>{ label, value }</code>).</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table>"
+        },
+        {
+          "key": "onChangeCode",
+          "type": "textarea",
+          "label": "JavaScript",
+          "description": "Código al cambiar la selección. Use las variables de la tabla anterior.",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10,
+          "validate": {
+            "javascript": true
+          }
+        }
+      ]
+    }
+  ]
+}

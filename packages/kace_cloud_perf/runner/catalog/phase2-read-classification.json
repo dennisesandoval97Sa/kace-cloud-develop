@@ -1,0 +1,140 @@
+{
+    "phase": "F2-R",
+    "subCatalogId": "classification",
+    "description": "Servicios de clasificación, estados, grupos y transiciones",
+    "notes": [
+        "classifications-view-by-id-delete eliminado: GET /classifications/{id}/delete -> ClassificationDeleter (soft-delete).",
+        "states-view-by-id-delete eliminado: GET /states/{id}/delete -> StateDeleter (soft-delete).",
+        "group-view-by-id-delete eliminado: la ruta del Postman dice /groupstest/{id}/delete (typo), pero la lambda real expone /groups/{id}/delete -> GroupDeleter (soft-delete). Se elimina por seguridad.",
+        "group-view-by-id-shift-managment eliminado: la ruta del Postman dice /groups/{id}/shift-managment (typo, falta la 'e'); la ruta canónica es /groups/{id}/shift-management y aunque su handler es de solo lectura, no podemos validar el contrato sin que el path coincida.",
+        "auxiliaries-view-list-entity-list eliminado: requiere placeholder {entity} que el runner pre-flight no sabe resolver.",
+        "auxiliaries-search eliminado: requiere placeholder {entidad} en la ruta /auxiliaries/{entidad}/search."
+    ],
+    "scenarios": [
+        {
+            "id": "classifications-view-list",
+            "service": "classifications",
+            "endpointId": "view-list",
+            "endpoint": "GET /classifications",
+            "script": "scenarios/classifications/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "classifications-view-list-list",
+            "service": "classifications",
+            "endpointId": "view-list-list",
+            "endpoint": "GET /classifications/list",
+            "script": "scenarios/classifications/view-list-list.js",
+            "mutating": false
+        },
+        {
+            "id": "classifications-view-by-id",
+            "service": "classifications",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /classifications/{id}",
+            "script": "scenarios/classifications/view-by-id.js",
+            "mutating": false,
+            "idTable": "clasificaciones"
+        },
+        {
+            "id": "classifications-search",
+            "service": "classifications",
+            "endpointId": "search",
+            "endpoint": "POST /classifications/search",
+            "script": "scenarios/classifications/search.js",
+            "mutating": false
+        },
+        {
+            "id": "states-view-list",
+            "service": "states",
+            "endpointId": "view-list",
+            "endpoint": "GET /states",
+            "script": "scenarios/states/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "states-view-list-list",
+            "service": "states",
+            "endpointId": "view-list-list",
+            "endpoint": "GET /states/list",
+            "script": "scenarios/states/view-list-list.js",
+            "mutating": false
+        },
+        {
+            "id": "states-view-by-id",
+            "service": "states",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /states/{id}",
+            "script": "scenarios/states/view-by-id.js",
+            "mutating": false,
+            "idTable": "estados"
+        },
+        {
+            "id": "states-search",
+            "service": "states",
+            "endpointId": "search",
+            "endpoint": "POST /states/search",
+            "script": "scenarios/states/search.js",
+            "mutating": false
+        },
+        {
+            "id": "group-view-list",
+            "service": "group",
+            "endpointId": "view-list",
+            "endpoint": "GET /groups",
+            "script": "scenarios/group/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "group-view-by-id",
+            "service": "group",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /groups/{id}",
+            "script": "scenarios/group/view-by-id.js",
+            "mutating": false,
+            "idTable": "grupos"
+        },
+        {
+            "id": "group-search",
+            "service": "group",
+            "endpointId": "search",
+            "endpoint": "POST /groups/search",
+            "script": "scenarios/group/search.js",
+            "mutating": false
+        },
+        {
+            "id": "transitions-view-list",
+            "service": "transitions",
+            "endpointId": "view-list",
+            "endpoint": "GET /transitions",
+            "script": "scenarios/transitions/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "transitions-view-by-id",
+            "service": "transitions",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /transitions/{id}",
+            "script": "scenarios/transitions/view-by-id.js",
+            "mutating": false,
+            "idTable": "transiciones"
+        },
+        {
+            "id": "transitions-search",
+            "service": "transitions",
+            "endpointId": "search",
+            "endpoint": "POST /transitions/search",
+            "script": "scenarios/transitions/search.js",
+            "mutating": false
+        },
+        {
+            "id": "aux-cases-view-by-id",
+            "service": "aux-cases",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /aux-cases/{id}",
+            "script": "scenarios/aux-cases/view-by-id.js",
+            "mutating": false,
+            "idTable": "aux_cases"
+        }
+    ]
+}

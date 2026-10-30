@@ -1,0 +1,61 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "kaceApiResponseCacheFlagsPanel",
+      "type": "panel",
+      "title": "Caché HTTP del apiService (flags opcionales)",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "kaceApiResponseCacheFlagsDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"small text-muted mb-2\"><strong>Ámbito:</strong> use estas propiedades en la <code>config</code> de Axios cuando el script recibe <code>apiService</code> (p. ej. <code>kaceEngine.getService('apiService')</code>): onMountCode y onChangeCode de Kace States, Schema, Aux Cases Schema, Custom Select / Multiselect, DataTable, Custom Submit, etc.</p><p class=\"font-weight-bold mb-2\">En <code>apiService.get(url, config)</code> y <code>apiService.post(url, body, config)</code></p><table class=\"table table-bordered table-sm\"><thead><tr><th>Propiedad</th><th>Efecto</th></tr></thead><tbody><tr><td><code>__kaceForceRefresh: true</code></td><td>No usa caché; va a red y actualiza caché si la respuesta es 2xx.</td></tr><tr><td><code>__kaceBypassCache: true</code></td><td>Esa petición no lee ni escribe caché.</td></tr><tr><td><code>__kaceCacheRead: true</code> <span class=\"text-muted\">(POST)</span></td><td>Permite caché en POST fuera de la lista blanca por URL.</td></tr><tr><td><code>__singleFlight: false</code></td><td>Desactiva deduplicación de peticiones idénticas en curso.</td></tr></tbody></table>"
+        }
+      ]
+    },
+    {
+      "key": "customCodeSection",
+      "type": "panel",
+      "title": "Documentación de bloques de código",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "customCodeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Variables disponibles en onMountCode y onChangeCode:</p><table class=\"table table-bordered table-sm mb-3\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><code>data</code> / <code>row</code></td><td>Datos actuales del formulario raíz (submission).</td></tr><tr><td><code>globalData</code></td><td>Alias de los datos del formulario global (<code>globalRoot</code>).</td></tr><tr><td><code>kaceEngine</code></td><td>Motor Kace; servicios con <code>kaceEngine.getService('nombre')</code>.</td></tr><tr><td><code>apiService</code></td><td>Cliente HTTP del backend.</td></tr><tr><td><code>url_api</code></td><td>URL base de la API.</td></tr><tr><td><code>setData</code></td><td>Fusiona y actualiza datos del formulario raíz.</td></tr><tr><td><code>handleChange</code></td><td>Actualiza <code>transicion_id</code> del caso en submission.</td></tr><tr><td><code>handleState</code></td><td>Selecciona un estado disponible por <code>state_id</code>.</td></tr><tr><td><code>emit</code></td><td>Emite eventos al root global.</td></tr><tr><td><code>params</code></td><td>Parámetros del handshake de Auth. <code>null</code> hasta autenticar.</td></tr><tr><td><code>authCognitoResponse</code></td><td>Respuesta de <code>/auth-cognito</code>. <code>null</code> hasta autenticar.</td></tr><tr><td><code>states</code></td><td>Lista de estados disponibles (<code>state_id</code>, <code>transition_id</code>, <code>nombre</code>).</td></tr><tr><td><code>selected</code></td><td><code>state_id</code> seleccionado.</td></tr><tr><td><code>defaultState</code></td><td>Estado actual del caso (botón verde).</td></tr></tbody></table><p class=\"font-weight-bold mb-2\">Ocultar botones de Estados disponibles (no aplica al Estado actual):</p><table class=\"table table-bordered table-sm mb-3\"><thead><tr><th>Función</th><th>Descripción</th></tr></thead><tbody><tr><td><code>hideById(id | ids[])</code></td><td>Oculta por <code>state_id</code>.</td></tr><tr><td><code>hideByName(name | names[])</code></td><td>Oculta por <code>nombre</code> (sin distinguir mayúsculas).</td></tr><tr><td><code>hideByTransitionId(id | ids[])</code></td><td>Oculta por <code>transition_id</code>.</td></tr></tbody></table><p class=\"small text-muted mb-2\"><strong>onMountCode</strong> corre una vez al montar (inicialización, API). <strong>onChangeCode</strong> se reevalúa en cada cambio del formulario y al cargar estados; use las funciones de ocultar allí para lógica reactiva.</p><pre style=\"background:#f5f5f5;padding:10px;border-radius:4px;font-size:12px\">const res = await apiService.get('/states/1');\nif (data.tipo_caso === 'interno') {\n  hideByName('Escalado');\n}\nhideByTransitionId(99);</pre>"
+        }
+      ]
+    },
+    {
+      "key": "onMountCode",
+      "type": "textarea",
+      "label": "Código personalizado al montar",
+      "description": "Se evalúa una vez al montar el componente (cuando hay estados y root disponibles). Úselo para inicialización o llamadas API.",
+      "input": true,
+      "editor": "ace",
+      "as": "javascript",
+      "rows": 8,
+      "validate": {
+        "javascript": true
+      }
+    },
+    {
+      "key": "onChangeCode",
+      "type": "textarea",
+      "label": "Código personalizado al cambiar",
+      "description": "Se evalúa en cada cambio del formulario y al actualizar la lista de estados. Use hideById/hideByName/hideByTransitionId para ocultar botones.",
+      "input": true,
+      "editor": "ace",
+      "as": "javascript",
+      "rows": 8,
+      "validate": {
+        "javascript": true
+      }
+    }
+  ]
+}

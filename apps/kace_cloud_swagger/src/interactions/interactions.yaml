@@ -1,0 +1,382 @@
+interactions:
+    post:
+        tags: [Interactions]
+        summary: Create interaction
+        operationId: createInteraction
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/InteractionCreate'
+        responses:
+            '201':
+                description: Interaction created
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InteractionCreateResponse'
+            '409':
+                description: The provided email already has an interaction
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InteractionEmailAlreadyLinkedResponse'
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+    get:
+        tags: [Interactions]
+        summary: List interactions
+        operationId: listInteractions
+        responses:
+            '200':
+                description: Interactions list
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InteractionSearchResponse'
+            '403':
+                description: Forbidden
+            '500':
+                description: Internal server error
+interactions_id:
+    get:
+        tags: [Interactions]
+        summary: Get interaction
+        operationId: getInteraction
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+        responses:
+            '200':
+                description: Interaction data
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Interaction'
+            '400':
+                description: Invalid id
+            '403':
+                description: Forbidden
+            '500':
+                description: Internal server error
+    post:
+        tags: [Interactions]
+        summary: Update interaction
+        operationId: updateInteraction
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/InteractionUpdate'
+        responses:
+            '200':
+                description: Interaction updated
+            '400':
+                description: Invalid id
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+interactions_id_delete:
+    post:
+        tags: [Interactions]
+        summary: Delete interaction
+        operationId: deleteInteraction
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+        responses:
+            '200':
+                description: Interaction deleted
+            '400':
+                description: Invalid id
+            '403':
+                description: Forbidden
+            '500':
+                description: Internal server error
+interactions_search:
+    post:
+        tags: [Interactions]
+        summary: Search interactions
+        operationId: searchInteractions
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Search'
+        responses:
+            '200':
+                description: Search result
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InteractionSearchResponse'
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+interactions_cases:
+    post:
+        tags: [Interactions]
+        summary: Associate interaction to case
+        operationId: associateInteractionToCase
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/InteractionJoinCase'
+        responses:
+            '200':
+                description: Interaction associated to case
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+interactions_cases_search:
+    post:
+        tags: [Interactions]
+        summary: Search interaction-case relations
+        operationId: searchInteractionCases
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Search'
+        responses:
+            '200':
+                description: Search result
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+interactions_webhook:
+    post:
+        tags: [Interactions]
+        summary: Legacy Channel Hub webhook adapter
+        deprecated: true
+        description: >
+            Deprecated compatibility endpoint for existing Channel Hub registrations.
+            New Channel Hub registrations must use /webhooks/channel-hub. This route
+            must not contain independent Email or Interaction business logic; while it
+            exists, it delegates to the shared Channel Hub inbound email processor.
+        operationId: processWebhook
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        additionalProperties: true
+                    example:
+                        messageId: '36l5q794T2rMPLl2b4gqbPuAe4a'
+                        origin: 'correo@ejemplo.com'
+                        tag: 'ATENCION CLIENTES'
+                        tags: 'c3f4a1a9-6e12-4c89-9c2b-3d1e8b7f1238'
+                        destination:
+                            to: 'correo@ejemplo.com'
+                            cc: ''
+                            bcc: ''
+                        status:
+                            statusId: '1'
+                            name: 'REGISTERED'
+                            description: 'Message registered in Channel Hub'
+                        content:
+                            text: 'https://d13sfafwp8nvyq.cloudfront.net/.../message_body.html'
+                            html: 'https://d13sfafwp8nvyq.cloudfront.net/.../message_body.html'
+                        type: 'email'
+                        messageIdOperator: '36l5q794T2rMPLl2b4gqbPuAe4a'
+                        subject: 'asunto correo de prueba'
+                        channel_id: 'c3f4a1a9-6e12-4c89-9c2b-3d1e8b7f1238'
+                        client_identifier: '9c1c0a7b-5b6d-4b9a-9b25-1e7d2a4b6f10'
+                        external_identifier: '8b7e3a91-5a4e-4b2f-9d61-7f93c1a2b456'
+                        workspace_id: 'c3f4a1a9-6e12-4c89-9c2b-3d1e8b7f1238'
+                        conversation_id: '4c9a12f6-7e2d-4f8b-9c11-1a2b3c4d5e6f'
+        responses:
+            '200':
+                description: Webhook processed
+            '403':
+                description: Forbidden
+            '500':
+                description: Internal server error
+
+components:
+    schemas:
+        Interaction:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                channel_id:
+                    type: string
+                client_identifier:
+                    type: string
+                external_identifier:
+                    type: string
+                description:
+                    type: string
+                    nullable: true
+                priority:
+                    type: string
+                workspace_id:
+                    type: string
+                    format: uuid
+                conversation_id:
+                    type: string
+                receipt_at:
+                    type: string
+                    format: date-time
+                start_review_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                start_review_by:
+                    type: string
+                    format: uuid
+                    nullable: true
+                closed_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                closed_by:
+                    type: string
+                    nullable: true
+                is_closed:
+                    type: boolean
+                    nullable: true
+                in_review:
+                    type: boolean
+                    nullable: true
+
+        InteractionCreate:
+            allOf:
+                - $ref: '#/components/schemas/Interaction'
+
+        InteractionCreateResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: Resource(s) created
+                data:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                            format: uuid
+
+        InteractionEmailAlreadyLinkedResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: The request could not be processed.
+                data:
+                    type: object
+                    properties:
+                        code:
+                            type: string
+                            example: '0x030031'
+                        email_id:
+                            type: string
+                            format: uuid
+                        interaction_id:
+                            type: string
+                            format: uuid
+                            nullable: true
+
+        InteractionUpdate:
+            allOf:
+                - $ref: '#/components/schemas/Interaction'
+
+        InteractionJoinCase:
+            type: object
+            required: [interaction_id, caso_id]
+            properties:
+                interaction_id:
+                    type: string
+                    format: uuid
+                caso_id:
+                    type: string
+                    format: uuid
+
+        InteractionSearchResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Interaction'
+                total:
+                    type: integer
+                limit:
+                    type: integer
+                offset:
+                    type: integer
+        Search:
+            type: object
+            properties:
+                filter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            field:
+                                type: string
+                            operator:
+                                type: string
+                            value:
+                                nullable: true
+                            type:
+                                type: string
+                                enum: [AND, OR]
+                relationships:
+                    type: array
+                    items:
+                        type: string
+                limit:
+                    type: integer
+                    example: 10
+                offset:
+                    type: integer
+                    example: 0
+                order:
+                    type: object
+                    properties:
+                        field:
+                            type: string
+                        direction:
+                            type: string
+                            enum: [asc, desc]

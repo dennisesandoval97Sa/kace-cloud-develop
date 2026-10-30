@@ -1,0 +1,43 @@
+global-configuration_set:
+  post:
+    tags:
+      - Set Global configuration
+    summary: Set the settings of the Global configuration instance
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - id -> ID de una configuracion global (Global configuration)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                example: "behaviors"
+              application:
+                type: string
+                example: "admin"
+              module:
+                type: string
+                example: "new_module"
+    responses:
+      '200':
+        description: Global configuration instance set successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'

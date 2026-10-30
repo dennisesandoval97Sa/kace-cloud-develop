@@ -1,0 +1,299 @@
+user-notifications:
+  get:
+    tags:
+      - User notifications
+    summary: Get user-notifications collection
+    operationId: getuser-notifications
+    responses:
+      '200':
+        description: A list of user-notifications
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - User notifications
+    summary: Create an user-notifications instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - user_id -> ID de un usuario (Users)
+      - leida_por -> ID de un usuario (Users)
+    operationId: postUser-notifications
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createBodyRequest'
+    responses:
+      '201':
+        description: user-notificationsinstance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+user-notifications_id:
+  get:
+    tags:
+      - User notifications
+    summary: Fetch an user-notificationsinstance by ID
+    description: Get detail of one single user-notification of database
+    operationId: getuser-notifications_id
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing user-notifications id
+    responses:
+      '200':
+        description: user-notifications instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: '#/components/schemas/collection-item'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - User notifications
+    summary: Update an user-notifications instance by ID
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - user_id -> ID de un usuario (Users)
+      - leida_por -> ID de un usuario (Users)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing user-notifications id
+    requestBody:
+      description: In this JSON body use only the properties that will be modified
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/updateBodyRequest'
+    responses:
+      '200':
+        description: user-notifications instance updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+user-notifications_delete:
+  get:
+    tags:
+      - User notifications
+    summary: Delete an user-notifications instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing user-notificationsid
+    responses:
+      '200':
+        description: user-notifications instance deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+user-notifications_search:
+  post:
+    tags:
+      - User notifications
+    summary: Get user-notifications whit advanced filters
+    requestBody:
+      description: In this JSON body use only the properties that you need search
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: A list of user-notifications
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+
+components:
+  schemas:
+    asunto:
+      type: string
+      example: proceso 1
+    mensaje:
+      type: string
+      example: Proceso 1 ha sido concluido exitosamente
+    fecha_inicio:
+      type: string
+      format: date-time
+      example: 2024-09-29T20:46:32.405Z
+    fecha_fin:
+      type: string
+      format: date-time
+      example: 2024-09-30T20:46:32.405Z
+    leida:
+      type: boolean
+      example: false
+      description: "Indica si el recurso ha sido leído."
+    leida_por:
+      $ref: '../common/fields.yaml#/schemas/id'
+    user_id:
+      $ref: '../common/fields.yaml#/schemas/id'
+    is_active:
+      type: boolean
+      example: true
+
+    collection-item:
+      type: object
+      properties:
+        id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        asunto:
+          $ref: '#/components/schemas/asunto'
+        mensaje:
+          $ref: '#/components/schemas/mensaje'
+        fecha_inicio:
+          $ref: '#/components/schemas/fecha_inicio'
+        fecha_fin:
+          $ref: '#/components/schemas/fecha_fin'
+        leida:
+          $ref: '#/components/schemas/leida'
+        leida_por:
+          $ref: '#/components/schemas/leida_por'
+        user_id:
+          $ref: '#/components/schemas/user_id'
+        is_active:
+          $ref: '#/components/schemas/is_active'
+        created_at:
+          $ref: '../common/fields.yaml#/schemas/created_at'
+        created_by:
+          $ref: '../common/fields.yaml#/schemas/created_by'
+        updated_at:
+          $ref: '../common/fields.yaml#/schemas/updated_at'
+        updated_by:
+          $ref: '../common/fields.yaml#/schemas/updated_by'
+        deleted_at:
+          $ref: '../common/fields.yaml#/schemas/deleted_at'
+        deleted_by:
+          $ref: '../common/fields.yaml#/schemas/deleted_by'
+   
+    collection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/collection-item'
+        metadata:
+          type: object
+    createBodyRequest:
+      type: object
+      properties:
+        id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        asunto:
+          $ref: '#/components/schemas/asunto'
+        mensaje:
+          $ref: '#/components/schemas/mensaje'
+        fecha_inicio:
+          $ref: '#/components/schemas/fecha_inicio'
+        fecha_fin:
+          $ref: '#/components/schemas/fecha_fin'
+        leida:
+          $ref: '#/components/schemas/leida'
+        user_id:
+          $ref: '#/components/schemas/user_id'
+        is_active:
+          $ref: '#/components/schemas/is_active'
+    updateBodyRequest:
+      type: object
+      properties:
+        asunto:
+          $ref: '#/components/schemas/asunto'
+        mensaje:
+          $ref: '#/components/schemas/mensaje'
+        fecha_inicio:
+          $ref: '#/components/schemas/fecha_inicio'
+        fecha_fin:
+          $ref: '#/components/schemas/fecha_fin'
+        leida:
+          $ref: '#/components/schemas/leida'
+        user_id:
+          $ref: '#/components/schemas/user_id'
+        is_active:
+          $ref: '#/components/schemas/is_active'
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: asunto
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: example description
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

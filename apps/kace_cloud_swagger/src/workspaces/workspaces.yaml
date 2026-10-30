@@ -1,0 +1,364 @@
+workspaces:
+    post:
+        tags:
+            - Workspaces
+        summary: Create a workspace
+        description: Creates a new workspace
+        operationId: createWorkspace
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/WorkspaceCreate'
+        responses:
+            '201':
+                description: Workspace created successfully
+            '400':
+                description: Bad request
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+    get:
+        tags:
+            - Workspaces
+        summary: List workspaces
+        description: Returns a paginated list of workspaces
+        operationId: listWorkspaces
+        responses:
+            '200':
+                description: Workspaces list
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/WorkspaceSearchResponse'
+            '403':
+                description: Forbidden
+            '500':
+                description: Internal server error
+workspaces_id:
+    get:
+        tags:
+            - Workspaces
+        summary: Get workspace
+        description: Returns a workspace by id
+        operationId: getWorkspace
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+        responses:
+            '200':
+                description: Workspace data
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Workspace'
+            '400':
+                description: Invalid id
+            '403':
+                description: Forbidden
+            '404':
+                description: Not found
+            '500':
+                description: Internal server error
+    post:
+        tags:
+            - Workspaces
+        summary: Update workspace
+        description: Updates an existing workspace
+        operationId: updateWorkspace
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/WorkspaceUpdate'
+        responses:
+            '200':
+                description: Workspace updated successfully
+            '400':
+                description: Invalid id
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+workspaces_id_delete:
+    post:
+        tags:
+            - Workspaces
+        summary: Delete workspace
+        description: Deletes a workspace by id
+        operationId: deleteWorkspace
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+        responses:
+            '200':
+                description: Workspace deleted successfully
+            '400':
+                description: Invalid id
+            '403':
+                description: Forbidden
+            '404':
+                description: Not found
+            '500':
+                description: Internal server error
+workspaces_search:
+    post:
+        tags:
+            - Workspaces
+        summary: Search workspaces
+        description: Search workspaces using filters, pagination and sorting
+        operationId: searchWorkspaces
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Search'
+        responses:
+            '200':
+                description: Search result
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/WorkspaceSearchResponse'
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+components:
+    schemas:
+        Workspace:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                description:
+                    type: string
+                    nullable: true
+                    maxLength: 500
+                is_active:
+                    type: boolean
+                tag:
+                    type: string
+                    nullable: true
+                    maxLength: 50
+                rules:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                mails_accounts:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                channel_hub_accounts:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                groups:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                tag_creation_flow_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                tag_update_flow_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                tag_deletion_flow_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                created_at:
+                    type: string
+                    format: date-time
+                created_by:
+                    type: string
+                    format: uuid
+                updated_at:
+                    type: string
+                    format: date-time
+                updated_by:
+                    type: string
+                    format: uuid
+
+        WorkspaceCreate:
+            type: object
+            required:
+                - id
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                description:
+                    type: string
+                    nullable: true
+                is_active:
+                    type: boolean
+                tag:
+                    type: string
+                    nullable: true
+                rules:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                mails_accounts:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                channel_hub_accounts:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                groups:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                tag_creation_flow_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                tag_update_flow_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                tag_deletion_flow_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+
+        WorkspaceUpdate:
+            type: object
+            required:
+                - updated_by
+                - updated_at
+            properties:
+                description:
+                    type: string
+                    nullable: true
+                is_active:
+                    type: boolean
+                tag:
+                    type: string
+                    nullable: true
+                rules:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                mails_accounts:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                channel_hub_accounts:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                groups:
+                    type: array
+                    items:
+                        type: object
+                    nullable: true
+                tag_creation_flow_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                tag_update_flow_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                tag_deletion_flow_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                updated_by:
+                    type: string
+                    format: uuid
+                updated_at:
+                    type: string
+                    format: date-time
+
+        WorkspaceSearchResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Workspace'
+                total:
+                    type: integer
+                limit:
+                    type: integer
+                offset:
+                    type: integer
+        Search:
+            type: object
+            properties:
+                filter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            field:
+                                type: string
+                            operator:
+                                type: string
+                            value:
+                                nullable: true
+                            type:
+                                type: string
+                                enum: [AND, OR]
+                relationships:
+                    type: array
+                    items:
+                        type: string
+                limit:
+                    type: integer
+                    example: 10
+                offset:
+                    type: integer
+                    example: 0
+                order:
+                    type: object
+                    properties:
+                        field:
+                            type: string
+                        direction:
+                            type: string
+                            enum: [asc, desc]

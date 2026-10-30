@@ -1,0 +1,48 @@
+case_reopen:
+  post:
+    tags:
+      - Cases Re Open
+    summary: Reopen a specific case by ID and comment ID
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - id -> ID de un caso (Cases) (un caso cerrado)
+
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - cambio_estado_comentario_id -> ID de un comentario (Comments)
+      - transicion_id -> ID de una transicion (transitions)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: 
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ReOpenCaseBody"
+    responses:
+      '200':
+        description: Case reopened successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    ReOpenCaseBody:
+      type: object
+      properties:
+        cambio_estado_comentario_id:
+          type: string
+          format: uuid
+        transicion_id:
+          type: string
+          format: uuid

@@ -1,0 +1,12 @@
+{
+    "service": "cases-count-by-group",
+    "postmanFolder": "Cases Count By Group",
+    "endpoints": [
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/cases-count-by-group/{id}",
+            "requiresId": true
+        }
+    ]
+}

@@ -1,0 +1,47 @@
+ans-calculate:
+   post:
+    tags:
+      - Ans Calculate
+    summary: Calculate ans
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              measurementType:
+                type: string
+                enum: ["Minutes","Hours","Days"]
+    responses:
+      '200':
+        description: Ans calculated successfully
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+  schemas:
+    AnsCalculateCollection:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Success
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    example: DAYS
+                  value:
+                    type: string
+                    example: days
+        metadata:
+          type: object

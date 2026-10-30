@@ -1,0 +1,40 @@
+{
+  "key": "kace_hidden_post_auth",
+  "label": "Post-Auth (KaceEngine)",
+  "components": [
+    {
+      "key": "kaceApiResponseCacheFlagsPanel",
+      "type": "panel",
+      "title": "Caché HTTP del apiService (flags opcionales)",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "kaceApiResponseCacheFlagsDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"small text-muted mb-2\"><strong>Ámbito:</strong> use estas propiedades en la <code>config</code> de Axios <strong>solo</strong> cuando el script evaluado recibe <code>apiService</code> (p. ej. <code>kaceEngine.getService('apiService')</code>): Schema y <strong>Aux Cases Schema</strong> (onMount / onChange / onSubmit), Custom Select / Multiselect / Custom Multiselect (carga y onChange; con &quot;Refetch al abrir&quot; el proxy puede forzar <code>__kaceForceRefresh</code>), DataTable en <strong>datos iniciales</strong> por JS si llama API, <strong>acciones masivas</strong>, <code>modalInitCode</code> y &quot;Mostrar cuando&quot; del modal, Custom Submit / Natura, <strong>antes de enviar subcaso</strong>, scripts Hidden (post-auth / on-mount), <strong>Custom On Change</strong> de campos Kace cuando el motor está disponible.</p><p class=\"small text-muted mb-2\"><strong>No aplica</strong> a: condición de ocultar adjuntos (solo <code>data</code> / <code>row</code>); script de filtros de <strong>literales auxiliares</strong> (<code>selected_group</code>, <code>setFilters</code>); columnas o acciones del DataTable por JS que solo exponen <code>setColumns</code> / <code>setActions</code>; <code>onClick</code> de fila (<code>row</code>, <code>rowIndex</code>).</p><p class=\"font-weight-bold mb-2\">En <code>apiService.get(url, config)</code> y <code>apiService.post(url, body, config)</code></p><p class=\"small text-muted mb-2\">Anexe en la <strong>raíz</strong> de <code>config</code>:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Propiedad</th><th>Efecto</th></tr></thead><tbody><tr><td><code>__kaceForceRefresh: true</code></td><td>No usa la entrada de caché; va a red y, si la respuesta es 2xx, <strong>actualiza</strong> la caché (clave: tenant + método + URL + params/body serializado).</td></tr><tr><td><code>__kaceBypassCache: true</code></td><td>Esa petición no lee ni escribe caché.</td></tr><tr><td><code>__kaceCacheRead: true</code> <span class=\"text-muted\">(solo POST)</span></td><td>Permite caché en POST fuera de la lista blanca por URL (lecturas idempotentes). Los POST de búsqueda/listado habituales ya son elegibles por convención.</td></tr><tr><td><code>__singleFlight: false</code></td><td>Desactiva deduplicación de peticiones idénticas en curso.</td></tr></tbody></table><p class=\"small text-muted mb-2\"><strong>GET:</strong> caché activa salvo <code>__kaceBypassCache</code> / <code>__kaceForceRefresh</code>. <strong>POST:</strong> solo 2xx en URLs de lectura (o con <code>__kaceCacheRead: true</code>). No se cachean mutaciones (p. ej. <code>/cases/auxiliary</code>).</p><p class=\"small text-muted mb-0\"><strong>Invalidación:</strong> al guardar caso/subcaso el motor invalida entradas relacionadas; use <code>__kaceForceRefresh</code> si necesita datos recién escritos al instante.</p>"
+        }
+      ]
+    },
+    {
+      "key": "postAuthKaceDoc",
+      "type": "content",
+      "input": false,
+      "html": "<p class=\"font-weight-bold mb-2\">Se ejecuta con <code>Evaluator.evaluate</code> al recibir <code>kaceAuthData</code> (flujo Auth finalizado).</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><code>kaceEngine</code></td><td>Motor Kace; <code>kaceEngine.getService('nombre')</code>.</td></tr><tr><td><code>apiService</code></td><td>Servicio HTTP.</td></tr><tr><td><code>kaceData</code></td><td>Payload del evento (mismo que tras init Auth).</td></tr><tr><td><code>data</code> / <code>row</code></td><td>Datos del submission del formulario.</td></tr><tr><td><code>component</code></td><td>Definición del Hidden en el builder.</td></tr><tr><td><code>instance</code></td><td>Instancia Form.io del Hidden.</td></tr><tr><td><code>params</code></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><code>authCognitoResponse</code></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table>"
+    },
+    {
+      "key": "postAuthKaceEngineScript",
+      "type": "textarea",
+      "label": "Código JavaScript",
+      "description": "Opcional. Se evalúa con Form.io Utils.evaluate tras Auth.",
+      "input": true,
+      "editor": "ace",
+      "as": "javascript",
+      "rows": 14,
+      "validate": {
+        "javascript": true
+      }
+    }
+  ]
+}

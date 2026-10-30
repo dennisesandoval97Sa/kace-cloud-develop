@@ -1,0 +1,324 @@
+fake-cases:
+  post:
+    tags:
+      - Fake cases
+    summary: Create a fake case instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - cliente_id  -> ID de un cliente (Clients)
+      - transicion_id -> ID de una transicion (transitions)
+      - responsable_id -> ID de un usuario (Users) (este usuario debe pertenecer al grupo referenciado anteriormente)
+      - clasificacion_id -> ID de una clasificacion (Classifications)
+      - descripcion_caso_id -> ID de una descripcion de caso (Case descriptions)
+      - grupo_id -> ID de un grupo (Groups)
+    requestBody:
+      required:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateFakeCase"
+    responses:
+      '201':
+        description: Fake case instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+fake-cases_id:
+  get:
+    tags:
+      - Fake cases
+    summary: Get a fake case instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Fake case instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: "#/components/schemas/message"
+                data:  
+                  $ref: "#/components/schemas/FakeCases"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags: 
+      - Fake cases
+    summary: Update a case instance by ID
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - cliente_id  -> ID de un cliente (Clients)
+      - transicion_id -> ID de una transicion (transitions)
+      - responsable_id -> ID de un usuario (Users) (este usuario debe pertenecer al grupo referenciado anteriormente)
+      - clasificacion_id -> ID de una clasificacion (Classifications)
+      - descripcion_caso_id -> ID de una descripcion de caso (Case descriptions)
+      - grupo_id -> ID de un grupo (Groups)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateFakeCase"
+    responses:
+      '200':
+        description: Case instance updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+fake-cases_delete:
+   get:
+    tags: 
+      - Fake cases
+    summary: Delete a fake case instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Fake case instance deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    message:
+      type: string
+      example: Success
+    cliente_id:
+      type: string
+      format: uuid
+    transicion_id:
+      type: string
+      format: uuid
+    responsable_id:
+      type: string
+      format: uuid
+    clasificacion_id:
+      type: string
+      format: uuid
+    descripcion_caso_id:
+      type: string
+      format: uuid
+    descripcion_caso:
+      type: string
+      example: This is a test description
+    mail_item_id:
+      type: string
+      format: uuid
+      example: null
+    canal_id:
+      type: string
+      example: null
+    grupo_id:
+      type: string
+      format: uuid
+    fecha_resolucion:
+      type: string
+      format: date-time
+      example: null
+    antiguedad:
+      type: number
+      example: 2
+    ans_posicion:
+      type: number
+      example: 1
+    antiguedad_dias:
+      type: number
+      example: 20
+    antiguedad_horas:
+      type: number
+      example: 33
+    antiguedad_minutos:
+      type: number
+      example: 98
+    motivo_baja:
+      type: string
+      example: motivo baja
+    alto_impacto:
+      type: number
+      example: 1
+    vista:
+      type: string
+      example: vista
+    comment:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "Identificador único del comentario"
+          example: "c7b496d6-ffcb-4214-a17b-abd2766025fa"
+        descripcion:
+          type: string
+          description: "Descripción del comentario"
+          example: "prueba"
+        calificacion:
+          type: integer
+          description: "Calificación del comentario"
+          example: 1
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    deleted_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+          nullable: true
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+          nullable: true
+    Deleted:
+      type: object
+      properties:
+        deleted_at:
+          $ref: "../common/fields.yaml#/schemas/deleted_at"
+        deleted_by:
+          $ref: "../common/fields.yaml#/schemas/deleted_by"
+    FakeCasesBase:
+      type: object
+      properties:
+        cliente_id:
+          $ref: "#/components/schemas/cliente_id"
+        transicion_id:
+          $ref: "#/components/schemas/transicion_id"
+        responsable_id:
+          $ref: "#/components/schemas/responsable_id"
+        clasificacion_id:
+          $ref: "#/components/schemas/clasificacion_id"
+        descripcion_caso_id:
+          $ref: "#/components/schemas/descripcion_caso_id"
+        descripcion_caso:
+          $ref: "#/components/schemas/descripcion_caso"
+        mail_item_id:
+          $ref: "#/components/schemas/mail_item_id"
+        canal_id:
+          $ref: "#/components/schemas/canal_id"
+        grupo_id:
+          $ref: "#/components/schemas/grupo_id"
+        fecha_resolucion:
+          $ref: "#/components/schemas/fecha_resolucion"
+        motivo_baja:
+          $ref: "#/components/schemas/motivo_baja"
+        alto_impacto:
+          $ref: "#/components/schemas/alto_impacto"
+        vista:
+          $ref: "#/components/schemas/vista"
+    FakeCases:
+      allOf:
+        - type: object
+          properties: 
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/FakeCasesBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+        - $ref: "#/components/schemas/Deleted"
+    FakeCasesCollection:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/FakeCases"
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"
+    CreateFakeCase:
+      allOf:
+        - type: object
+          properties: 
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/FakeCasesBase"
+        - type: object
+          properties:
+            created_at:
+              $ref: "../common/fields.yaml#/schemas/created_at"
+            created_by:
+              $ref: "#/components/schemas/created_by"
+    UpdateFakeCase:
+      allOf:
+        - $ref: "#/components/schemas/FakeCasesBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+    DeleteFakeCase:
+      type: object
+      properties:
+        comment:
+          $ref: "#/components/schemas/comment"
+        motivo_baja:
+          type: string
+          description: "Motivo de la baja o eliminación"
+          example: "Prueba"

@@ -1,0 +1,53 @@
+{
+    "service": "classifications",
+    "postmanFolder": "Classifications",
+    "endpoints": [
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/classifications",
+            "requiresId": false
+        },
+        {
+            "id": "view-list-list",
+            "method": "GET",
+            "path": "/classifications/list",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/classifications/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/classifications/search",
+            "requiresId": false,
+            "body": {
+                "filter": [
+                    {
+                        "field": "is_active",
+                        "operator": "eq",
+                        "type": "AND",
+                        "value": "true"
+                    },
+                    {
+                        "field": "clasificaciones.deleted_at",
+                        "operator": "null",
+                        "value": "null",
+                        "type": "AND"
+                    }
+                ],
+                "relationship": null,
+                "order": {
+                    "field": "clasificaciones.created_at",
+                    "direction": "desc"
+                },
+                "limit": 10,
+                "offset": 0
+            }
+        }
+    ]
+}

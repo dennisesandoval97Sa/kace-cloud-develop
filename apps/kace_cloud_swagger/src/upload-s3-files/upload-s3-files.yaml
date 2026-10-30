@@ -1,0 +1,70 @@
+upload-s3-files:
+  post:
+    tags:
+      - S3 files Upload
+    summary: Upload a S3 file
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateS3File"
+    responses:
+      '201':
+        description: Upload a S3 file succesfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResponseCreate"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    fileName:
+      type: string
+      example: prueba.png
+    contentType:
+      type: string
+      example: image/png
+    url:
+      type: string
+      example: template
+    
+    S3FileBase:
+      type: object
+      properties:
+        fileName:
+          $ref: "#/components/schemas/fileName"
+        contentType:
+          $ref: "#/components/schemas/contentType"
+        url:
+          $ref: "#/components/schemas/url"
+    CreateS3File:
+        allOf:
+          - type: object  
+            properties:
+              id:
+                $ref: "../common/fields.yaml#/schemas/id"
+          - $ref: "#/components/schemas/S3FileBase"
+          - type: object
+    ResponseCreate:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Success
+        data:
+          type: object
+          properties:
+            uploadUrl:
+              type: string
+              format: uri
+              example: "https://s3pruebaskace.s3.us-east-1.amazonaws.com/template/5b090fbb-926e-4997-9242-12fa7847bf5b/prueba.png..."
+        metadata:
+          type: object
+          additionalProperties: true
+          example: {}

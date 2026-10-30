@@ -1,0 +1,184 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "kaceApiResponseCacheFlagsPanel",
+      "type": "panel",
+      "title": "Caché HTTP del apiService (flags opcionales)",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "kaceApiResponseCacheFlagsDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"small text-muted mb-2\"><strong>Ámbito:</strong> use estas propiedades en la <code>config</code> de Axios <strong>solo</strong> cuando el script evaluado recibe <code>apiService</code> (p. ej. <code>kaceEngine.getService('apiService')</code>): Schema y <strong>Aux Cases Schema</strong> (onMount / onChange / onSubmit), Custom Select / Multiselect / Custom Multiselect (carga y onChange; con &quot;Refetch al abrir&quot; el proxy puede forzar <code>__kaceForceRefresh</code>), DataTable en <strong>datos iniciales</strong> por JS si llama API, <strong>acciones masivas</strong>, <code>modalInitCode</code> y &quot;Mostrar cuando&quot; del modal, Custom Submit / Natura, <strong>antes de enviar subcaso</strong>, scripts Hidden (post-auth / on-mount), <strong>Custom On Change</strong> de campos Kace cuando el motor está disponible.</p><p class=\"small text-muted mb-2\"><strong>No aplica</strong> a: condición de ocultar adjuntos (solo <code>data</code> / <code>row</code>); script de filtros de <strong>literales auxiliares</strong> (<code>selected_group</code>, <code>setFilters</code>); columnas o acciones del DataTable por JS que solo exponen <code>setColumns</code> / <code>setActions</code>; <code>onClick</code> de fila (<code>row</code>, <code>rowIndex</code>).</p><p class=\"font-weight-bold mb-2\">En <code>apiService.get(url, config)</code> y <code>apiService.post(url, body, config)</code></p><p class=\"small text-muted mb-2\">Anexe en la <strong>raíz</strong> de <code>config</code>:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Propiedad</th><th>Efecto</th></tr></thead><tbody><tr><td><code>__kaceForceRefresh: true</code></td><td>No usa la entrada de caché; va a red y, si la respuesta es 2xx, <strong>actualiza</strong> la caché (clave: tenant + método + URL + params/body serializado).</td></tr><tr><td><code>__kaceBypassCache: true</code></td><td>Esa petición no lee ni escribe caché.</td></tr><tr><td><code>__kaceCacheRead: true</code> <span class=\"text-muted\">(solo POST)</span></td><td>Permite caché en POST fuera de la lista blanca por URL (lecturas idempotentes). Los POST de búsqueda/listado habituales ya son elegibles por convención.</td></tr><tr><td><code>__singleFlight: false</code></td><td>Desactiva deduplicación de peticiones idénticas en curso.</td></tr></tbody></table><p class=\"small text-muted mb-2\"><strong>GET:</strong> caché activa salvo <code>__kaceBypassCache</code> / <code>__kaceForceRefresh</code>. <strong>POST:</strong> solo 2xx en URLs de lectura (o con <code>__kaceCacheRead: true</code>). No se cachean mutaciones (p. ej. <code>/cases/auxiliary</code>).</p><p class=\"small text-muted mb-0\"><strong>Invalidación:</strong> al guardar caso/subcaso el motor invalida entradas relacionadas; use <code>__kaceForceRefresh</code> si necesita datos recién escritos al instante.</p>"
+        }
+      ]
+    },
+    {
+      "key": "enableAttachments",
+      "type": "checkbox",
+      "label": "Habilitar adjuntos en subcasos",
+      "input": true,
+      "description": "Permite a los usuarios adjuntar archivos al crear o editar subcasos. Los archivos se suben al guardar el subcaso."
+    },
+    {
+      "key": "enforceStateChangeValidation",
+      "type": "checkbox",
+      "label": "Exigir cambio de estado al actualizar subcaso",
+      "input": true,
+      "defaultValue": true,
+      "description": "Si está activado, al editar un subcaso se aplica la regla global del grupo (obligar a un estado distinto al actual). Desactívelo para permitir guardar el subcaso sin cambiar de estado desde este componente."
+    },
+    {
+      "key": "lazySubcaseListUntilVisible",
+      "type": "checkbox",
+      "label": "Cargar lista solo cuando el bloque sea visible",
+      "input": true,
+      "defaultValue": true,
+      "description": "Evita POST de búsqueda de subcasos hasta que este componente intersecte el viewport (útil si hay varios bloques de subcasos o están en pestañas ocultas). Desactívelo para cargar en cuanto exista caso padre."
+    },
+    {
+      "key": "dataSourceValues",
+      "type": "datagrid",
+      "label": "Clasificaciones",
+      "input": true,
+      "addAnother": "Agregar Clasificación",
+      "components": [
+        {
+          "key": "label",
+          "type": "textfield",
+          "label": "Etiqueta",
+          "input": true
+        },
+        {
+          "key": "value",
+          "type": "textfield",
+          "label": "ID de Clasificación",
+          "input": true
+        }
+      ],
+      "description": "Ingrese las clasificaciones disponibles para los subcasos (Etiqueta / ID de clasificación)"
+    },
+    {
+      "key": "buttonLabel",
+      "type": "textfield",
+      "label": "Etiqueta del Botón",
+      "input": true,
+      "description": "Texto que se mostrará en el botón de creación (ej: Crear subcaso)"
+    },
+    {
+      "key": "tableColumns",
+      "type": "editgrid",
+      "label": "Columnas de la Tabla de Subcasos",
+      "addAnother": "Agregar Columna",
+      "saveRow": "Guardar",
+      "removeRow": "Eliminar",
+      "components": [
+        {
+          "key": "key",
+          "type": "textfield",
+          "label": "Clave del campo (ej: id)",
+          "input": true
+        },
+        {
+          "key": "label",
+          "type": "textfield",
+          "label": "Título de la columna",
+          "input": true
+        }
+      ]
+    },
+    {
+      "key": "auxColumns",
+      "type": "editgrid",
+      "label": "Columnas Auxiliares (aux_cases)",
+      "input": true,
+      "addAnother": "Agregar Campo Auxiliar",
+      "saveRow": "Guardar",
+      "removeRow": "Eliminar",
+      "description": "Campos de la entidad aux_cases para mostrar en el grid. Cada entrada genera un JOIN a aux_cases y un SELECT con la expresion PostgreSQL indicada.",
+      "components": [
+        {
+          "key": "selectExpression",
+          "type": "textfield",
+          "label": "Expresion SELECT PostgreSQL",
+          "input": true,
+          "placeholder": "aux_cases.data->'*'->>'nombre'",
+          "description": "Expresion PostgreSQL sobre aux_cases.data (JSONB). Texto con ->> (ej. aux_cases.data->>'name'); JSON o arrays con ->. Anidamiento: aux_cases.data->'profile'->'contact'->>'email'. Arrays por indice: aux_cases.data->'items'->0->>'code'. Comodin de primer nivel (cualquier clave bajo data): aux_cases.data->'*'->>'nombre'; con array: aux_cases.data->'*'->'generos'->0->>'code' o aux_cases.data->'*'->'telefonos'->0. No incluir \" as alias\" aqui: use el campo Alias. El comodin debe ir entre comillas: '*'. Requiere backend que traduzca a jsonb_path_query_first."
+        },
+        {
+          "key": "alias",
+          "type": "textfield",
+          "label": "Alias (clave unica, ej: aux_nombre)",
+          "input": true,
+          "description": "Nombre unico que identifica la columna en la respuesta. Sera la clave del campo en cada fila."
+        },
+        {
+          "key": "label",
+          "type": "textfield",
+          "label": "Titulo de la columna",
+          "input": true
+        },
+        {
+          "key": "columnType",
+          "type": "select",
+          "label": "Tipo de dato",
+          "input": true,
+          "defaultValue": "text",
+          "data": {
+            "values": [
+              { "label": "Texto", "value": "text" },
+              { "label": "Fecha (DD/MM/YYYY HH:mm)", "value": "date" }
+            ]
+          },
+          "description": "Seleccione 'Fecha' para que el valor se formatee como DD/MM/YYYY HH:mm en la tabla."
+        }
+      ]
+    },
+    {
+      "key": "ignoreSchemaKeys",
+      "type": "editgrid",
+      "label": "Campos a ignorar en validación",
+      "description": "Propiedades generadas por componentes que no están en el schema (ej. kaceSubcases, sesiones). Estas claves se excluyen de la validación y del payload al guardar el formulario auxiliar del subcaso. Si este bloque Subcases está embebido dentro de un componente Aux Cases Schema o Schema, las claves configuradas aquí se combinan con las de esos componentes: se tienen en cuenta todas (unión en kace.ignoreSchemaKeys) para validación y envío.",
+      "addAnother": "Agregar campo a ignorar",
+      "components": [
+        {
+          "key": "key",
+          "type": "textfield",
+          "label": "Nombre del campo",
+          "input": true
+        }
+      ]
+    },
+    {
+      "key": "beforeSubmitSection",
+      "type": "panel",
+      "title": "Código antes de enviar",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "beforeSubmitDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Variables disponibles en el script:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">subcasePayload</span></td><td>Objeto con los datos del caso (transicion_id, clasificacion_id, parent_id, etc.). Puede modificarse antes del envío.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">subcaseAuxData</span></td><td>Objeto con los datos del formulario auxiliar. Puede modificarse antes del envío.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">subcaseAuxId</span></td><td>ID del registro aux_cases asociado al subcaso cuando ya existe en el backend; se envía en el payload de actualización. null en creación o si aún no hay auxiliar persistido.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">descriptionValue</span></td><td>Descripción en texto del subcaso (string).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">isEditing</span></td><td>true si es actualización, false si es creación.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">kaceEngine</span></td><td>Instancia del motor Kace; permite acceder a servicios con kaceEngine.getService('nombre').</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">apiService</span></td><td>Servicio de API (Kace); para llamadas HTTP al backend.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">caseService</span></td><td>Servicio de casos (Kace).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">fileService</span></td><td>Servicio de archivos (Kace).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">uploadPendingCaseAttachments</span></td><td>Función (caseId) → Promise. Sube adjuntos pendientes en <span style=\"font-family: monospace;\">cases.attachments</span> (sin id), igual que al guardar un caso. Úsela tras tener el ID del caso (p. ej. tras crear el subcaso en un flujo custom).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">subcaseAttachments</span> / <span style=\"font-family: monospace;\">uploadSubcaseAttachments</span></td><td>Adjuntos del componente subcaso (UI).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">storeService</span></td><td>Servicio de store (Kace).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">userService</span></td><td>Servicio de usuario (Kace).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">selectedSubcase</span></td><td>Datos del subcaso actual; solo en edición, null en creación.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">abort</span></td><td>(mensaje) Llamar para abortar el envío. Ej: abort('No se puede enviar').</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">refreshListCallback</span></td><td>Función que puede llamarse para volver a refrescar la lista de subcasos después de operaciones personalizadas.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table>"
+        },
+        {
+          "key": "beforeSubmitCode",
+          "type": "textarea",
+          "label": "JavaScript",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10,
+          "validate": {
+            "javascript": true
+          },
+          "description": "Se ejecuta después de validar. Use abort('mensaje') para cancelar."
+        }
+      ]
+    }
+  ]
+}

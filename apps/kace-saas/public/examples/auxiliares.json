@@ -1,0 +1,24 @@
+{
+    "auxiliary_table": "aux_cases",
+    "data_structure": {
+        "form_ventas": {
+            "one_script_id": "6a22819b-dee9-493b-819d-cc2344400d7b",
+            "label": "Formulario de ventas",
+            "fields": [
+                {
+                    "name": "mcc",
+                    "label": "Valor del campo mcc"
+                }
+            ]
+        },
+        "form_compras": {
+            "one_script_id": "6a22819b-dee9-493b-819d-cc2344400d7b",
+            "fields": [
+                {
+                    "name": "extenciones",
+                    "label": "Valor del campo extenciones"
+                }
+            ]
+        }
+    }
+}

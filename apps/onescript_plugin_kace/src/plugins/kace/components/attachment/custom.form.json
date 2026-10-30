@@ -1,0 +1,141 @@
+{
+  "key": "attachment",
+  "label": "Attachment",
+  "components": [
+    {
+      "key": "visibilitySection",
+      "type": "panel",
+      "title": "Visibilidad",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "hiddenDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"mb-2\">La visibilidad del bloque de adjuntos puede controlarse por una expresión evaluada con <code>Evaluator.evaluate</code> o desde otro campo usando <code>emit('kaceAttachmentVisibility', { hidden: true })</code> en el <strong>Custom On Change</strong> de un campo del formulario.</p><p class=\"font-weight-bold mb-2\">Variables en la condición de ocultamiento:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; font-weight: bold;\">data</span></td><td>Datos actuales del formulario (submission).</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">row</span></td><td>Alias del mismo objeto que <code>data</code> (compatibilidad con expresiones Form.io).</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table>"
+        },
+        {
+          "key": "hiddenInitialValue",
+          "type": "checkbox",
+          "label": "Oculto inicialmente",
+          "description": "Si está activado, el componente de adjuntos se mostrará oculto al cargar el formulario. Luego puede mostrarse con el evento o con la condición de ocultamiento.",
+          "input": true,
+          "defaultValue": false
+        },
+        {
+          "key": "hidden",
+          "type": "textarea",
+          "label": "Condición de ocultamiento",
+          "description": "Expresión evaluada con data y row (mismo objeto). Si el resultado es truthy, el componente se oculta. Ejemplo: data.tipo === 'sin_adjuntos'",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 4,
+          "validate": {
+            "javascript": true
+          }
+        }
+      ]
+    },
+    {
+      "key": "classificationSection",
+      "type": "panel",
+      "title": "Tipificación de adjuntos",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "classificationMode",
+          "type": "radio",
+          "label": "Modo de clasificación",
+          "input": true,
+          "defaultValue": "none",
+          "values": [
+            { "label": "Ninguno", "value": "none" },
+            { "label": "Tipo adjunto (texto)", "value": "tipoFoto" },
+            {
+              "label": "Tipo de interacción (numérico)",
+              "value": "tipoAdjunto"
+            }
+          ]
+        },
+        {
+          "key": "classificationDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"mb-2\">Seleccione un modo de clasificación para los adjuntos. <strong>Solo puede estar activo uno a la vez.</strong></p><ul><li><strong>Tipo adjunto:</strong> Asigna un label de texto libre (se envía como <code>attachment_type</code> string).</li><li><strong>Tipo de interacción:</strong> Asigna un valor numérico predefinido (se envía como <code>type</code> number).</li></ul><div class=\"alert alert-warning\"><strong>⚠️ Advertencia:</strong> Actualmente la API solo acepta los valores <code>1</code> (Recepción) y <code>2</code> (Envío) para el tipo numérico.</div>",
+          "conditional": {
+            "show": true,
+            "when": "classificationMode",
+            "eq": "tipoAdjunto"
+          }
+        },
+        {
+          "key": "tipoFotoItems",
+          "type": "datagrid",
+          "label": "Opciones de tipo de foto",
+          "description": "Agrega aquí los tipos que el asesor verá al clasificar cada adjunto.",
+          "addAnother": "+ Agregar tipo",
+          "input": true,
+          "conditional": {
+            "show": true,
+            "when": "classificationMode",
+            "eq": "tipoFoto"
+          },
+          "components": [
+            {
+              "key": "label",
+              "type": "textfield",
+              "label": "Nombre del tipo",
+              "placeholder": "Ej: Cédula",
+              "input": true,
+              "validate": { "required": true }
+            }
+          ]
+        },
+        {
+          "key": "tipoFotoRequired",
+          "type": "checkbox",
+          "label": "Requerir clasificación de cada archivo",
+          "description": "Si está activado, se mostrará una advertencia mientras haya archivos sin clasificar.",
+          "input": true,
+          "defaultValue": true,
+          "conditional": {
+            "show": true,
+            "when": "classificationMode",
+            "eq": "tipoFoto"
+          }
+        },
+        {
+          "key": "attachmentTypes",
+          "type": "datagrid",
+          "label": "Tipos disponibles",
+          "description": "Defina los tipos numéricos que se podrán asignar a los adjuntos.",
+          "input": true,
+          "conditional": {
+            "show": true,
+            "when": "classificationMode",
+            "eq": "tipoAdjunto"
+          },
+          "components": [
+            {
+              "key": "label",
+              "type": "textfield",
+              "label": "Nombre visible",
+              "tooltip": "Texto que verá el usuario para seleccionar este tipo. Ejemplo: Recepción, Envío.",
+              "input": true,
+              "validate": { "required": true }
+            },
+            {
+              "key": "identifier",
+              "type": "number",
+              "label": "Valor",
+              "tooltip": "Valor numérico que se envía al servidor al subir el adjunto. Ejemplo: 1, 2.",
+              "input": true,
+              "validate": { "required": true }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

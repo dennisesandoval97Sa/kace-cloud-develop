@@ -1,0 +1,355 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "fromLocked",
+      "type": "checkbox",
+      "label": "De — bloqueado",
+      "description": "Si está activo, el campo «De» no podrá ser editado por el usuario"
+    },
+    {
+      "key": "toLocked",
+      "type": "checkbox",
+      "label": "Para — bloqueado",
+      "description": "Si está activo, el campo «Para» no podrá ser editado por el usuario"
+    },
+    {
+      "key": "ccLocked",
+      "type": "checkbox",
+      "label": "CC — bloqueado",
+      "description": "Si está activo, el campo «CC» no podrá ser editado por el usuario"
+    },
+    {
+      "key": "bccLocked",
+      "type": "checkbox",
+      "label": "CCO — bloqueado",
+      "description": "Si está activo, el campo «CCO» no podrá ser editado por el usuario"
+    },
+    {
+      "key": "subjectLocked",
+      "type": "checkbox",
+      "label": "Asunto — bloqueado",
+      "description": "Si está activo, el campo «Asunto» no podrá ser editado por el usuario"
+    },
+    {
+      "key": "templateLocked",
+      "type": "checkbox",
+      "label": "Plantilla — bloqueada",
+      "description": "Si está activo, el selector de plantilla no podrá ser editado por el usuario"
+    },
+    {
+      "key": "bodyLocked",
+      "type": "checkbox",
+      "label": "Cuerpo — bloqueado",
+      "description": "Si está activo, el cuerpo del mensaje no podrá ser editado por el usuario"
+    },
+    {
+      "key": "attachmentsLocked",
+      "type": "checkbox",
+      "label": "Adjuntos — bloqueados",
+      "description": "Si está activo, el usuario no podrá agregar ni eliminar archivos adjuntos"
+    },
+    {
+      "key": "replyLocked",
+      "type": "checkbox",
+      "label": "Responder — bloqueado",
+      "description": "Si está activo, el botón «Responder» estará deshabilitado"
+    },
+    {
+      "key": "replyAllLocked",
+      "type": "checkbox",
+      "label": "Responder a todos — bloqueado",
+      "description": "Si está activo, el botón «Responder a todos» estará deshabilitado"
+    },
+    {
+      "key": "newEmailLocked",
+      "type": "checkbox",
+      "label": "Enviar (nuevo) — bloqueado",
+      "description": "Si está activo, el botón «Enviar» (correo nuevo sin hilo) estará deshabilitado"
+    },
+    {
+      "key": "cancelLocked",
+      "type": "checkbox",
+      "label": "Cancelar respuesta — bloqueado",
+      "description": "Si está activo, el botón «Cancelar respuesta» estará deshabilitado"
+    },
+    {
+      "key": "sendLocked",
+      "type": "checkbox",
+      "label": "Enviar — bloqueado",
+      "description": "Si está activo, el botón «Enviar» estará deshabilitado"
+    },
+    {
+      "key": "replyHidden",
+      "type": "checkbox",
+      "label": "Responder — oculto",
+      "description": "Si está activo, el botón «Responder» no se mostrará"
+    },
+    {
+      "key": "replyAllHidden",
+      "type": "checkbox",
+      "label": "Responder a todos — oculto",
+      "description": "Si está activo, el botón «Responder a todos» no se mostrará"
+    },
+    {
+      "key": "newEmailHidden",
+      "type": "checkbox",
+      "label": "Nueva respuesta — oculto",
+      "description": "Si está activo, el botón «Nueva respuesta» no se mostrará"
+    },
+    {
+      "key": "cancelHidden",
+      "type": "checkbox",
+      "label": "Cancelar respuesta — oculto",
+      "description": "Si está activo, el botón «Cancelar respuesta» no se mostrará"
+    },
+    {
+      "key": "sendHidden",
+      "type": "checkbox",
+      "label": "Enviar — oculto",
+      "description": "Si está activo, el botón «Enviar» no se mostrará"
+    },
+    {
+      "key": "bodyMode",
+      "type": "checkbox",
+      "label": "Modo solo cuerpo (body mode)",
+      "description": "Si está activo, solo se muestra un textarea como cuerpo. Los botones Responder/Responder a todos expanden el formulario completo, y Cancelar respuesta lo oculta."
+    },
+    {
+      "key": "receivedEmailAutoLoad",
+      "type": "checkbox",
+      "label": "Cargar correo recibido automáticamente",
+      "description": "Si está activo, el componente carga el último correo recibido del caso automáticamente. Desactívelo para controlar los datos manualmente.",
+      "defaultValue": true
+    },
+    {
+      "key": "floatingButton",
+      "type": "checkbox",
+      "label": "Botón flotante",
+      "input": true,
+      "defaultValue": false,
+      "description": "Si está activado, la barra de acciones del email se mostrará como un botón flotante fijo en la interfaz, permitiendo acceso rápido incluso al hacer scroll."
+    },
+    {
+      "key": "saveCaseBeforeSend",
+      "type": "checkbox",
+      "label": "Guardar caso antes de enviar",
+      "input": true,
+      "defaultValue": false,
+      "description": "Si está activado, al enviar el correo primero se guardará el caso para obtener el case_id y luego se enviará el correo. Si no está activo y no existe un caso guardado, no se podrá enviar."
+    },
+    {
+      "key": "sendButtonCustomization",
+      "type": "panel",
+      "title": "Personalizar botón Enviar",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "sendButtonText",
+          "type": "textfield",
+          "label": "Texto botón Enviar",
+          "input": true,
+          "defaultValue": "Enviar",
+          "description": "Texto que se muestra en el botón de enviar."
+        },
+        {
+          "key": "sendingButtonText",
+          "type": "textfield",
+          "label": "Texto botón Enviando",
+          "input": true,
+          "defaultValue": "Enviando...",
+          "description": "Texto que se muestra en el botón mientras se está enviando."
+        },
+        {
+          "key": "sendButtonIcon",
+          "type": "textfield",
+          "label": "Icono botón Enviar",
+          "input": true,
+          "defaultValue": "fa fa-paper-plane",
+          "description": "Clase CSS de Font Awesome 4 (ej: 'fa fa-paper-plane', 'fa fa-save', 'fa fa-envelope'). Ver: https://fontawesome.com/v4/icons/"
+        },
+        {
+          "key": "sendButtonIconHidden",
+          "type": "checkbox",
+          "label": "Ocultar icono del botón Enviar",
+          "input": true,
+          "defaultValue": false,
+          "description": "Si está activo, no se muestra el icono en el botón de enviar."
+        },
+        {
+          "key": "sendButtonColor",
+          "type": "textfield",
+          "label": "Color botón Enviar",
+          "input": true,
+          "defaultValue": "",
+          "description": "Color de fondo del botón (ej: '#4CAF50', 'red', 'rgb(0,128,0)'). Dejar vacío para usar el estilo por defecto."
+        }
+      ]
+    },
+    {
+      "key": "receivedEmailManualDoc",
+      "type": "panel",
+      "title": "Modo manual — estructura de datos",
+      "collapsible": true,
+      "collapsed": true,
+      "conditional": {
+        "json": { "!": { "var": "data.receivedEmailAutoLoad" } }
+      },
+      "components": [
+        {
+          "key": "receivedEmailManualDocContent",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Para enviar datos manualmente, dispare el siguiente evento:</p><pre style=\"background:#f5f5f5;padding:10px;border-radius:4px;font-size:12px\">window.dispatchEvent(new CustomEvent('kace:setReceivedEmail', {\n  detail: {\n    from: 'remitente@correo.com',\n    to: 'destinatario@correo.com',\n    cc: 'copia@correo.com',\n    bcc: '',\n    date: '2025-01-15T10:30:00Z',\n    subject: 'Asunto del correo',\n    bodyHtml: '&lt;p&gt;Contenido HTML&lt;/p&gt;',\n    attachments: [{ name: 'archivo.pdf', size: 1024 }]\n  }\n}));</pre><p class=\"font-weight-bold mt-3 mb-2\">Loading:</p><p class=\"small text-muted\">El componente muestra un spinner hasta que reciba el evento. Para quitar el loading sin mostrar datos (estado vacío), envíe <code>detail: null</code>.</p><table class=\"table table-bordered table-sm mt-2\"><thead><tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr></thead><tbody><tr><td><code>from</code></td><td>string</td><td>Remitente del correo</td></tr><tr><td><code>to</code></td><td>string</td><td>Destinatarios separados por coma</td></tr><tr><td><code>cc</code></td><td>string</td><td>Copia (opcional)</td></tr><tr><td><code>bcc</code></td><td>string</td><td>Copia oculta (opcional)</td></tr><tr><td><code>date</code></td><td>string (ISO)</td><td>Fecha de envío</td></tr><tr><td><code>subject</code></td><td>string</td><td>Asunto</td></tr><tr><td><code>bodyHtml</code></td><td>string</td><td>Contenido HTML del correo</td></tr><tr><td><code>attachments</code></td><td>Array</td><td>Lista de adjuntos con <code>name</code> y <code>size</code> (bytes)</td></tr></tbody></table>"
+        }
+      ]
+    },
+    {
+      "key": "receivedAttachmentsDownloadSection",
+      "type": "panel",
+      "title": "Descarga de adjuntos recibidos",
+      "collapsible": true,
+      "collapsed": true,
+      "conditional": {
+        "json": { "var": "data.bodyMode" }
+      },
+      "components": [
+        {
+          "key": "receivedAttachmentsDownloadDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"mb-2\">Cuando el correo recibido trae adjuntos, se muestra un botón de descarga junto a cada archivo. Por defecto se descargan usando el endpoint <code>/download-s3-files</code>.</p><p class=\"small text-muted mb-2\">Ese endpoint recibe <code>{ id, fileName, contentType, url }</code>, donde <code>url</code> es la carpeta («bucket key») dentro del almacenamiento S3 e <code>id</code> el identificador del recurso dentro de esa carpeta. Ajuste el valor de abajo si su backend usa una carpeta distinta a <code>attachments</code> para los adjuntos de correos recibidos.</p>"
+        },
+        {
+          "key": "receivedAttachmentsS3Bucket",
+          "type": "textfield",
+          "label": "Carpeta S3 (bucket key)",
+          "input": true,
+          "defaultValue": "attachments",
+          "description": "Valor enviado como 'url' a /download-s3-files al descargar un adjunto recibido. Por defecto: 'attachments'."
+        },
+        {
+          "key": "customDownloadAttachmentCodeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Reemplazo total de la descarga (opcional).</p><p class=\"small text-muted mb-2\">Si necesita más control que solo cambiar la carpeta S3 (por ejemplo, otro endpoint, otra forma de resolver el id/nombre del archivo, etc.), use este script. <strong>Reemplaza por completo</strong> la llamada a <code>fileService.downloadFile</code> por defecto.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><code>attachment</code></td><td>Objeto del adjunto tal como llega del correo: <code>{ id, filename, size, url }</code>.</td></tr><tr><td><code>kaceEngine</code></td><td>Instancia del motor Kace; acceso a servicios con <code>kaceEngine.getService('nombre')</code>.</td></tr><tr><td><code>apiService</code></td><td>Servicio de API para llamadas HTTP al backend.</td></tr><tr><td><code>fileService</code></td><td>Servicio de archivos; expone <code>fileService.downloadFile(payload)</code>.</td></tr><tr><td><code>caseService</code></td><td>Servicio de casos.</td></tr></tbody></table><p class=\"small text-muted\">Si el script lanza un error (<code>throw new Error('...')</code>), se muestra el mensaje como error al usuario. El script puede ser asíncrono (usar <code>await</code>).</p><p class=\"font-weight-bold mt-3 mb-2\">Ejemplo:</p><pre style=\"background:#f5f5f5;padding:10px;border-radius:4px;font-size:12px\">await fileService.downloadFile({\n  id: attachment.id,\n  fileName: attachment.filename,\n  contentType: 'application/pdf',\n  url: 'attachments',\n});</pre>"
+        },
+        {
+          "key": "customDownloadAttachmentCode",
+          "type": "textarea",
+          "label": "JavaScript (onDownloadAttachment)",
+          "description": "Se ejecuta al hacer clic en descargar un adjunto recibido. Si se define, reemplaza la descarga por defecto.",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10
+        }
+      ]
+    },
+    {
+      "key": "customSaveCodeSection",
+      "type": "panel",
+      "title": "Código personalizado al guardar",
+      "collapsible": true,
+      "collapsed": true,
+      "conditional": {
+        "json": { "var": "data.saveCaseBeforeSend" }
+      },
+      "components": [
+        {
+          "key": "customSaveCodeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Se ejecuta al guardar el caso (antes de enviar el correo) cuando \"Guardar caso antes de enviar\" está activo.</p><p class=\"small text-muted mb-2\">Este script <strong>reemplaza</strong> toda la lógica de guardado estándar. El script es responsable de validar, manipular datos y llamar a <code>caseService.createCase</code>.</p><p class=\"small text-danger mb-2\"><strong>Importante:</strong> El script debe retornar <code>{ caseId: 'id_del_caso' }</code> para que el envío del correo pueda continuar. Si no retorna un <code>caseId</code>, se cancelará el flujo con un error.</p><p class=\"small text-muted mb-2\">Si el script lanza un error (<code>throw new Error('...')</code>), se cancela el guardado y el envío, y se muestra el mensaje como error al usuario.</p><p class=\"small text-muted mb-2\">Si el script no retorna un <code>caseId</code> explícito, se usará <code>currentCaseId</code> como respaldo (el caso ya guardado antes de ejecutar el script, si existía). El script es responsable de actualizar <code>cases.case_id</code> en el store cuando crea o modifica el caso, para mantener sincronizado el resto del formulario.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><code>data</code></td><td>Datos completos del formulario (submissionData).</td></tr><tr><td><code>caseData</code></td><td>Datos del caso (<code>case_data.case</code>).</td></tr><tr><td><code>auxCaseData</code></td><td>Datos auxiliares del caso.</td></tr><tr><td><code>currentCaseId</code></td><td>ID del caso ya guardado antes de ejecutar este script (si existe). Úselo en vez de leer <code>storeService.get('cases.case_id')</code> directamente: es la forma soportada de saber si se trata de una actualización.</td></tr><tr><td><code>kaceEngine</code></td><td>Instancia del motor Kace.</td></tr><tr><td><code>apiService</code></td><td>Servicio de API HTTP.</td></tr><tr><td><code>storeService</code></td><td>Store global de Kace.</td></tr><tr><td><code>caseService</code></td><td>Servicio de casos.</td></tr><tr><td><code>postMessageToParent</code></td><td>Envía un mensaje al window.parent vía postMessage.</td></tr><tr><td><code>Swal</code></td><td>Instancia de SweetAlert2 para diálogos modales.</td></tr></tbody></table><p class=\"font-weight-bold mt-3 mb-2\">Ejemplo:</p><pre style=\"background:#f5f5f5;padding:10px;border-radius:4px;font-size:12px\">const description = data?.kaceDescription || '';\nconst isUpdate = Boolean(currentCaseId);\n\nawait caseService.validateCaseFields(caseData, auxCaseData, description, isUpdate);\n\nconst { caseId } = await caseService.createCase({\n  caseData: { case: caseData, aux_cases: data?.case_data?.aux_cases },\n  description,\n});\n\nreturn { caseId: caseId || currentCaseId };</pre>"
+        },
+        {
+          "key": "customSaveCode",
+          "type": "textarea",
+          "label": "JavaScript (onSave)",
+          "description": "Se ejecuta al guardar el caso antes de enviar el correo. Use las variables anteriores para lógica personalizada.",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10
+        }
+      ]
+    },
+    {
+      "key": "onMountCodeSection",
+      "type": "panel",
+      "title": "Código al montar (onMountCode)",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "onMountCodeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Se ejecuta una sola vez cuando el componente de email está listo.</p><p class=\"small text-muted mb-2\">Útil para ocultar/bloquear campos o botones según contexto inicial (ej: si no hay interaction_id, ocultar botones de responder).</p><p class=\"small text-muted mb-2\"><strong>Nota:</strong> El código se ejecuta en un intérprete con sandbox (<code>Utils.evaluate</code> de @formio/react). <code>async/await</code> no está soportado; use cadenas de promesas (<code>.then/.catch</code>) para operaciones asíncronas.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><code>kaceEngine</code></td><td>Motor Kace; acceso a servicios.</td></tr><tr><td><code>apiService</code></td><td>Servicio de API HTTP.</td></tr><tr><td><code>storeService</code></td><td>Store global de Kace.</td></tr><tr><td><code>setFieldLocked(field, bool)</code></td><td>Bloquea/desbloquea un campo o botón. Campos: <code>'from'</code>, <code>'to'</code>, <code>'cc'</code>, <code>'bcc'</code>, <code>'subject'</code>, <code>'template'</code>, <code>'body'</code>, <code>'attachments'</code>. Botones: <code>'reply'</code>, <code>'replyAll'</code>, <code>'newEmail'</code>, <code>'cancel'</code>, <code>'send'</code>.</td></tr><tr><td><code>setFieldHidden(field, bool)</code></td><td>Oculta/muestra un botón. Aplica a: <code>'reply'</code>, <code>'replyAll'</code>, <code>'newEmail'</code>, <code>'cancel'</code>, <code>'send'</code>.</td></tr><tr><td><code>submissionData</code></td><td>Datos actuales del formulario padre.</td></tr></tbody></table>"
+        },
+        {
+          "key": "onMountCode",
+          "type": "textarea",
+          "label": "JavaScript (onMount)",
+          "description": "Se ejecuta al montar el componente de email. Use setFieldLocked/setFieldHidden para controlar el estado inicial.",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10
+        }
+      ]
+    },
+    {
+      "key": "onActionChangeCodeSection",
+      "type": "panel",
+      "title": "Código al cambiar acción (onActionChangeCode)",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "onActionChangeCodeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Se ejecuta cada vez que el usuario cambia de acción (Responder, Responder a todos, Nueva respuesta, Cancelar).</p><p class=\"small text-muted mb-2\">Útil para bloquear campos dinámicamente según la acción seleccionada.</p><p class=\"small text-muted mb-2\"><strong>Nota:</strong> El código se ejecuta en un intérprete con sandbox (<code>Utils.evaluate</code> de @formio/react). <code>async/await</code> no está soportado; use cadenas de promesas (<code>.then/.catch</code>) para operaciones asíncronas.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><code>action</code></td><td>Acción actual: <code>'reply'</code>, <code>'replyAll'</code>, <code>'newEmail'</code> o <code>null</code>.</td></tr><tr><td><code>kaceEngine</code></td><td>Motor Kace.</td></tr><tr><td><code>apiService</code></td><td>Servicio de API HTTP.</td></tr><tr><td><code>storeService</code></td><td>Store global de Kace.</td></tr><tr><td><code>setFieldLocked(field, bool)</code></td><td>Bloquea/desbloquea un campo o botón.</td></tr><tr><td><code>setFieldHidden(field, bool)</code></td><td>Oculta/muestra un botón.</td></tr><tr><td><code>submissionData</code></td><td>Datos actuales del formulario padre.</td></tr></tbody></table><p class=\"small text-muted\">Ejemplo:<br/><code>const isReply = action === 'reply' || action === 'replyAll';<br/>setFieldLocked('to', isReply);<br/>setFieldLocked('subject', isReply);</code></p>"
+        },
+        {
+          "key": "onActionChangeCode",
+          "type": "textarea",
+          "label": "JavaScript (onActionChange)",
+          "description": "Se ejecuta al cambiar la acción del email. La variable 'action' contiene la acción actual.",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10
+        }
+      ]
+    },
+    {
+      "key": "customSendCodeSection",
+      "type": "panel",
+      "title": "Código personalizado al enviar",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "customSendCodeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Variables disponibles en el script:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><code>payload</code></td><td>Objeto con los datos del email: <code>{ case_id, to, cc, bcc, subject, body, template }</code>. Modifíquelo directamente para alterar lo que se envía.</td></tr><tr><td><code>attachments</code></td><td>Array de archivos adjuntos (File[]).</td></tr><tr><td><code>kaceEngine</code></td><td>Instancia del motor Kace; acceso a servicios con <code>kaceEngine.getService('nombre')</code>.</td></tr><tr><td><code>apiService</code></td><td>Servicio de API para llamadas HTTP al backend.</td></tr><tr><td><code>emailService</code></td><td>Servicio de email.</td></tr><tr><td><code>caseService</code></td><td>Servicio de casos.</td></tr><tr><td><code>fileService</code></td><td>Servicio de archivos.</td></tr><tr><td><code>postMessageToParent</code></td><td>Envía un mensaje al window.parent vía postMessage.</td></tr></tbody></table><p class=\"small text-muted\">Si el script lanza un error (<code>throw new Error('...')</code>), se cancela el envío y se muestra el mensaje como error. El script puede ser asíncrono (usar <code>await</code>).</p>"
+        },
+        {
+          "key": "customSendCode",
+          "type": "textarea",
+          "label": "JavaScript",
+          "description": "Se ejecuta al presionar Enviar, antes de la petición. Modifique 'payload' para personalizar lo que se envía.",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10
+        }
+      ]
+    }
+  ]
+}

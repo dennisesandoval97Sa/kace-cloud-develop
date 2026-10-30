@@ -1,0 +1,133 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "placeholder": "Select an option",
+  "components": [
+    {
+      "key": "endpoint",
+      "type": "select",
+      "label": "API Endpoint",
+      "placeholder": "Selecciona un enpoint",
+      "description": "Selecciona el endpoint para obtener las opciones",
+      "input": true,
+      "data": {
+        "values": [
+          {
+            "label": "Classifications",
+            "value": "/classifications/list"
+          },
+          {
+            "label": "States",
+            "value": "/states/list"
+          },
+          {
+            "label": "Literals (requires Literal ID)",
+            "value": "/literals"
+          },
+          {
+            "label": "Auxiliaries (requires Entity)",
+            "value": "/auxiliaries"
+          },
+          {
+            "label": "Lists",
+            "value": "/customlists"
+          }
+        ]
+      },
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "key": "literal_id",
+      "type": "textfield",
+      "label": "Literal ID",
+      "placeholder": "6adb2852-af60-48b9-b590-593f33f4a6b4",
+      "description": "Campo requerido para el endpoint de Literals. Ejemplo: 6adb2852-af60-48b9-b590-593f33f4a6b4",
+      "input": true,
+      "conditional": {
+        "show": true,
+        "when": "endpoint",
+        "eq": "/literals"
+      }
+    },
+    {
+      "key": "entity",
+      "type": "textfield",
+      "label": "Entity Name",
+      "placeholder": "proveedores",
+      "description": "Campo requerido para el endpoint de Auxiliaries. Ejemplo: proveedores, clientes, etc.",
+      "input": true,
+      "conditional": {
+        "show": true,
+        "when": "endpoint",
+        "eq": "/auxiliaries"
+      },
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "key": "field",
+      "type": "textfield",
+      "label": "Field",
+      "placeholder": "Field Name",
+      "description": "Campo requerido para el endpoint de Auxiliaries, si deseas buscar por una ruta especifica. Ejemplo: nombre, progreso.inicio, contactos.0.nombre",
+      "input": true,
+      "conditional": {
+        "show": true,
+        "when": "endpoint",
+        "eq": "/auxiliaries"
+      },
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "key": "list_id",
+      "type": "textfield",
+      "label": "List ID",
+      "placeholder": "List ID",
+      "description": "Campo requerido para el endpoint de Custom Lists, si deseas buscar por una ruta especifica. Ejemplo: 7ec4ce91-5227-46a3-9e99-f5cd4fb7a484",
+      "input": true,
+      "conditional": {
+        "show": true,
+        "when": "endpoint",
+        "eq": "/customlists"
+      },
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "key": "osSelectDocPanel",
+      "type": "panel",
+      "title": "Comportamiento y valor precargado",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "osSelectDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Referencia rápida (sin código personalizado):</p><p class=\"small text-muted mb-2\">Las opciones se cargan por API según el endpoint y campos configurados. El valor guardado depende del tipo de endpoint: en <strong>Literals</strong> el valor se compara y guarda contra el <strong>label</strong> de la opción; en el resto, contra <strong>value</strong> mapeado desde la API (<code>labelField</code> / <code>valueField</code> en el esquema del componente si aplica).</p><p class=\"small text-muted mb-2\">Si el envío trae un valor precargado que aún no está en la lista cargada, el componente muestra ese valor y añade una opción temporal hasta que exista la opción real.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Campo</th><th>Uso</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">endpoint</span></td><td>Ruta base de la petición (classifications, states, literals, auxiliaries, customlists).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">literal_id</span></td><td>Obligatorio si endpoint es <code>/literals</code>; construye <code>/literals/{id}/list</code>.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">entity</span> / <span style=\"font-family: monospace; color: #212529; font-weight: bold;\">field</span></td><td>Para <code>/auxiliaries</code>: entidad y filtro opcional por campo.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">list_id</span></td><td>Para <code>/customlists</code>: identificador de la lista.</td></tr></tbody></table>"
+        }
+      ]
+    },
+    {
+      "key": "lazySelectBehaviorPanel",
+      "type": "panel",
+      "title": "Carga lazy y refetch",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "refetchOnEveryOpen",
+          "type": "checkbox",
+          "label": "Refetch al abrir y en eventos",
+          "description": "Si está activo, vuelve a consultar el API al abrir el desplegable y en kaceAuthData / redraw. Si está desactivado, se cachea el resultado de la primera carga hasta que un evento invalide los datos.",
+          "input": true,
+          "defaultValue": false
+        }
+      ]
+    }
+  ]
+}

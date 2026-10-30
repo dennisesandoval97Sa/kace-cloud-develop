@@ -1,0 +1,82 @@
+comments-batch:
+    post:
+        tags:
+            - Comments batch
+        summary: Create a batch of comments
+        description: |
+            Crea varios comentarios en una sola petición (todo-o-nada: si algún item
+            falla, no se persiste ninguno). El servidor genera el id y los campos de
+            auditoría de cada comentario.
+
+            Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema:
+            - caso_id -> ID de un caso (Cases)
+
+            Requiere el permiso `administrador.comments.CommentsCreate`.
+
+            El array acepta entre 1 y 500 items; excederlo devuelve 400.
+
+            `data.ids` se devuelve en el mismo orden que los items del request: el item
+            de índice N corresponde a `data.ids[N]`.
+
+            Códigos de error públicos:
+            - 400 `malformed_relationship_id` — algún `caso_id` no es un UUID válido.
+            - 403 `relationship_unauthorized` — el caso existe pero no es accesible al actor.
+            - 404 `relationship_unauthorized` — el caso no existe.
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        minItems: 1
+                        maxItems: 500
+                        items:
+                            $ref: '#/components/schemas/CreateCommentBatchItem'
+        responses:
+            '201':
+                description: Batch of comments created succesfully
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                message:
+                                    $ref: '../common/fields.yaml#/schemas/message_ok'
+                                data:
+                                    type: object
+                                    properties:
+                                        ids:
+                                            type: array
+                                            items:
+                                                type: string
+                                                format: uuid
+                                metadata:
+                                    type: object
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '403':
+                $ref: '../common/fields.yaml#/schemas/forbidden_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+    schemas:
+        CreateCommentBatchItem:
+            type: object
+            required:
+                - descripcion
+                - caso_id
+            properties:
+                descripcion:
+                    type: string
+                    minLength: 3
+                    maxLength: 5000
+                calificacion:
+                    type: integer
+                    minimum: 1
+                    maximum: 10
+                    nullable: true
+                caso_id:
+                    type: string
+                    format: uuid

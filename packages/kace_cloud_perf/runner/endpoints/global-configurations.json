@@ -1,0 +1,42 @@
+{
+    "service": "global-configurations",
+    "postmanFolder": "Global configuration",
+    "endpoints": [
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/global-configuration",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/global-configuration/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/global-configuration/search",
+            "requiresId": false,
+            "body": {
+                "filter": [
+                    {
+                        "field": "description",
+                        "operator": "like",
+                        "value": "example description",
+                        "type": "AND"
+                    },
+                    {
+                        "field": "description",
+                        "operator": "like",
+                        "value": "example description",
+                        "type": "AND"
+                    }
+                ],
+                "limit": 10,
+                "offset": 0
+            }
+        }
+    ]
+}

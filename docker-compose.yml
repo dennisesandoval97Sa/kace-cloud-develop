@@ -1,0 +1,29 @@
+services:
+    db-postgres16-3:
+        image: postgres:16.3-bullseye
+        restart: unless-stopped
+        environment:
+            PG_PASSWORD: secret
+            POSTGRES_DB: global_dev
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: secret
+            TZ: America/Mexico_City
+            PGTZ: America/Mexico_City
+        ports:
+            - '5434:5432'
+        volumes:
+            - postgres16_data:/var/lib/postgresql/data
+            - .:/app
+        networks:
+            global-network:
+                ipv4_address: 172.20.0.3
+
+networks:
+    global-network:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.20.0.0/16
+
+volumes:
+    postgres16_data:

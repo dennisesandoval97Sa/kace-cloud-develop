@@ -1,0 +1,52 @@
+{
+    "name": "kace-cloud",
+    "scripts": {
+        "list-prs": "node src/nodejs/getPRs.js type=all",
+        "list-prs-packages": "node src/nodejs/getPRs.js type=packages",
+        "list-prs-apis": "node src/nodejs/getPRs.js type=apis",
+        "list-prs-frontend": "node src/nodejs/getPRs.js type=frontends",
+        "list-release-commits-packages": "node src/nodejs/getLastCommitRelease.js type=packages",
+        "list-release-commits-apis": "node src/nodejs/getLastCommitRelease.js type=apis",
+        "config:bitbucket": "node src/nodejs/setConfig.js type=packages",
+        "generate-secret-key": "node src/nodejs/generateSecretKey.mjs",
+        "generate-tenant-json": "node utils/nodejs/generateTenantJson.mjs",
+        "deploy": "bash utils/bash/validate-env-deploy.sh && pnpm install --frozen-lockfile && pnpm -r run --workspace-concurrency=5 --report-summary cdk:deploy && pnpm -r run cdk:clean",
+        "deploy:env": "node utils/deploy-env/deployEnvironment.mjs",
+        "deploy:15": "bash utils/bash/validate-env-deploy.sh && pnpm install --frozen-lockfile && pnpm -r run --workspace-concurrency=15 --report-summary cdk:deploy && pnpm -r run cdk:clean",
+        "deploy:migrations": "bash utils/bash/validate-env-deploy.sh && pnpm install --frozen-lockfile && pnpm --filter @kace/database run migrate:latest && pnpm -r run --workspace-concurrency=15 --report-summary cdk:deploy && pnpm -r run cdk:clean",
+        "deploy:apis": "bash utils/bash/validate-env-deploy.sh && pnpm install --frozen-lockfile && pnpm --filter @kace/database run migrate:latest && pnpm --filter './apps/apiv1/kace_cloud_api_*' run --workspace-concurrency=10 --report-summary cdk:deploy && pnpm -r run cdk:clean",
+        "deploy:frontend": "bash utils/bash/validate-env-deploy.sh && pnpm install --frozen-lockfile && pnpm --filter './apps/kace-saas' run cdk:deploy && pnpm -r run cdk:clean",
+        "version:minor": "pnpm -r exec pnpm version minor",
+        "version:patch": "pnpm -r exec pnpm version patch",
+        "prepare": "husky",
+        "prettier": "pnpm exec prettier $(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\\\ |g') --write --ignore-unknown && git update-index --again",
+        "test": "echo \"not implemented yet\"",
+        "local:server": "pnpm --filter @kace/local-server start",
+        "local:server:dev": "pnpm --filter @kace/local-server dev",
+        "local:server:debug": "pnpm --filter @kace/local-server debug",
+        "validate:env": "bash utils/bash/validate-env-vars.sh",
+        "search-auth:inventory": "node scripts/search-authorization/inventory-search-handlers.mjs",
+        "search-auth:check": "node scripts/search-authorization/check-search-authorization-coverage.mjs",
+        "validate:env:deploy": "bash utils/bash/validate-env-deploy.sh --strict",
+        "disable-lambda-debug": "bash utils/bash/disable-lambda-debug.sh"
+    },
+    "dependencies": {
+        "@kace/api-common": "workspace:*",
+        "@kace/aws-infra": "workspace:*",
+        "@kace/core": "workspace:*",
+        "@kace/database": "workspace:*",
+        "@kace/prettier_config": "workspace:*",
+        "axios": "^1.8.4",
+        "dotenv": "^16.4.7",
+        "prettier": "^3.8.1"
+    },
+    "engines": {
+        "node": ">=22.16.0",
+        "pnpm": ">=10.11.0"
+    },
+    "packageManager": "pnpm@10.11.0",
+    "version": "1.10.2",
+    "devDependencies": {
+        "husky": "^9.1.7"
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "name": "@kace/aws-infra",
+    "version": "1.26.1",
+    "main": "src/index.js",
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "test": "jest",
+        "cdk": "cdk",
+        "cdk:clean": "rm -rf cdk.out",
+        "version:patch": "pnpm version patch -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:minor": "pnpm version minor -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:major": "pnpm version major -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:prepatch": "pnpm version prepatch -m \"Upgrade to %s\" && git push",
+        "version:preminor": "pnpm version preminor -m \"Upgrade to %s\" && git push",
+        "version:premajor": "pnpm version premajor -m \"Upgrade to %s\" && git push",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.14",
+        "@types/node": "^22.16.4",
+        "aws-cdk": "^2.1005.0",
+        "dotenv": "^16.4.7",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.2.5",
+        "ts-node": "^10.9.2",
+        "typescript": "~5.6.3",
+        "@kace/prettier_config": "workspace:*",
+        "prettier": "^3.3.3"
+    },
+    "dependencies": {
+        "aws-cdk-lib": "^2.185.0",
+        "constructs": "^10.0.0"
+    }
+}

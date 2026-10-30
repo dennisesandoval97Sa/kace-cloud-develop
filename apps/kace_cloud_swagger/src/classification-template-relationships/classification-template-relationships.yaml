@@ -1,0 +1,172 @@
+classification-template-relationships:
+  get:
+    tags:
+      - Classification template relations
+    summary: Get classification-template-relationships collection
+    description: Get all classifications on every template of the database
+    operationId: getClassification-template-relationships
+    responses:
+      '200':
+        description: A list of classification-template-relationships
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Classification template relations
+    summary: Create a batch of classifications and templates relationships
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - classification_id -> ID de una clasificacion (Classifications)
+      - template_id -> ID de una plantilla (Templates)
+    requestBody:
+      description: Must be an array with classification and template ids per each item
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/collection-item'
+    responses:
+      '200':
+        description: Batch classification-template-relationships instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+classification-template-relationships_batch_delete:
+  post:
+    tags:
+      - Classification template relations
+    summary: Delete a batch of classifications and templates relationships
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - classification_id -> ID de una clasificacion (Classifications)
+      - template_id -> ID de una plantilla (Templates)
+    requestBody:
+      description: Must be an array with classification and template ids per each item
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/collection-item'
+  
+    responses:
+      '200':
+        description: Batch classification-template-relationships instance deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'        
+
+classification-template-relationships_search:
+  post:
+    tags:
+      - Classification template relations
+    summary: Get classification-template-relationships with advanced filters
+    operationId: searchClassificationTemplate
+    requestBody:
+      description: In this JSON body, use only the properties that you need to search
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: A list of classification-template-relationships
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    collection-item:
+      type: object
+      properties:
+        classification_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        template_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+
+    collection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/collection-item'
+        metadata:
+          type: object
+    createBodyRequest_classification:
+      type: object
+      properties:
+        classification_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+    createBodyRequest_template:
+      type: object
+      properties:
+        template_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: classification_id
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                format: uuid
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

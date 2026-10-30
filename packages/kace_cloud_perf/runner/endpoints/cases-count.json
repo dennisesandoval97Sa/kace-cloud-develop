@@ -1,0 +1,12 @@
+{
+    "service": "cases-count",
+    "postmanFolder": "Cases Count",
+    "endpoints": [
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/cases-count",
+            "requiresId": false
+        }
+    ]
+}

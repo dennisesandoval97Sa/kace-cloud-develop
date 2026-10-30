@@ -1,0 +1,149 @@
+aux-clients:
+  post:
+    tags:
+      - Aux clients
+    summary: Create an AuxClients instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - cliente_id  -> ID de un cliente (Clients)
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateAuxClient'
+    responses:
+      '201':
+        description: AuxClient instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+aux-client_id:
+  get:
+    tags:
+      - Aux clients
+    summary: Fetch an AuxClient instance by Client ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: AuxClient instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: '#/components/schemas/AuxClient'
+                metadata:
+                  type: object
+      '404':
+        description: AuxClient instance not found
+  post:
+    tags:
+      - Aux clients
+    summary: Update an AuxClient instance by ID
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - cliente_id  -> ID de un cliente (Clients)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateAuxClient'
+    responses:
+      '200':
+        description: AuxClient instance updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    cliente_id:
+      $ref: '../common/fields.yaml#/schemas/id'
+    data:
+      type: object
+      properties:
+        codigo:
+          type: string
+          example: asda6s54d
+        ciudad:
+          type: string
+          example: medellin
+        barrio:
+          type: string
+          example: la estrella
+        direccion:
+          type: string
+          example: calle 23A
+    AuxClientBase:
+      type: object
+      properties:
+        cliente_id:
+          $ref: "#/components/schemas/cliente_id"
+        data:
+          $ref: "#/components/schemas/data"
+    AuxClient:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/cliente_id"
+        - $ref: "#/components/schemas/AuxClientBase"
+        - type: object
+          properties:
+            created_at:
+              type: string
+              format: date-time
+            created_by:
+              type: string
+              format: uuid
+            updated_at:
+              type: string
+              format: date-time
+            updated_by:
+              type: string
+              format: uuid
+    CreateAuxClient:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AuxClientBase"
+    UpdateAuxClient:
+      allOf:
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/data"

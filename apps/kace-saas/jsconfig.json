@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "paths": {
+            "@/*": ["src/*"],
+            "@kace_v2/*": ["src_v2/*"]
+        }
+    },
+    "include": ["src", "src_v2"]
+}

@@ -1,0 +1,24 @@
+# This file is unused. The Dockerfile is built from the monorepo root context
+# (see lib/actions_queue_executions_worker-stack.ts), so the active .dockerignore
+# is at the repo root.
+node_modules
+npm-debug.log
+.env
+.env.*
+coverage
+tests
+cdk.out
+dist
+.git
+.gitignore
+README.md
+*.md
+Dockerfile
+.dockerignore
+.eslintrc.js
+.prettierrc
+jest.config.js
+tsconfig.json
+cdk.json
+bin
+lib

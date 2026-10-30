@@ -1,0 +1,87 @@
+/*
+ * Validation-banner error items.
+ *
+ * Two Form.io renderer paths produce the list and each uses a different node:
+ *   - `Webform.showErrors`            -> <span ref="errorRef" role="link">   (whole-form banner)
+ *   - EditGrid row-edit modal `Alert` -> <li   ref="messageRef">             (row modal banner)
+ *
+ * Only items that actually navigate get the link affordance:
+ *   - `errorsList` always emits `data-component-key`, sometimes empty, and
+ *     `demoteUnresolvableErrorLinks` strips role/tabindex from the empty ones —
+ *     so match a non-empty key explicitly.
+ *   - `Alert.createErrorMessage` only sets `data-component-key` when the error
+ *     resolves to a field, so its mere presence is enough.
+ */
+
+.alert-danger [ref='errorRef'][data-component-key]:not([data-component-key='']),
+.alert-danger [ref='messageRef'][data-component-key] {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.alert-danger
+  [ref='errorRef'][data-component-key]:not([data-component-key='']):hover,
+.alert-danger [ref='messageRef'][data-component-key]:hover {
+  text-decoration-thickness: 2px;
+}
+
+.alert-danger
+  [ref='errorRef'][data-component-key]:not(
+    [data-component-key='']
+  ):focus-visible,
+.alert-danger [ref='messageRef'][data-component-key]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Items with no resolvable field stay plain text (not misleadingly clickable). */
+.alert-danger [ref='errorRef']:not([data-component-key]),
+.alert-danger [ref='errorRef'][data-component-key=''],
+.alert-danger [ref='messageRef']:not([data-component-key]) {
+  cursor: default;
+  text-decoration: none;
+}
+
+/*
+ * "You landed here" cue after clicking an error.
+ *
+ * A text input shows a caret, but the React-rendered selects (os-select,
+ * custom-select, multiselect) give no sign they were focused. `revealComponent`
+ * adds `.kace-field-navigated` to the field (or its inner control) so every
+ * field type gets the same short pulse.
+ */
+@keyframes kace-field-navigate-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(13, 110, 253, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+  }
+}
+
+.kace-field-navigated {
+  border-radius: 4px;
+  animation: kace-field-navigate-pulse 1s ease-out 2;
+}
+
+/* Persistent ring while a custom select keeps focus, so the position is clear
+   even after the pulse fades. */
+.os-dropdown-control:focus,
+.custom-dropdown-control:focus,
+.multi-select-input:focus,
+.kace-multiselect-control:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kace-field-navigated {
+    animation: none;
+    box-shadow: 0 0 0 2px #0d6efd;
+    transition: box-shadow 0.15s ease-out;
+  }
+}

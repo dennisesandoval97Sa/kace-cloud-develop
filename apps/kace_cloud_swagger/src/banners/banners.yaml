@@ -1,0 +1,291 @@
+banners:
+  get:
+    tags:
+     - Banners
+    summary: Get All banners instances
+    responses: 
+      '200':
+        description: A list of banners
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BannersCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Banners
+    summary: Create a banner instance
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateBanner"
+    responses:
+      '201':
+        description: Banner instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+banners_id:
+  get: 
+    tags:
+      - Banners
+    summary: Fetch a banner instane by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Banner instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: "#/components/schemas/message"
+                data:
+                  $ref: "#/components/schemas/Banner"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post:
+    tags:
+      - Banners
+    summary: Update a banner instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateBanner"
+    responses:
+      '200':
+        description: Banner instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+   
+
+banners_delete:
+  get:
+    tags: 
+      - Banners
+    summary: Delete banner instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Banner instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+banners_search:
+  post:
+    tags:
+      - Banners
+    summary: Search banners instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Banners instances fetched successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BannersCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    descripcion:
+      type: string
+      example: This is my description
+    propiedades:
+      type: object
+      properties:
+        position:
+          type: string
+          example: top-center
+        icon:
+          type: string
+          example: check
+        color:
+          type: string
+          example: "#000000"
+    especificaciones:
+      type: object
+      properties:
+        users:
+          type: array
+        groups:
+          type: array
+        clients:
+          type: array
+    fecha_inicio: 
+      type: string
+      format: date-time
+      example: "2024-12-27T20:21:11.281Z"
+    fecha_fin:
+      type: string
+      format: date-time
+      example: "2024-12-28T20:21:11.281Z"
+    status:
+      type: number
+      enum: [1,2]
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    message:
+      type: string
+      example: Success
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    BannerBase:
+      type: object
+      properties:
+        descripcion:
+          $ref: "#/components/schemas/descripcion"
+        propiedades:
+          $ref: "#/components/schemas/propiedades"
+        especificaciones:
+          $ref: "#/components/schemas/especificaciones"
+        fecha_inicio:
+          $ref: "#/components/schemas/fecha_inicio"
+        fecha_fin:
+          $ref: "#/components/schemas/fecha_fin"
+        status:
+          $ref: "#/components/schemas/status"
+    Banner:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/BannerBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    BannersCollection:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Banner"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: "1"
+    CreateBanner:
+        allOf:
+          - type: object  
+            properties:
+              id:
+                $ref: "../common/fields.yaml#/schemas/id"
+          - $ref: "#/components/schemas/BannerBase"
+    UpdateBanner:
+        allOf:
+        - $ref: "#/components/schemas/BannerBase"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: descripcion
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: description example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

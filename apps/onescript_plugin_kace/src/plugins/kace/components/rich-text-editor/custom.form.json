@@ -1,0 +1,13 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "changeme",
+      "type": "url",
+      "label": "Changeme",
+      "placeholder": "https://example.com/",
+      "description": "This is only an example field, remove it."
+    }
+  ]
+}

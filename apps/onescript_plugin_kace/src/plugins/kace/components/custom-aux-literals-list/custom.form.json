@@ -1,0 +1,61 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "kaceDataLegacyNotice",
+      "type": "content",
+      "input": false,
+      "html": "<p class=\"text-danger small mb-0\"><strong>Legacy (KaceData):</strong> este componente y su documentación pueden referenciar <code>kace_data</code> (p. ej. <code>selected_group_id</code>, <code>_fetchAuxLiteralList</code>). Esa API es heredada; se recomienda migrar a <code>kaceEngine</code> y servicios equivalentes lo antes posible.</p>"
+    },
+    {
+      "key": "entity",
+      "type": "textfield",
+      "label": "Entidad del auxiliar",
+      "placeholder": "literales",
+      "description": "Nombre de la entidad usada en la carga (kace_data._fetchAuxLiteralList). Debe coincidir con el backend.",
+      "input": true,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "key": "auxLiteralsCodePanel",
+      "type": "panel",
+      "title": "Filtros (código personalizado)",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "auxLiteralsCodeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Variables disponibles en el script:</p><p class=\"text-danger small mb-2\"><strong>Legacy (KaceData):</strong> la fila <code>selected_group</code> documenta el origen vía <code>kace_data</code>; use <code>kaceEngine</code> en código nuevo cuando sea posible.</p><p class=\"small text-muted mb-2\">Se ejecuta al cambiar la configuración o el grupo seleccionado. Debe llamar a <code>setFilters</code> con el array de filtros. Con entidad y filtros no vacíos se cargan las opciones; se mapean a <code>{ label, value }</code> según “Ruta de valores”. Valor guardado: el <code>value</code> elegido. Si el valor viene precargado y no está en la respuesta, se añade una opción temporal.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">selected_group</span></td><td>ID del grupo seleccionado (<code>kace_data.selected_group_id</code>).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">setFilters</span></td><td><code>(filtros)</code> array de filtros; al asignarlo se dispara la petición junto con “Entidad del auxiliar”.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table>"
+        },
+        {
+          "key": "code",
+          "type": "textarea",
+          "label": "JavaScript",
+          "description": "Defina los filtros con setFilters. Use las variables de la tabla anterior.",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10,
+          "validate": {
+            "javascript": true
+          }
+        }
+      ]
+    },
+    {
+      "key": "path_values",
+      "type": "textfield",
+      "label": "Ruta de valores",
+      "placeholder": "data.literal",
+      "description": "Ruta en cada ítem de la API para mapear label/value (mapToLabelValue). Ej.: data.literal.",
+      "input": true,
+      "validate": {
+        "required": true
+      }
+    }
+  ]
+}

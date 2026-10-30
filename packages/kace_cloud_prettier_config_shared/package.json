@@ -1,0 +1,18 @@
+{
+    "name": "@kace/prettier_config",
+    "version": "1.26.1",
+    "main": "index.js",
+    "license": "ISC",
+    "scripts": {
+        "version:patch": "pnpm version patch -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:minor": "pnpm version minor -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:major": "pnpm version major -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:prepatch": "pnpm version prepatch -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:preminor": "pnpm version preminor -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:premajor": "pnpm version premajor -m \"Upgrade to %s\" && git push --follow-tags"
+    },
+    "engines": {
+        "node": "22.x"
+    },
+    "packageManager": ">=pnpm@10.11.0"
+}

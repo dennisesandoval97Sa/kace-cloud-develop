@@ -1,0 +1,40 @@
+# Suites que usan el literal invalid-uuid a proposito para probar validacion.
+# Sus lineas [ERROR] son ruido esperado, no fallos: el analisis del diagnostico
+# debe descartarlas o el inventario se llenara de falsos positivos.
+tests/actions/ActionUnitTest.test.js
+tests/action-update-model/ActionUpdateModelUnitTest.test.js
+tests/agendas-groups/AgendasGroupsUnit.test.js
+tests/allowed-conections/AllowedConnectionUnitTest.test.js
+tests/automation-settings/AutomationSettingsUnitTest.test.js
+tests/background-executions/BackgroundExecutionUnitTest.test.js
+tests/banners/BannersUnitTest.test.js
+tests/case-attachments/CaseAttachmentUnitTest.test.js
+tests/case-descriptions/CaseDescriptionUnitTest.test.js
+tests/cases/Subcases.unit.test.js
+tests/classification-group-relationships/ClassificationGrorupUnitTest.test.js
+tests/classifications/ClassificationsUnitTest.test.js
+tests/classification-template-relations/ClassificationGrorupUnitTest.test.js
+tests/client-notifications/ClientNotificationUnitTest.test.js
+tests/clients/ClientsUnitTest.test.js
+tests/comments/CommentsUnitTest.test.js
+tests/csv-export-views/CsvExportView.unit.test.js
+tests/event-log/EventLog.unit.test.js
+tests/group-lists/GroupListUnit.test.js
+tests/helps_attachments/HelpsAttachmentsUnitTest.test.js
+tests/literals/LiteralUnitTest.test.js
+tests/mail-accounts/MailAccountsUnitTest.test.js
+tests/one-script/OneScriptUnit.test.js
+tests/s3-files/S3FileUnitTest.test.js
+tests/shared/domain/aggregates/HistoryEntity.test.js
+tests/shared/domain/events/DomainEvent.test.js
+tests/shared/domain/value-objects/ValueObjectUuid.test.js
+tests/shift-management/ShiftManagementUnitTest.test.js
+tests/template-attachments/TemplateAttachmentUnitTest.test.js
+tests/templates/TemplatesUnitTest.test.js
+tests/user-group-relationships/UserGrorupRelationshipUnitTest.test.js
+tests/user-lists/UserListUnit.test.js
+tests/user-notifications/UserNotificationsUnitTest.test.js
+tests/users/UsersUnitTest.test.js
+tests/ws-rest-endpoints/WSRestEndpointUnitTest.test.js
+tests/ws-rest-flows/WSRestFlowUnitTest.test.js
+tests/ws_rest_functions/WSRestFunctionUnitTest.test.js

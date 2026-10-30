@@ -1,0 +1,5 @@
+# Ignore artifacts:
+build
+coverage
+test/example_old_rules.json
+test/example_configuraciones.json

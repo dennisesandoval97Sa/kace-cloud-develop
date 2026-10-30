@@ -1,0 +1,99 @@
+wsHookRestFlow:
+  get:
+    tags:
+      - WS hook rest flows
+    summary: Execute a workflow by flow_id
+    description: |
+      Ejecuta un flujo de trabajo (workflow) identificado por flow_id.
+    parameters:
+      - name: flow_id
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: ID del flujo a ejecutar
+    responses:
+      '200':
+        description: Workflow executed successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    context:
+                      type: object
+                      example: 
+                        pokemon:
+                          name: "pikachu"
+                          abilities: []
+                        results:
+                          pokemon:
+                            name: "PIKACHU"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  
+  post:
+    tags:
+      - WS hook rest flows
+    summary: Execute a workflow by flow_id or external_code
+    description: |
+      Ejecuta un flujo de trabajo (workflow) identificado por flow_id o external_code.
+      Se debe proporcionar uno de los dos parámetros (son mutuamente excluyentes).
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/WSHookRestFlow"
+    responses:
+      '200':
+        description: Workflow executed successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    context:
+                      type: object
+                      example: 
+                        pokemon:
+                          name: "pikachu"
+                          abilities: []
+                        results:
+                          pokemon:
+                            name: "PIKACHU"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    WSHookRestFlow:
+      type: object
+      properties:
+        flow_id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440001"
+          description: ID del flujo a ejecutar
+        external_code:
+          type: string
+          example: "pokemon_flow_123456789"
+          description: Código externo del flujo a ejecutar
+      oneOf:
+        - required: [flow_id]
+        - required: [external_code]

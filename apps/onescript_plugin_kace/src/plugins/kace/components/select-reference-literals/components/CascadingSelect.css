@@ -1,0 +1,25 @@
+/* Fila de búsqueda dentro del panel (CustomSelect.search es ancho completo; aquí va junto al ✕) */
+.kace-lit-cascade-search-row {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0 0.25rem 0.35rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.kace-lit-cascade-search-row .custom-dropdown-search {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  border-bottom: none;
+  margin: 0;
+}
+
+.kace-lit-cascade-search-clear {
+  flex-shrink: 0;
+}
+
+.kace-lit-cascade-item-active {
+  background: #e7f1ff;
+  font-weight: 500;
+}

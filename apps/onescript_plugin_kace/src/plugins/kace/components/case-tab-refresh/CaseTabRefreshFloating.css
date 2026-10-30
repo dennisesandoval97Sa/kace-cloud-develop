@@ -1,0 +1,129 @@
+html.kace-case-tab-refresh-active {
+  --kace-floating-case-refresh-reserve: calc(
+    42px + var(--kace-floating-stack-gap)
+  );
+}
+
+@media (max-width: 767.98px) {
+  html.kace-case-tab-refresh-active {
+    --kace-floating-case-refresh-reserve: calc(
+      var(--kace-mobile-strip-max-width) + var(--kace-floating-stack-gap)
+    );
+  }
+}
+
+@media (max-width: 767.98px) and (max-height: 600px) {
+  html.kace-case-tab-refresh-active {
+    --kace-floating-case-refresh-reserve: calc(
+      36px + var(--kace-floating-stack-gap)
+    );
+  }
+}
+
+@media (max-width: 767.98px) and (max-height: 480px) {
+  html.kace-case-tab-refresh-active {
+    --kace-floating-case-refresh-reserve: calc(
+      32px + var(--kace-floating-stack-gap)
+    );
+  }
+}
+
+@media (min-width: 768px) and (max-height: 520px) {
+  html.kace-case-tab-refresh-active {
+    --kace-floating-case-refresh-reserve: calc(
+      36px + var(--kace-floating-stack-gap)
+    );
+  }
+}
+
+@media (max-height: 390px) {
+  html.kace-case-tab-refresh-active {
+    --kace-floating-case-refresh-reserve: calc(
+      min(36px, var(--kace-floating-timer-slot-h, 64px)) +
+        var(--kace-floating-stack-gap)
+    );
+  }
+}
+
+.kace-case-tab-refresh-button {
+  --kace-case-refresh-size: var(--kace-mobile-strip-max-width, 42px);
+  position: fixed;
+  z-index: calc(var(--kace-floating-timer-z) - 1);
+  box-sizing: border-box;
+  width: var(--kace-case-refresh-size);
+  height: var(--kace-case-refresh-size);
+  min-width: var(--kace-case-refresh-size);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #004085;
+  color: #ffffff;
+  border: 0.2rem solid #004085;
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  cursor: pointer;
+  font-family: var(--kace-floating-font-family);
+  font-size: 1rem;
+  font-weight: var(--kace-floating-font-weight);
+  line-height: 1;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s ease;
+}
+
+.kace-case-tab-refresh-button:hover:not(:disabled) {
+  background-color: #003570;
+  border-color: #003570;
+}
+
+.kace-case-tab-refresh-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 767.98px) {
+  .kace-case-tab-refresh-button {
+    top: var(--kace-mobile-stack-anchor-top);
+    right: 0;
+  }
+}
+
+@media (max-width: 767.98px) and (max-height: 600px) {
+  .kace-case-tab-refresh-button {
+    --kace-case-refresh-size: 36px;
+    font-size: 0.9rem;
+    border-width: 2px;
+  }
+}
+
+@media (max-width: 767.98px) and (max-height: 480px) {
+  .kace-case-tab-refresh-button {
+    --kace-case-refresh-size: 32px;
+    font-size: 0.82rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .kace-case-tab-refresh-button {
+    --kace-case-refresh-size: 42px;
+    top: var(--kace-floating-desk-stack-anchor-top);
+    right: 0;
+  }
+}
+
+@media (min-width: 768px) and (max-height: 520px) {
+  .kace-case-tab-refresh-button {
+    --kace-case-refresh-size: 36px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-height: 390px) {
+  .kace-case-tab-refresh-button {
+    --kace-case-refresh-size: min(
+      36px,
+      var(--kace-floating-timer-slot-h, 64px)
+    );
+    font-size: 0.85rem;
+  }
+}

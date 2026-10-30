@@ -1,0 +1,42 @@
+{
+    "service": "comments",
+    "postmanFolder": "Comments",
+    "endpoints": [
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/comments",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/comments/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/comments/search",
+            "requiresId": false,
+            "body": {
+                "filter": [
+                    {
+                        "field": "descripcion",
+                        "operator": "like",
+                        "value": "description example",
+                        "type": "AND"
+                    },
+                    {
+                        "field": "descripcion",
+                        "operator": "like",
+                        "value": "description example",
+                        "type": "AND"
+                    }
+                ],
+                "limit": 10,
+                "offset": 0
+            }
+        }
+    ]
+}

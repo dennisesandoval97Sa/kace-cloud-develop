@@ -1,0 +1,424 @@
+mail-accounts:
+  get:
+    tags:
+      - Mail Accounts
+    summary: Get all mail accounts
+    responses:
+      '200':
+        description: Returns a list of mail accounts
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MailAccountsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Mail Accounts
+    summary: Create a mail account instance
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateMailAccount"
+    responses:
+      '201':
+        description: mail account instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  
+mail-accounts_id:
+  get:
+    tags:
+      - Mail Accounts
+    summary:  Fetch a mail account by ID
+    parameters: 
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        descripcion: Return a mail account instance
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: "#/components/schemas/MailAccount"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Mail Accounts
+    summary: Update a mail account instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateMailAccount"
+    responses:
+      '200':
+        description: Mail account updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+ 
+mail-accounts_delete:
+  get:
+    tags:
+      - Mail Accounts
+    summary: Delete a mail account instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: mail account instance deleted succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+mail-accounts_search:
+  post:
+    tags:
+      - Mail Accounts
+    summary: Search mail account instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of mail accounts which match with the search
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/MailAccountsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+        
+mail-accounts_types:
+  get:
+    tags:
+      - Mail Accounts
+    summary: Get all types 
+    responses:
+      '200':
+        description: Returns a list of types
+        content:  
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Types"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    description:
+      type: string
+      example: this is a description
+    type:
+      type: string
+      example: ms_graph_user
+    host:
+      type: string
+      example: null
+    port:
+      type: number
+      example: 4000
+    protocol:
+      type: string
+      enum: ['smtp', null]
+    encryption:
+      type: string
+      enum: ['tls', null]
+    username:
+      type: string
+      example: juansito
+    password:
+      type: string
+      example: juansito123
+    from_address:
+      type: string
+      example: hola@example.com
+    from_name:
+      type: string
+      example: John Doe
+    tenant_id:
+      type: string
+      example: TENANT_ID_REFERENCE
+    client_id:
+      type: string
+      example: CLIENT_ID_REFERENCE
+    client_secret:
+      type: string
+      example: CLIENT_SECRET_REFERENCE
+    code:
+      type: string
+      example: authCode123
+    refresh_token:
+      type: string
+      example: refreshToken456
+    mails_download_limit:
+      type: number
+      example: 1000
+    login_endpoint:
+      type: string
+      example: https://example.com/oauth/token
+    graph_scope:
+      type: string
+      example: mail.read
+    start_syncing_from:
+      type: string
+      format: date
+    last_synchronization:
+      type: string
+      format: date
+    folders:
+      type: array
+    access_token:
+      type: string
+      example: accessToken789
+    email_account:
+      type: string
+      example: user@example.com
+    vault:
+      type: boolean
+      example: false
+    vault_data:
+      type: object
+    is_active:
+      oneOf:
+        - type: number
+          enum: [1,0]
+        - type: boolean
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    Types:
+      type: object
+      properties:
+        message: 
+          type: string
+          example: Success
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    example: MS_GRAPH
+                  value:
+                    type: string
+                    example: ms_graph
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    Deleted:
+      type: object
+      properties:
+        deleted_at:
+          $ref: "../common/fields.yaml#/schemas/deleted_at"
+        deleted_by:
+          $ref: "../common/fields.yaml#/schemas/deleted_by"
+    MailAccountBase:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/description"
+        type:
+          $ref: "#/components/schemas/type"
+        host:
+          $ref: "#/components/schemas/host"
+        port:
+          $ref: "#/components/schemas/port"
+        protocol:
+          $ref: "#/components/schemas/protocol"
+        encryption:
+          $ref: "#/components/schemas/encryption"
+        username:
+          $ref: "#/components/schemas/username"
+        password:
+          $ref: "#/components/schemas/password"
+        from_address:
+          $ref: "#/components/schemas/from_address"
+        from_name:
+          $ref: "#/components/schemas/from_name"
+        tenant_id:
+          $ref: "#/components/schemas/tenant_id"
+        client_id:
+          $ref: "#/components/schemas/client_id"
+        client_secret:
+          $ref: "#/components/schemas/client_secret"
+        code:
+          $ref: "#/components/schemas/code"
+        refresh_token:
+          $ref: "#/components/schemas/refresh_token"
+        mails_download_limit:
+          $ref: "#/components/schemas/mails_download_limit"
+        login_endpoint:
+          $ref: "#/components/schemas/login_endpoint"
+        graph_scope:
+          $ref: "#/components/schemas/graph_scope"
+        start_syncing_from:
+          $ref: "#/components/schemas/start_syncing_from"
+        last_synchronization:
+          $ref: "#/components/schemas/last_synchronization"
+        folders:
+          $ref: "#/components/schemas/folders"
+        access_token:
+          $ref: "#/components/schemas/access_token"
+        email_account:
+          $ref: "#/components/schemas/email_account"
+        vault:
+          $ref: "#/components/schemas/vault"
+        vault_data:
+          $ref: "#/components/schemas/vault_data"
+        is_active:
+          $ref: "#/components/schemas/is_active"
+    MailAccount:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/MailAccountBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+        - $ref: "#/components/schemas/Deleted"
+    MailAccountsCollection:
+      type: object
+      properties:
+        message:
+            $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/MailAccount"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: '198'
+    CreateMailAccount:
+        allOf:
+          - type: object  
+            properties:
+              id:
+                $ref: "../common/fields.yaml#/schemas/id"
+          - $ref: "#/components/schemas/MailAccountBase"
+          - type: object
+            properties:
+              created_at:
+                $ref: "../common/fields.yaml#/schemas/created_at"
+              created_by:
+                $ref: "#/components/schemas/created_by"
+    UpdateMailAccount:
+      allOf:
+        - $ref: "#/components/schemas/MailAccountBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: description
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: description example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

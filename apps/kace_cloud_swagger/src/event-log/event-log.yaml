@@ -1,0 +1,245 @@
+event-logs:
+  get:
+    tags:
+      - Event Log
+    summary: List events with pagination
+    responses:
+      '200':
+        description: A list of events logs
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventLogsCollection'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+event-logs_id:
+  get:
+    tags:
+      - Event Log
+    summary: Get an event by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+        description: an existing event id
+    responses:
+      '200':
+        description: event instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message: { type: string, example: Success }
+                data:
+                  $ref: '#/components/schemas/EventLog'
+                metadata:
+                  type: object
+                  nullable: true
+            examples:
+                ejemplo:
+                  value:
+                    message: Success
+                    data:
+                      id: 7439296d-e12c-4469-8d6d-4f6b441a9004
+                      event_name: case.state_changed
+                      occurred_at: 2025-08-25T16:44:03.802Z
+                      initiated_by_user: c96ef814-0f4e-41f1-9864-875220e01ae9
+                      aggregate_id: 5b090fbb-936e-4997-9242-12fa7847bf5b
+                      body:
+                        transicion_id: af8fc535-6fb0-4614-aaaa-4242ef19024a
+                      case_id: 5b090fbb-936e-4997-9242-12fa7847bf5b
+                      client_id: 91a453b8-f78a-458c-9614-631dd55c82f0
+                    metadata: { }
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+event-logs_search:
+  post:
+    tags:
+      - Event Log
+    summary: Search events with criteria
+    requestBody:
+      description: In this JSON body use only the properties that you need search
+      required: true
+      content:
+        application/json:
+          schema:
+              $ref: '#/components/schemas/SearchRequest'
+          examples:
+            ejemplo:
+              value:
+                filter:
+                  - field: event_name
+                    operator: ilike
+                    value: "%created%"
+                    type: AND
+                order: { field: occurred_at, direction: desc }
+                limit: 5
+                offset: 0
+    responses:
+      '200':
+        description: A list of Events
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventLogsCollection'
+            examples:
+                ejemplo:
+                  value:
+                    message: Success
+                    data:
+                      items:
+                        - id: 5b090fbb-936e-4997-9242-12fa7847bf5b
+                          event_name: case.created
+                          occurred_at: 2025-08-21T14:12:07.512Z
+                          initiated_by_user: e8bc913d-5d33-4c44-9f2f-93d01e3176a7
+                          aggregate_id: null
+                          body: { case_title: "Caso de prueba" }
+                          case_id: b61f81db-f1a6-47b3-833d-1483f948a78d
+                          client_id: 91a453b8-f78a-458c-9614-631dd55c82f0
+                    metadata: { count: 1 }
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+event-logs_case_id:
+  get:
+    tags:
+      - Event Log
+    summary: Return events of a specific case
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+        description: an existing case id
+    responses:
+      '200':
+        description: Events of a specific case fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message: 
+                  { type: string, example: Success }
+                data:
+                  $ref: '#/components/schemas/EventLog'
+                metadata:
+                  type: object
+                  nullable: true
+            examples:
+                ejemplo:
+                  value:
+                    message: Success
+                    data:
+                      id: 7439296d-e12c-4469-8d6d-4f6b441a9004
+                      event_name: case.state_changed
+                      occurred_at: 2025-08-25T16:44:03.802Z
+                      initiated_by_user: c96ef814-0f4e-41f1-9864-875220e01ae9
+                      aggregate_id: 5b090fbb-936e-4997-9242-12fa7847bf5b
+                      body:
+                        transicion_id: af8fc535-6fb0-4614-aaaa-4242ef19024a
+                      case_id: 5b090fbb-936e-4997-9242-12fa7847bf5b
+                      client_id: 91a453b8-f78a-458c-9614-631dd55c82f0
+                    metadata: { }
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    EventLog:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        event_name: { type: string, example: "case.state_changed" }
+        occurred_at: { type: string, format: date-time }
+        initiated_by_user: { type: string, format: uuid, nullable: true }
+        aggregate_id: { type: string, format: uuid, nullable: true }
+        body:
+          type: object
+          additionalProperties: true
+        case_id: { type: string, format: uuid, nullable: true }
+        client_id: { type: string, format: uuid, nullable: true }
+    EventLogsCollection:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Success
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/EventLog'
+        metadata:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 118
+    Order:
+      type: object
+      properties:
+        field:
+          type: string
+          example: occurred_at
+        direction:
+          type: string
+          enum: [asc, desc]
+          example: desc
+    Filter:
+      type: object
+      properties:
+        field:
+          type: string
+          example: event_name
+        operator:
+          type: string
+          description: Operador (por ejemplo, ilike, =, <, >, null, not_null)
+          example: ilike
+        value:
+          type: string
+          nullable: true
+          example: "%created%"
+        type:
+          type: string
+          enum: [AND, OR]
+          example: AND
+    SearchRequest:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filter'
+        relationship:
+          type: array
+          items: {}
+          nullable: true
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+        order:
+          $ref: '#/components/schemas/Order'

@@ -1,0 +1,71 @@
+name: worker-image
+
+on:
+    pull_request:
+        paths:
+            - 'apps/workers/kace_cloud_worker_actions_queue_executions/**'
+            - 'pnpm-lock.yaml'
+            - 'pnpm-workspace.yaml'
+            - '.github/workflows/worker-image.yml'
+    push:
+        branches: [develop]
+        paths:
+            - 'apps/workers/kace_cloud_worker_actions_queue_executions/**'
+            - 'pnpm-lock.yaml'
+            - 'pnpm-workspace.yaml'
+            - '.github/workflows/worker-image.yml'
+    # La base esta pineada por digest: un CVE nuevo en node:22-alpine no llega
+    # por push porque el arbol no cambia. Sin esta ejecucion programada la
+    # imagen envejece en silencio.
+    schedule:
+        - cron: '0 6 * * 1'
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    image-scan:
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        steps:
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+            # El contexto de build es la raiz del monorepo: el Dockerfile necesita
+            # pnpm-workspace.yaml y packages/ para resolver el grafo de dependencias.
+            - name: Construir la imagen del worker
+              run: |
+                  DOCKER_BUILDKIT=1 docker build \
+                      -f apps/workers/kace_cloud_worker_actions_queue_executions/Dockerfile \
+                      -t kace-worker-actions:ci \
+                      .
+
+            # Mismo bloque pineado que ci.yml (§6.3): la action oficial de Trivy
+            # falla de forma reproducible en los runners.
+            - name: Instalar Trivy (version y checksum pineados)
+              env:
+                  TRIVY_VERSION: 0.73.0
+                  TRIVY_SHA256: 2edd39da482bb4e9831962487b68f68e3928ec3137794757f54d00383d79547b
+              run: |
+                  curl -sSfL -o trivy.tgz "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+                  echo "${TRIVY_SHA256}  trivy.tgz" | sha256sum -c -
+                  tar xzf trivy.tgz trivy
+                  sudo mv trivy /usr/local/bin/trivy
+                  rm trivy.tgz
+                  trivy --version
+
+            # Gate post-build (§3.6). La tabla va a stdout Y al artifact: con
+            # --output a secas, un gate rojo no imprime nada en el log.
+            - name: Trivy — imagen del worker (bloqueante)
+              run: |
+                  set -o pipefail
+                  trivy image --scanners vuln --severity CRITICAL,HIGH --exit-code 1 \
+                      --format table kace-worker-actions:ci | tee trivy-worker-image.txt
+
+            - name: Publicar informe de la imagen
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+              with:
+                  name: trivy-worker-image
+                  path: trivy-worker-image.txt
+                  retention-days: 30

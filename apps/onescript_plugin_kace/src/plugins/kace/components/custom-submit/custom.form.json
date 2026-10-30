@@ -1,0 +1,64 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "kaceApiResponseCacheFlagsPanel",
+      "type": "panel",
+      "title": "Caché HTTP del apiService (flags opcionales)",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "kaceApiResponseCacheFlagsDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"small text-muted mb-2\"><strong>Ámbito:</strong> use estas propiedades en la <code>config</code> de Axios <strong>solo</strong> cuando el script evaluado recibe <code>apiService</code> (p. ej. <code>kaceEngine.getService('apiService')</code>): Schema y <strong>Aux Cases Schema</strong> (onMount / onChange / onSubmit), Custom Select / Multiselect / Custom Multiselect (carga y onChange; con &quot;Refetch al abrir&quot; el proxy puede forzar <code>__kaceForceRefresh</code>), DataTable en <strong>datos iniciales</strong> por JS si llama API, <strong>acciones masivas</strong>, <code>modalInitCode</code> y &quot;Mostrar cuando&quot; del modal, Custom Submit / Natura, <strong>antes de enviar subcaso</strong>, scripts Hidden (post-auth / on-mount), <strong>Custom On Change</strong> de campos Kace cuando el motor está disponible.</p><p class=\"small text-muted mb-2\"><strong>No aplica</strong> a: condición de ocultar adjuntos (solo <code>data</code> / <code>row</code>); script de filtros de <strong>literales auxiliares</strong> (<code>selected_group</code>, <code>setFilters</code>); columnas o acciones del DataTable por JS que solo exponen <code>setColumns</code> / <code>setActions</code>; <code>onClick</code> de fila (<code>row</code>, <code>rowIndex</code>).</p><p class=\"font-weight-bold mb-2\">En <code>apiService.get(url, config)</code> y <code>apiService.post(url, body, config)</code></p><p class=\"small text-muted mb-2\">Anexe en la <strong>raíz</strong> de <code>config</code>:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Propiedad</th><th>Efecto</th></tr></thead><tbody><tr><td><code>__kaceForceRefresh: true</code></td><td>No usa la entrada de caché; va a red y, si la respuesta es 2xx, <strong>actualiza</strong> la caché (clave: tenant + método + URL + params/body serializado).</td></tr><tr><td><code>__kaceBypassCache: true</code></td><td>Esa petición no lee ni escribe caché.</td></tr><tr><td><code>__kaceCacheRead: true</code> <span class=\"text-muted\">(solo POST)</span></td><td>Permite caché en POST fuera de la lista blanca por URL (lecturas idempotentes). Los POST de búsqueda/listado habituales ya son elegibles por convención.</td></tr><tr><td><code>__singleFlight: false</code></td><td>Desactiva deduplicación de peticiones idénticas en curso.</td></tr></tbody></table><p class=\"small text-muted mb-2\"><strong>GET:</strong> caché activa salvo <code>__kaceBypassCache</code> / <code>__kaceForceRefresh</code>. <strong>POST:</strong> solo 2xx en URLs de lectura (o con <code>__kaceCacheRead: true</code>). No se cachean mutaciones (p. ej. <code>/cases/auxiliary</code>).</p><p class=\"small text-muted mb-0\"><strong>Invalidación:</strong> al guardar caso/subcaso el motor invalida entradas relacionadas; use <code>__kaceForceRefresh</code> si necesita datos recién escritos al instante.</p>"
+        }
+      ]
+    },
+    {
+      "key": "customCodeSection",
+      "type": "panel",
+      "title": "Código personalizado al guardar",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "customCodeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Variables disponibles en el script:</p><p class=\"text-danger small mb-2\"><strong>Legacy (KaceData):</strong> la variable <code>singleton</code> expone la instancia global de <code>KaceData</code> (<code>kace_data</code>). Es una opción heredada; se recomienda migrar a <code>kaceEngine</code> y a los servicios obtenidos con <code>kaceEngine.getService('…')</code> lo antes posible.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">data</span></td><td>Datos completos del formulario (Form.io). Puede incluir kaceSchema, case_data o aux_cases según el contexto del formulario.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">row</span></td><td>Alias de data; mismos datos del formulario (compatibilidad).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">component</span></td><td>Definición del componente Custom Submit en el builder (propiedades, key, etc.).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">instance</span></td><td>Instancia del componente en tiempo de ejecución; acceso a métodos y estado del botón de envío.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">singleton</span></td><td>Objeto compartido (kace_data) entre evaluaciones; útil para persistir estado durante la sesión del formulario.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">kaceEngine</span></td><td>Instancia del motor Kace; permite acceder a servicios con kaceEngine.getService('nombre').</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">apiService</span></td><td>Servicio de API (Kace); para llamadas HTTP al backend.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">uploadAttachments</span></td><td>Función para subir archivos adjuntos pendientes (p. ej. fileService.uploadPendingAttachments).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">attachments</span></td><td>Array con la lista actual de adjuntos del caso. Use para validaciones (requerido, cantidad, etc.). Para bloquear el envío lance un error en el script.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">saveTimer</span></td><td>Función asíncrona que finaliza el temporizador del caso: marca el timer como FINISHED con mensaje \"Formulario Guardado\" y lo elimina del almacenamiento local. <strong>Solo está disponible cuando se actualiza un caso existente</strong> (no al crear uno nuevo); si no hay timer activo, la llamada no tiene efecto. Uso: <code>await saveTimer()</code>.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">postMessageToParent</span></td><td>Función que envía un mensaje al <code>window.parent</code> con <code>postMessage</code> cuando el plugin corre dentro de un iframe. Recibe un objeto <code>payload</code> (p. ej. <code>{ type: 'miEvento', ... }</code>); el host debe escuchar el evento <code>message</code> y validar el origen. Ejemplo: <code>postMessageToParent({ type: 'kaceCloseTab' })</code> si el host define ese contrato.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">root</span></td><td>Instancia raíz del formulario Form.io (<code>globalRoot</code> si existe).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">getComponent</span></td><td><code>(key)</code> devuelve la instancia Form.io del campo por su <code>key</code> (admite ruta con puntos; si falla, busca por key en todo el árbol).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">redrawComponent</span></td><td><code>(key)</code> redibuja un componente por key: re-render React, <code>redraw()</code> nativo y emite <code>redraw</code> (p. ej. selects Kace invalidan caché). Devuelve <code>true</code> si lo encontró.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">redrawComponents</span></td><td><code>(['key1','key2'])</code> redibuja varios; devuelve array de booleanos.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">redrawAll</span></td><td>Emite <code>redraw</code> en el formulario completo (todos los listeners globales).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">Swal</span></td><td>Instancia de <strong>SweetAlert2</strong> (<code>sweetalert2</code>) para diálogos modales (alertas, confirmaciones, loading). Ejemplo: <code>await Swal.fire({ icon: 'warning', title: 'Atención', text: 'Mensaje' })</code>; confirmación: <code>const { isConfirmed } = await Swal.fire({ title: '¿Continuar?', showCancelButton: true }); if (!isConfirmed) throw new Error('Cancelado');</code>.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table>"
+        },
+        {
+          "key": "clearStoreService",
+          "type": "checkbox",
+          "label": "Limpiar storeService",
+          "input": true,
+          "defaultValue": true,
+          "description": "Si está activado, se limpiará el storeService después de ejecutar el script."
+        },
+        {
+          "key": "customDefaultValue",
+          "type": "textarea",
+          "label": "JavaScript",
+          "description": "Se ejecuta al confirmar el botón Guardar, antes del envío. Use las variables anteriores para lógica personalizada.",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10,
+          "validate": {
+            "javascript": true
+          }
+        }
+      ]
+    },
+    {
+      "key": "floatingButton",
+      "type": "checkbox",
+      "label": "Botón flotante",
+      "input": true,
+      "defaultValue": false,
+      "description": "Si está activado, el botón Guardar se mostrará como un botón flotante fijo en la interfaz, permitiendo acceso rápido incluso al hacer scroll."
+    }
+  ]
+}

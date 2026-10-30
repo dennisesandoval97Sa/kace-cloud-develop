@@ -1,0 +1,360 @@
+states:
+  get:
+    tags:
+      - States
+    summary: Get states collection
+    description: Get all states of database
+    operationId: getstates
+    responses:
+      '200':
+        description: A list of states
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - States
+    summary: Create an states instance
+    description: Registers a states in database
+    operationId: poststates
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createBodyRequest'
+    responses:
+      '201':
+        description: states instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+states_id:
+  get:
+    tags:
+      - States
+    summary: Fetch an states instance by ID
+    description: Get detail of one single user-notification of database
+    operationId: getstates_id
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing states id
+    responses:
+      '200':
+        description: states instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: '#/components/schemas/collection-item'
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - States
+    summary: Update an states instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing states id
+    requestBody:
+      description: In this JSON body use only the properties that will be modified
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/updateBodyRequest'
+    responses:
+      '200':
+        description: states instance updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+states_delete:
+  get:
+    tags:
+      - States
+    summary: Delete an states instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing states id
+    responses:
+      '200':
+        description: states instance deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+states_search:
+  post:
+    tags:
+      - States
+    summary: Get states whit advanced filters
+    requestBody:
+      description: In this JSON body use only the properties that you need search
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: A list of states
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+states_list:
+  get:
+    tags:
+      - States
+    summary: Get states as select options
+    description: Returns all states mapped as select options (`value`/`label`).
+    responses:
+        '200':
+          description: A list of states (select options)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/states_select_collection'
+              examples:
+                ok:
+                  summary: Example
+                  value:
+                    data:
+                      items:
+                        - value: "e6aea5d9-c640-4f55-82ca-9fc1af955f3f"
+                          label: "State 1"
+                        - value: "a4b02c17-2bb7-49b8-8d5c-8e21dfb40b42"
+                          label: "State 2"
+                    metadata:
+                      count: 2
+        '404':
+          $ref: '../common/fields.yaml#/schemas/not_found_response'
+        '403':
+          description: Sin permiso para leer el recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                forbidden:
+                  value:
+                    message: "You do not have permission to read this resource."
+        '500':
+          $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+
+components:
+  schemas:
+    nombre:
+      type: string
+      example: jon  
+    descripcion:
+      type: string
+      example: Descripción aleatoria
+    icon_class:
+      type: string
+      example: funnyIcon
+    color:
+      type: string
+      example: '#5cae4e'
+    require_observation:
+      type: boolean
+      example: false
+
+    collection-item:
+      type: object
+      properties:
+        id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        nombre:
+          $ref: '#/components/schemas/nombre'
+        descripcion:
+          $ref: '#/components/schemas/descripcion'
+        icon_class:
+          $ref: '#/components/schemas/icon_class'
+        status:
+          $ref: '../common/fields.yaml#/schemas/status'
+        color:
+          $ref: '#/components/schemas/color'
+        require_observation:
+          $ref: '#/components/schemas/require_observation'
+        created_at:
+          $ref: '../common/fields.yaml#/schemas/created_at'
+        created_by:
+          $ref: '../common/fields.yaml#/schemas/created_by'
+        updated_at:
+          $ref: '../common/fields.yaml#/schemas/updated_at'
+        updated_by:
+          $ref: '../common/fields.yaml#/schemas/updated_by'
+        deleted_at:
+          $ref: '../common/fields.yaml#/schemas/deleted_at'
+        deleted_by:
+          $ref: '../common/fields.yaml#/schemas/deleted_by'
+   
+    collection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/collection-item'
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: '198'
+    createBodyRequest:
+      type: object
+      properties:
+        id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        nombre:
+          $ref: '#/components/schemas/nombre'
+        descripcion:
+          $ref: '#/components/schemas/descripcion'
+        icon_class:
+          $ref: '#/components/schemas/icon_class'
+        status:
+          $ref: '../common/fields.yaml#/schemas/status'
+        color:
+          $ref: '#/components/schemas/color'
+        require_observation:
+          $ref: '#/components/schemas/require_observation'
+    updateBodyRequest:
+      type: object
+      properties:
+        nombre:
+          $ref: '#/components/schemas/nombre'
+        descripcion:
+          $ref: '#/components/schemas/descripcion'
+        icon_class:
+          $ref: '#/components/schemas/icon_class'
+        status:
+          $ref: '../common/fields.yaml#/schemas/status'
+        color:
+          $ref: '#/components/schemas/color'
+        require_observation:
+          $ref: '#/components/schemas/require_observation'
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: nombre
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: example name
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+    states_select_item:
+      type: object
+      properties:
+        value:
+          type: string
+          description: State ID (UUID)
+        label:
+          type: string
+          description: Human-readable state name
+      required: [value, label]
+    states_select_data:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/states_select_item'
+      required: [items]
+    states_select_collection:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/states_select_data'
+        metadata:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 2
+          required: [count]
+      required: [data, metadata]
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          nullable: true
+      required: [message]

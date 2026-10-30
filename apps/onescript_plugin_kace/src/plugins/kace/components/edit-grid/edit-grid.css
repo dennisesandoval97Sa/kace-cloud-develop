@@ -1,0 +1,7 @@
+.formio-component-editgrid li.list-group-item[hidden] {
+  display: none !important;
+}
+
+.formio-component-editgrid.formio-hidden {
+  display: none !important;
+}

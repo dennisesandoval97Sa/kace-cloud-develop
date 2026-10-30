@@ -1,0 +1,47 @@
+{
+    "name": "@kace/database",
+    "version": "1.26.1",
+    "description": "",
+    "type": "module",
+    "main": "knexfile.js",
+    "scripts": {
+        "uuid": "npx uuid v4",
+        "db:config": "grep -E '^\\s*DB_' ../../.env | grep -Ev '^\\s*(DB_PASSWORD|DB_AUXILIAR_PASSWORD|DB_.*TOKEN|DB_TEST_.*)=' | grep -Ev '^\\s*#'",
+        "migrate": "pnpm run db:config && knex migrate:latest && knex seed:run",
+        "migrate:latest": "pnpm run db:config && knex migrate:latest",
+        "migrate:rollback": "pnpm run db:config && knex migrate:rollback --all",
+        "migrate:unlock": "pnpm run db:config && knex migrate:unlock",
+        "seed:fresh": "pnpm run db:config && knex seed:run",
+        "format": "prettier --write .",
+        "check-format": "prettier --check .",
+        "lint": "echo 'No hay tareas de lint por ahora'",
+        "test": "pnpm run test:sqlite && pnpm run test:postgres",
+        "test:sqlite": "if [ -f test.sqlite ]; then rm test.sqlite; fi && knex migrate:latest --env testSqlite && knex seed:run --env testSqlite && knex migrate:rollback --all --env=testSqlite && if [ -f test.sqlite ]; then rm test.sqlite; fi && pnpm run test:unit",
+        "test:unit": "node --env-file-if-exists=../../.env --test",
+        "test:postgres": "node utils/dropTestSchema.js && knex migrate:latest --env testPostgres && knex seed:run --env testPostgres && knex migrate:rollback --all --env=testPostgres",
+        "version:patch": "pnpm version patch -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:minor": "pnpm version minor -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:major": "pnpm version major -m \"Upgrade to %s\" && git push --follow-tags",
+        "format:check": "prettier --check ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@kace/prettier_config": "workspace:*",
+        "bcrypt": "^5.1.1",
+        "dotenv": "^16.5.0",
+        "knex": "^3.1.0",
+        "pg": "^8.16.0",
+        "prettier": "^3.4.1",
+        "sqlite3": "^5.1.7",
+        "uuid": "^11.0.3"
+    },
+    "engines": {
+        "node": "22.x"
+    },
+    "devDependencies": {
+        "@kace/prettier_config": "workspace:*",
+        "prettier": "^3.3.3"
+    }
+}

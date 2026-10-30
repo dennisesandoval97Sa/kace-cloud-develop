@@ -1,0 +1,25 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "kace-voice-dictation",
+      "type": "url",
+      "label": "Voice Dictation",
+      "placeholder": "https://example.com/",
+      "description": "This is voice dictation textarea component custom settings form.",
+      "input": true
+    },
+    {
+      "key": "maxLength",
+      "type": "number",
+      "label": "Límite de caracteres",
+      "description": "Opcional. Si se establece, se mostrará un contador y no se permitirá superar este número de caracteres. Dejar vacío para sin límite. Prioridad: si el componente se usa dentro de un Schema de Kace y el schema define un límite (max), ese valor tiene prioridad sobre este; si no hay max en el schema, se usa este límite.",
+      "input": true,
+      "min": 1,
+      "validate": {
+        "min": 1
+      }
+    }
+  ]
+}

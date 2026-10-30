@@ -1,0 +1,73 @@
+field-list:
+  get:
+    tags:
+      - Field list
+    summary: Fetch an Field list instance by table name
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - table_name -> nombre de una tabla de la base de datos
+    operationId: getfieldlist_table
+    parameters:
+      - name: table_name
+        in: path
+        required: true
+        description: an existing Field list table name
+    responses:
+      '200':
+        description: Field list instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: '#/components/schemas/List'
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+  schemas:
+    column_name :
+      type: string
+      example: "id"
+    data_type :
+      type: string
+      example: "String"
+    character_maximum_length :
+      type: number
+      example: 36
+    relation :
+      type: string
+      example: "null"
+    label :
+      type: string
+      example: "ID"
+    ListBase:
+      type: object
+      properties:
+        column_name:
+          $ref: "#/components/schemas/column_name"
+        data_type:
+          $ref: "#/components/schemas/data_type"
+        character_maximum_length:
+          $ref: "#/components/schemas/character_maximum_length"
+        relation:
+          $ref: "#/components/schemas/relation"
+        label:
+          $ref: "#/components/schemas/label"
+        
+    List:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/ListBase"
+  

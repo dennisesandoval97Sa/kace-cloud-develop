@@ -1,0 +1,43 @@
+classifications-groups-relationships-batch-delete:
+  post:
+    tags:
+      - Classification group relationships batch delete
+    summary: Delete a batch of classification-group-relationships
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - classification_id -> ID de una clasificacion (Classifications)
+      - group_id -> ID de un grupo (Groups)
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ClassificationGroupRelationships"
+    responses:
+      '200':
+        description: Batch of classification-group-relationships deleted succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    classification_id:
+      type: string
+      format: uuid
+    group_id:
+      type: string
+      format: uuid
+    ClassificationGroupRelationships:
+      type: object
+      properties:
+        classification_id:
+          $ref: "#/components/schemas/classification_id"
+        group_id:
+          $ref: "#/components/schemas/group_id"

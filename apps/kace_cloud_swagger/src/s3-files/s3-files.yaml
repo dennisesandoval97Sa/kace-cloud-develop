@@ -1,0 +1,315 @@
+s3-files:
+  get:
+    tags:
+      - S3 files
+    summary: Get all S3 files
+    responses:
+      '200':
+        description: Returns a list of S3 files
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/S3FilesCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - S3 files
+    summary: Create a S3 file instance
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateS3File"
+    responses:
+      '201':
+        description: S3 file instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+s3-files_id:
+  get:
+    tags:
+      - S3 files
+    summary:  Fetch a S3 file by ID
+    parameters: 
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        descripcion: Return a S3 file instance
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/S3FileId"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - S3 files
+    summary: Update a S3 file instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateS3File"
+    responses:
+      '200':
+        description: S3 file updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+s3-files_delete:
+  get:
+    tags:
+      - S3 files
+    summary: Delete a S3 file instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: S3 file instance deleted succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+s3-files_search:
+  post:
+    tags:
+      - S3 files
+    summary: Search S3 file instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of S3 files which match with the search
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/S3FilesCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    description:
+      type: string
+      example: this is a description
+    file_name:
+      type: string
+      example: screenshot_1
+    s3_file_name:
+      type: string
+      example: screenshot_1
+    url:
+      type: string
+      example: "https://example.com/screenshot_1.png"
+    size:
+      type: number
+      example: 1500
+    origin:
+      type: string
+      example: "uploaded_by_user"
+    expired_at:
+      type: string
+      format: date
+    is_active:
+      oneOf:
+        - type: boolean
+        - type: number
+          enum: [0,1]
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    Deleted:
+      type: object
+      properties:
+        deleted_at:
+          $ref: "../common/fields.yaml#/schemas/deleted_at"
+        deleted_by:
+          $ref: "../common/fields.yaml#/schemas/deleted_by"
+    S3FileBase:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/description"
+        file_name:
+          $ref: "#/components/schemas/file_name"
+        s3_file_name:
+          $ref: "#/components/schemas/s3_file_name"
+        url:
+          $ref: "#/components/schemas/url"
+        size:
+          $ref: "#/components/schemas/size"
+        origin:
+          $ref: "#/components/schemas/origin"
+        expired_at:
+          $ref: "#/components/schemas/expired_at"
+        is_active:
+          $ref: "#/components/schemas/is_active"
+    S3File:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/S3FileBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+        - $ref: "#/components/schemas/Deleted"
+        
+    S3FileId:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Success
+        data:
+          type: object
+          allOf:
+            - type: object  
+              properties:
+                id:
+                  $ref: "../common/fields.yaml#/schemas/id"
+            - $ref: "#/components/schemas/S3FileBase"
+            - $ref: "#/components/schemas/Created"
+            - $ref: "#/components/schemas/Updated"
+            - $ref: "#/components/schemas/Deleted"
+        metadata:
+          type: object
+    S3FilesCollection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/S3File"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: array
+              items:
+                type: object
+                properties:
+                  count:
+                    type: string
+                    example: '198'
+    CreateS3File:
+        allOf:
+          - type: object  
+            properties:
+              id:
+                $ref: "../common/fields.yaml#/schemas/id"
+          - $ref: "#/components/schemas/S3FileBase"
+          - type: object
+            properties:
+              created_at:
+                $ref: "../common/fields.yaml#/schemas/created_at"
+              created_by:
+                $ref: "#/components/schemas/created_by"
+    UpdateS3File:
+        allOf:
+        - $ref: "#/components/schemas/S3FileBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: description
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: description example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

@@ -1,0 +1,187 @@
+aux-cases:
+  post:
+    tags:
+      - Aux cases
+    summary: Create an AuxCase instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - caso_id  -> ID de un caso (Cases).
+      **Nota sobre funciones autoejecutadas:**
+      Algunos campos de la propiedad `data` se completan automáticamente mediante funciones definidas en el sistema. 
+      Los valores calculados estarán presentes en la respuesta bajo la misma estructura `data`.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateAuxCase'
+    responses:
+      '201':
+        description: Aux cases created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+aux-case_id:
+  get:
+    tags:
+      - Aux cases
+    summary: Fetch an AuxCase instance by Case ID
+    
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: AuxCase instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: '#/components/schemas/AuxCase'
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Aux cases
+    summary: Update an AuxCase instance by ID
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - caso_id  -> ID de un caso (Cases).
+      **Nota sobre funciones autoejecutadas:**
+      Algunos campos de la propiedad `data` se completan automáticamente mediante funciones definidas en el sistema. 
+      Los valores calculados estarán presentes en la respuesta bajo la misma estructura `data`.
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateAuxCase'
+    responses:
+      '200':
+        description: Aux Case updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    caso_id:
+      $ref: '../common/fields.yaml#/schemas/id'
+    data:
+      type: object
+      properties:
+        caso_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        fecha_solicitud:
+          type: string
+          format: date-time
+        tipo_usuario:
+          type: string
+          example: "Cliente Corporativo"
+        numero_pedido:
+          type: string
+          example: "CASE-987654321"
+        canal_contacto:
+          type: string
+          example: "Llamada telefónica"
+        motivo_interaccion:
+          type: string
+          example: "Reclamo"
+        spc:
+          type: string
+          example: "Agente de atención al cliente - Nivel 2"
+        tiempo_solucion:
+          type: string
+          example: "24 horas"
+        form_20f33a74_8c68_4d1a_9d63_39e768e74dda:
+          type: object
+          description: Campos calculados automáticamente por funciones autoejecutadas
+          properties:
+            fecha_emision:
+              type: string
+              format: date
+              example: "2025-10-01"
+            NombreCliente:
+              type: string
+              example: "Juan Pérez"
+            addDays_funct:
+              type: string
+              format: date
+              description: Fecha calculada automáticamente usando addDays
+              example: "2025-10-31"
+    AuxCaseBase:
+      type: object
+      properties:
+        caso_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        data:
+          $ref: '#/components/schemas/data'
+    AuxCase:
+      allOf:
+        - type: object
+          properties:
+            id:  
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AuxCaseBase"
+        - type: object
+          properties:
+            created_at:
+              type: string
+              format: date-time
+            created_by:
+              type: string
+              format: uuid
+            updated_at:
+              type: string
+              format: date-time
+            updated_by:
+              type: string
+              format: uuid
+
+    CreateAuxCase:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AuxCaseBase"
+    UpdateAuxCase:
+      allOf:
+        - type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/data"

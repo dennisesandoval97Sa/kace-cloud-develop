@@ -1,0 +1,23 @@
+{
+    "cases": "Cases",
+    "case-attachments": "Case attachments",
+    "case-descriptions": "Case descriptions",
+    "cases-count": "Cases Count",
+    "cases-count-by-group": "Cases Count By Group",
+    "comments": "Comments",
+    "users": "Users",
+    "auxiliaries": "auxiliaries",
+    "aux-cases": "Aux cases",
+    "global-configurations": "Global configuration",
+    "boards": "boards",
+    "one-script": "One Script",
+    "schemas": "Schemas",
+    "download-s3-files": "S3 files Download",
+    "classifications": "Classifications",
+    "states": "States",
+    "group": "Groups",
+    "aux-definitions": "aux_definitions",
+    "transitions": "Transitions",
+    "case-count-by-responsable": "Cases Count By Responsable",
+    "case-available-states": "Cases Available States"
+}

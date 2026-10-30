@@ -1,0 +1,17 @@
+{
+    "name": "@kace/local-server",
+    "version": "1.26.1",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "start": "node --import ./src/esm-loader-register.mjs src/server.mjs",
+        "dev": "node --import ./src/esm-loader-register.mjs --watch src/server.mjs",
+        "debug": "node --import ./src/esm-loader-register.mjs --inspect src/server.mjs",
+        "debug:brk": "node --import ./src/esm-loader-register.mjs --inspect-brk src/server.mjs"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.7",
+        "express": "^4.21.0"
+    }
+}

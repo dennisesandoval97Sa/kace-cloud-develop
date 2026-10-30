@@ -1,0 +1,246 @@
+comments:
+  get:
+    tags:
+      - Comments
+    summary: Get comments
+    responses:
+      '200':
+        description: Returns a list of comments
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Comments
+    summary: Create a new comment
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - caso_id -> ID de un caso (Cases)
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateComment"
+    responses:
+      '201':
+        description: Comment instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+comments_id:
+  get:
+    tags:
+      - Comments
+    summary: Fetch a comment by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Return a comment
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: "#/components/schemas/Comment"
+                metadata:
+                  type: object
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'              
+  post:
+    tags:
+      - Comments
+    summary: Update a comment
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - caso_id -> ID de un caso (Cases)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdatedComment"
+    responses:
+      '200':
+        description: Comment updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+comments_search:
+  post:
+    tags:
+      - Comments
+    summary: Search a list of comments by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of comments which match with the search
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+    
+components:
+  schemas:
+    descripcion:
+      type: string
+      example: description test
+    calificacion:
+      type: number
+      example: 5
+    caso_id:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    updated_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    CommentBase:
+      type: object
+      properties:
+        descripcion:
+          $ref: "#/components/schemas/descripcion"
+        calificacion:
+          $ref: "#/components/schemas/calificacion"
+        caso_id:
+          $ref: "#/components/schemas/caso_id"
+    Comment:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/CommentBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    CommentCollection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Comment"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: '198'
+    CreateComment:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/CommentBase"
+        - type: object
+          properties:
+            created_at:
+              $ref: "../common/fields.yaml#/schemas/created_at"
+            created_by:
+              $ref: "#/components/schemas/created_by"
+    UpdatedComment:
+      type: object
+      properties:
+        descripcion:
+          $ref: "#/components/schemas/descripcion"
+        calificacion:
+          $ref: "#/components/schemas/calificacion"
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "#/components/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: descripcion
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: description example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

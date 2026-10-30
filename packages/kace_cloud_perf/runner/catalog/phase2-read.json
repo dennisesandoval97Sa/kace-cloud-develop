@@ -1,0 +1,10 @@
+{
+    "phase": "F2-R",
+    "description": "Baseline lectura — 15 servicios top según invocaciones (filas 2-16 spec maestro)",
+    "subCatalogs": [
+        "phase2-read-cases.json",
+        "phase2-read-users-config.json",
+        "phase2-read-classification.json",
+        "phase2-read-aggregates.json"
+    ]
+}

@@ -1,0 +1,110 @@
+auxiliaries_list:
+  get:
+    tags:
+      - Auxiliaries
+    summary: Get auxiliary values by JSON path
+    description: >
+      Returns an array built from each auxiliary row by reading the JSON path provided in the `field`
+      query param over the `data` column. If `field` is omitted, the whole `data` object of each row
+      is returned. Duplicates are removed only for primitive values.
+      **Request example**
+      ```
+      GET /auxiliaries/clients/list?field=auxcli_campanya.BASE_PRUEBAVALIDADOR
+      ```
+    parameters:
+      - name: entity
+        in: path
+        required: true
+        description: Auxiliary entity (e.g., `clients`, `cases`). The table queried is `aux_{entity}`.
+        schema:
+          type: string
+      - name: field
+        in: query
+        required: false
+        description: >
+          Dot-path to extract from each row’s `data` (e.g., `auxcli_campanya.BASE_PRUEBAVALIDADOR`,
+          `some.nested.key`). If omitted, the entire `data` object is returned for each row.
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Array extracted from auxiliary entries
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuxiliaryListResponse'
+            examples:
+              primitives:
+                summary: Primitive values (deduped)
+                value:
+                  data: ["A", "B", "C"]
+                  metadata: { count: 3 }
+              objects:
+                summary: Objects (no dedupe)
+                value:
+                  data:
+                    - { id: "u1", name: "Alice" }
+                    - { id: "u2", name: "Bob" }
+                  metadata: { count: 2 }
+              arrays:
+                summary: Arrays (no dedupe)
+                value:
+                  data:
+                    - ["tag1", "tag2"]
+                    - ["tag3"]
+                  metadata: { count: 2 }
+              full_data_when_field_omitted:
+                summary: Full `data` objects when no `field` is provided
+                value:
+                  data:
+                    - { auxcli_campanya: { BASE_PRUEBAVALIDADOR: "A" }, foo: 1 }
+                    - { auxcli_campanya: { BASE_PRUEBAVALIDADOR: "B" }, foo: 2 }
+                  metadata: { count: 2 }
+      '400':
+        description: Bad request (invalid or missing entity)
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            examples:
+              invalidEntity:
+                value: { message: "Invalid or missing entity" }
+      '403':
+        description: Forbidden
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/custom_error_response'
+            examples:
+              forbidden:
+                value: { message: "You do not have permission to read this resource." }
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+  schemas:
+    AuxiliaryListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: >
+            Array result of extracting `field` from each row’s `data`. If `field` is omitted, each item
+            is the full `data` object of the row.
+          items:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
+              - type: array
+              - type: object
+        metadata:
+          type: object
+          properties:
+            count:
+              type: integer
+              description: Number of returned items (after primitive dedupe if applicable)
+          required: [count]
+      required: [data, metadata]
+

@@ -1,0 +1,15 @@
+export const AllowedAttributes = [
+    'type',
+    'required',
+    'unique',
+    'readonly',
+    'ui',
+    'sources',
+    'calc',
+    'dependency',
+    'dependencyValue',
+    'dependencyValueValidation',
+    'dependsOn',
+    'schema_id',
+    'data_structure',
+];

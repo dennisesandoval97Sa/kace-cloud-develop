@@ -1,0 +1,229 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "kaceApiResponseCacheFlagsPanel",
+      "type": "panel",
+      "title": "Caché HTTP del apiService (flags opcionales)",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "kaceApiResponseCacheFlagsDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"small text-muted mb-2\"><strong>Ámbito:</strong> use estas propiedades en la <code>config</code> de Axios <strong>solo</strong> cuando el script evaluado recibe <code>apiService</code> (p. ej. <code>kaceEngine.getService('apiService')</code>): Schema y <strong>Aux Cases Schema</strong> (onMount / onChange / onSubmit), Custom Select / Multiselect / Custom Multiselect (carga y onChange; con &quot;Refetch al abrir&quot; el proxy puede forzar <code>__kaceForceRefresh</code>), DataTable en <strong>datos iniciales</strong> por JS si llama API, <strong>acciones masivas</strong>, <code>modalInitCode</code> y &quot;Mostrar cuando&quot; del modal, Custom Submit / Natura, <strong>antes de enviar subcaso</strong>, scripts Hidden (post-auth / on-mount), <strong>Custom On Change</strong> de campos Kace cuando el motor está disponible.</p><p class=\"small text-muted mb-2\"><strong>No aplica</strong> a: condición de ocultar adjuntos (solo <code>data</code> / <code>row</code>); script de filtros de <strong>literales auxiliares</strong> (<code>selected_group</code>, <code>setFilters</code>); columnas o acciones del DataTable por JS que solo exponen <code>setColumns</code> / <code>setActions</code>; <code>onClick</code> de fila (<code>row</code>, <code>rowIndex</code>).</p><p class=\"font-weight-bold mb-2\">En <code>apiService.get(url, config)</code> y <code>apiService.post(url, body, config)</code></p><p class=\"small text-muted mb-2\">Anexe en la <strong>raíz</strong> de <code>config</code>:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Propiedad</th><th>Efecto</th></tr></thead><tbody><tr><td><code>__kaceForceRefresh: true</code></td><td>No usa la entrada de caché; va a red y, si la respuesta es 2xx, <strong>actualiza</strong> la caché (clave: tenant + método + URL + params/body serializado).</td></tr><tr><td><code>__kaceBypassCache: true</code></td><td>Esa petición no lee ni escribe caché.</td></tr><tr><td><code>__kaceCacheRead: true</code> <span class=\"text-muted\">(solo POST)</span></td><td>Permite caché en POST fuera de la lista blanca por URL (lecturas idempotentes). Los POST de búsqueda/listado habituales ya son elegibles por convención.</td></tr><tr><td><code>__singleFlight: false</code></td><td>Desactiva deduplicación de peticiones idénticas en curso.</td></tr></tbody></table><p class=\"small text-muted mb-2\"><strong>GET:</strong> caché activa salvo <code>__kaceBypassCache</code> / <code>__kaceForceRefresh</code>. <strong>POST:</strong> solo 2xx en URLs de lectura (o con <code>__kaceCacheRead: true</code>). No se cachean mutaciones (p. ej. <code>/cases/auxiliary</code>).</p><p class=\"small text-muted mb-0\"><strong>Invalidación:</strong> al guardar caso/subcaso el motor invalida entradas relacionadas; use <code>__kaceForceRefresh</code> si necesita datos recién escritos al instante.</p>"
+        }
+      ]
+    },
+    {
+      "key": "tableLayoutDatatableDoc",
+      "type": "content",
+      "input": false,
+      "html": "<p class=\"font-weight-bold mb-2\">Layout, scroll y columnas fijas</p><p class=\"small mb-2\">Active el scroll horizontal si la tabla es más ancha que el contenedor. Si hay selección por filas o acciones masivas, la columna de checkboxes queda fija a la izquierda. Puede fijar la columna de acciones y, en cada definición de columna, una o más columnas de datos.</p><p class=\"font-weight-bold mb-2\">Ancho con el ratón</p><p class=\"small mb-2\">Si activa <strong>Permitir cambiar el ancho de columnas con el ratón</strong>, arrastre el borde derecho del encabezado de cada columna de datos para ajustar el ancho, o <strong>doble clic</strong> en ese borde para ampliar la columna al ancho máximo del contenido visible (solo en esta vista; no guarda el esquema del formulario).</p><p class=\"font-weight-bold mb-2\">Ancho de columnas (JSON / JavaScript)</p><p class=\"small mb-0\">En cada objeto de columna use <span style=\"font-family: monospace;\">width</span>, <span style=\"font-family: monospace;\">minWidth</span> y/o <span style=\"font-family: monospace;\">maxWidth</span> (número en px implícito o cadena como <span style=\"font-family: monospace;\">\"12rem\"</span>, <span style=\"font-family: monospace;\">\"180px\"</span>). Para fijar una columna al hacer scroll horizontal: <span style=\"font-family: monospace;\">pinLeft: true</span> (también acepta <span style=\"font-family: monospace;\">fixedLeft</span> o <span style=\"font-family: monospace;\">stickyLeft</span>). Las columnas fijas se apilan en orden; conviene definir <span style=\"font-family: monospace;\">width</span> en px para un cálculo preciso del desplazamiento.</p>"
+    },
+    {
+      "key": "horizontalScroll",
+      "type": "checkbox",
+      "label": "Scroll horizontal si la tabla no cabe en pantalla",
+      "input": true,
+      "defaultValue": true
+    },
+    {
+      "key": "pinActionsColumn",
+      "type": "checkbox",
+      "label": "Fijar columna Acciones a la derecha (visible al hacer scroll horizontal)",
+      "input": true,
+      "defaultValue": false
+    },
+    {
+      "key": "actionsColumnWidth",
+      "type": "textfield",
+      "label": "Ancho de la columna Acciones",
+      "input": true,
+      "placeholder": "120px",
+      "description": "Opcional. Ej.: 120px, 8rem, 15%"
+    },
+    {
+      "key": "columnResizeEnabled",
+      "type": "checkbox",
+      "label": "Permitir cambiar el ancho de columnas con el ratón (arrastrar borde del encabezado)",
+      "input": true,
+      "defaultValue": true
+    },
+    {
+      "key": "combinedBulkActionsModal",
+      "type": "checkbox",
+      "label": "Modal combinado de acciones masivas",
+      "input": true,
+      "defaultValue": false,
+      "tooltip": "Si está activo, la barra de acciones masivas muestra un botón \"Gestionar\" que abre un solo modal con un checkbox por cada acción configurada (pestaña Acciones). El usuario puede marcar una o varias; los campos de cada acción marcada aparecen debajo y, al confirmar, se ejecutan en el orden en que están definidas. Por defecto (desactivado) el comportamiento es el actual: seleccionar una acción del listado y ejecutarla."
+    },
+    {
+      "type": "select",
+      "key": "initialData_type",
+      "label": "Tipo de InitialData",
+      "input": true,
+      "data": {
+        "values": [
+          {
+            "label": "Seleccione...",
+            "value": ""
+          },
+          {
+            "label": "JSON",
+            "value": "json"
+          },
+          {
+            "label": "JavaScript",
+            "value": "js"
+          }
+        ]
+      },
+      "defaultValue": ""
+    },
+    {
+      "key": "initialData",
+      "type": "textarea",
+      "label": "Initial Data (JSON)",
+      "editor": "ace",
+      "as": "json",
+      "rows": 8,
+      "customConditional": "show = data.initialData_type === 'json';"
+    },
+    {
+      "key": "initialData",
+      "type": "textarea",
+      "label": "Initial Data (JavaScript)",
+      "editor": "ace",
+      "as": "javascript",
+      "rows": 8,
+      "customConditional": "show = data.initialData_type === 'js';"
+    },
+    {
+      "type": "select",
+      "key": "columns_type",
+      "label": "Tipo de Columns",
+      "input": true,
+      "data": {
+        "values": [
+          {
+            "label": "Seleccione...",
+            "value": ""
+          },
+          {
+            "label": "JSON",
+            "value": "json"
+          },
+          {
+            "label": "JavaScript",
+            "value": "js"
+          }
+        ]
+      },
+      "defaultValue": ""
+    },
+    {
+      "key": "columns",
+      "type": "textarea",
+      "label": "Columns (JSON)",
+      "editor": "ace",
+      "as": "json",
+      "rows": 8,
+      "customConditional": "show = data.columns_type === 'json';"
+    },
+    {
+      "key": "columns",
+      "type": "textarea",
+      "label": "Columns (JavaScript)",
+      "editor": "ace",
+      "as": "javascript",
+      "rows": 8,
+      "customConditional": "show = data.columns_type === 'js';"
+    },
+    {
+      "type": "select",
+      "key": "actions_type",
+      "label": "Tipo de Actions",
+      "input": true,
+      "data": {
+        "values": [
+          {
+            "label": "Seleccione...",
+            "value": ""
+          },
+          {
+            "label": "JavaScript",
+            "value": "js"
+          },
+          {
+            "label": "EditGrid",
+            "value": "editgrid"
+          }
+        ]
+      },
+      "defaultValue": ""
+    },
+    {
+      "key": "actions",
+      "type": "textarea",
+      "label": "Actions (JavaScript)",
+      "editor": "ace",
+      "as": "javascript",
+      "rows": 8,
+      "customConditional": "show = data.actions_type === 'js';"
+    },
+    {
+      "key": "actions",
+      "type": "editgrid",
+      "label": "Actions Editor",
+      "addAnother": "Add Action",
+      "customConditional": "show = data.actions_type === 'editgrid';",
+      "components": [
+        {
+          "type": "textfield",
+          "key": "label",
+          "label": "Label",
+          "input": true
+        },
+        {
+          "type": "textfield",
+          "key": "icon",
+          "label": "Icon",
+          "input": true,
+          "placeholder": "fa fa-info-circle"
+        },
+        {
+          "type": "textfield",
+          "key": "title",
+          "label": "Title",
+          "input": true
+        },
+        {
+          "type": "textfield",
+          "key": "className",
+          "label": "Class",
+          "input": true
+        },
+        {
+          "type": "textarea",
+          "key": "onClick",
+          "label": "onClick Function",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 3,
+          "placeholder": "(row) => alert(`Ver detalles de: ${row.name}`)"
+        },
+        {
+          "type": "checkbox",
+          "key": "disabled",
+          "label": "Disabled",
+          "input": true,
+          "defaultValue": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+    "service": "users",
+    "postmanFolder": "Users",
+    "endpoints": [
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/users",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/users/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/users/search",
+            "requiresId": false,
+            "body": {
+                "filter": [],
+                "limit": 10,
+                "offset": 0
+            }
+        }
+    ]
+}

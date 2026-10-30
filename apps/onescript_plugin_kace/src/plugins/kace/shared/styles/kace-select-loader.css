@@ -1,0 +1,27 @@
+/* Shared inline loading hint for Kace custom selects and multiselects */
+.kace-select-loader {
+  color: #6c757d;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875em;
+}
+
+/* Mensaje de carga en listas (dropdown) — mismo tono que clasificaciones */
+li.kace-select-list-loading,
+li.empty.kace-select-list-loading,
+.kace-select-list-loading {
+  color: #6c757d;
+  font-size: 0.875em;
+  cursor: default;
+  list-style: none;
+}
+
+/* Native: una sola opción «Cargando…» (clase opcional para estilo / accesibilidad) */
+select.kace-select-native--options-loading {
+  cursor: wait;
+}
+
+/* Misma paleta que `li.kace-select-list-loading` en CustomSelect (opciones nativas limitan CSS) */
+select.kace-select-native--options-loading > option {
+  color: #6c757d;
+  font-size: 0.875em;
+}

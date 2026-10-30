@@ -1,0 +1,1 @@
+export const TENANT_CONTEXT_ERROR = '0x150001';

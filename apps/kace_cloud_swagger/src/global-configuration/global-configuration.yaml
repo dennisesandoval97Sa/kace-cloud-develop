@@ -1,0 +1,299 @@
+global-configuration:
+  get:
+    tags:
+      - Global configuration
+    summary: Get all global configurations
+    responses:
+      '200':
+        description: Returns a list of Global configurations
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GlobalConfigurationsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Global configuration
+    summary: Create a Global configuration instance
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateGlobalConfiguration"
+    responses:
+      '201':
+        description: Global configuration instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+global-configuration_id:
+  get:
+    tags:
+      - Global configuration
+    summary:  Fetch a Global configuration by ID
+    parameters: 
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        descripcion: Return a Global configuration instance
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: "#/components/schemas/GlobalConfiguration"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Global configuration
+    summary: Update a Global configuration instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateGlobalConfiguration"
+    responses:
+      '200':
+        description: Global configuration instance updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+global-configuration_delete:
+  get:
+    tags:
+      - Global configuration
+    summary: Delete a Global configuration instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Global configuration instance deleted succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+global-configuration_search:
+  post:
+    tags:
+      - Global configuration
+    summary: Search Global configuration instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of Global configurations which match with the search
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/GlobalConfigurationsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+# {
+#   "id": "5b090fbb-926e-4997-9242-12fa7847bf5b",
+# "description": "example",
+#   "settings": {
+#     "layouts": {
+#       "application": {
+#         "admin": {},
+#         "agente": {}
+#       }
+#     },
+#    "behaviors":{"application":{}},
+#    "custom_fields": {"application":{}}
+#   },
+#   "is_active": true,
+#   "created_at": "2025-01-15T12:40:53.430Z",
+#   "created_by": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+# }
+components:
+  schemas:
+    settings:
+      type: object
+      properties:
+        layouts:
+          type: object
+          properties:
+            application:
+              type: object
+              properties:
+                admin:
+                  type: object
+                agente:
+                  type: object
+        behaviors:
+          type: object
+          properties:
+            application:
+              type: object
+        custom_fields:
+          type: object
+          properties:
+            application:
+              type: object
+    description:
+      type: string
+      example: example description
+    is_active:
+      type: boolean
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    GlobalConfigurationBase:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/description"  
+        settings:
+          $ref: "#/components/schemas/settings"
+        is_active:
+          $ref: "#/components/schemas/is_active"
+    GlobalConfiguration:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/GlobalConfigurationBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    GlobalConfigurationsCollection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/GlobalConfiguration"
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"
+    CreateGlobalConfiguration:
+        allOf:
+          - type: object  
+            properties:
+              id:
+                $ref: "../common/fields.yaml#/schemas/id"
+          - $ref: "#/components/schemas/GlobalConfigurationBase"
+          - type: object
+            properties:
+              created_at:
+                $ref: "../common/fields.yaml#/schemas/created_at"
+              created_by:
+                $ref: "#/components/schemas/created_by"
+    UpdateGlobalConfiguration:
+        allOf:
+        - $ref: "#/components/schemas/GlobalConfigurationBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: description
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: example description
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

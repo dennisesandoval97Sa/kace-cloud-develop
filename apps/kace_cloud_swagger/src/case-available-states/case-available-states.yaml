@@ -1,0 +1,64 @@
+case_available-states:
+  get:
+    tags: 
+      - Cases Available States
+    summary: Fetch all available states by case id
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - id -> ID de un usuario (Users)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Returns a list of available states
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailableCasesCollection'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    AvailableCases:
+      type: object
+      properties:
+        transition:
+          type: string
+          format: uuid
+        estado_actual:
+          type: string
+          format: uuid
+        estado_siguiente:
+          type: string
+          format: uuid
+    AvailableCasesCollection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/AvailableCases'
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"
+            

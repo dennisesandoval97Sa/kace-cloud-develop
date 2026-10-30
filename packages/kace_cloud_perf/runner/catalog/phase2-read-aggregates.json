@@ -1,0 +1,70 @@
+{
+    "phase": "F2-R",
+    "subCatalogId": "aggregates",
+    "description": "Servicios agregados y de I/O (boards, one-script, descargas, dashboards)",
+    "notes": [
+        "one-script-view-by-id-delete eliminado: GET /one_script/{id}/delete -> OneScriptDeleter (soft-delete).",
+        "boards-view-list-relations-entity eliminado: ruta /boards/relations/{entity} requiere placeholder no-{id} que el runner pre-flight no sabe resolver.",
+        "case-count-by-responsable-view-list-responsable-id eliminado: ruta /cases-count-by-responsable/{responableId} (typo Postman) usa placeholder distinto a {id}; el filtro del importer lo descarta."
+    ],
+    "scenarios": [
+        {
+            "id": "boards-view-list",
+            "service": "boards",
+            "endpointId": "view-list",
+            "endpoint": "GET /boards",
+            "script": "scenarios/boards/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "boards-view-by-id",
+            "service": "boards",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /boards/{id}",
+            "script": "scenarios/boards/view-by-id.js",
+            "mutating": false,
+            "idTable": "boards"
+        },
+        {
+            "id": "boards-view-list-relations",
+            "service": "boards",
+            "endpointId": "view-list-relations",
+            "endpoint": "GET /boards/relations",
+            "script": "scenarios/boards/view-list-relations.js",
+            "mutating": false
+        },
+        {
+            "id": "boards-view-list-available",
+            "service": "boards",
+            "endpointId": "view-list-available",
+            "endpoint": "GET /boards/available",
+            "script": "scenarios/boards/view-list-available.js",
+            "mutating": false
+        },
+        {
+            "id": "one-script-view-list",
+            "service": "one-script",
+            "endpointId": "view-list",
+            "endpoint": "GET /one_script",
+            "script": "scenarios/one-script/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "one-script-view-by-id",
+            "service": "one-script",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /one_script/{id}",
+            "script": "scenarios/one-script/view-by-id.js",
+            "mutating": false,
+            "idTable": "one-script"
+        },
+        {
+            "id": "one-script-search",
+            "service": "one-script",
+            "endpointId": "search",
+            "endpoint": "POST /one_script/search",
+            "script": "scenarios/one-script/search.js",
+            "mutating": false
+        }
+    ]
+}

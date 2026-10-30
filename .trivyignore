@@ -1,0 +1,25 @@
+# Excepciones al gate de vulnerabilidades (política DevSecOps Konecta §3.6).
+#
+# Una entrada aquí es una decisión de riesgo, no un atajo para desbloquear un PR.
+# Solo se admite cuando NO existe versión parcheada, o cuando el parche rompe el
+# sistema y hay un plan de migración con fecha.
+#
+# Formato obligatorio de cada entrada — sin las cuatro líneas, no entra:
+#
+#   # Motivo: por qué no se puede parchear ahora
+#   # Alcance: qué código lo alcanza y por qué el riesgo es asumible
+#   # Responsable: quien la revisa
+#   CVE-XXXX-NNNNN exp:AAAA-MM-DD
+#
+# La fecha de caducidad respeta los SLA §3.7 desde que se detecta la
+# vulnerabilidad: Critical 48 h, High 14 d, Medium 45 d, Low next release.
+# Al vencer, Trivy vuelve a bloquear: es deliberado.
+#
+# Detectado 2026-10-05. Primera ventana High SLA caducó 2026-10-19.
+# Renovado 2026-10-19. High SLA §3.7 = 14 días → caduca 2026-11-02.
+# Motivo: no hay versión parcheada en npm; braces sigue en 3.0.3. El PR
+#   micromatch/braces#72 se cerró sin release; el maintainer disputa el CVE.
+# Alcance: tránsito de tailwindcss→chokidar en el build de kace-saas. Jest
+#   →micromatch es solo dev. Ningún endpoint pasa globs de un atacante a braces().
+# Responsable: equipo KACE
+CVE-2026-93687 exp:2026-11-02

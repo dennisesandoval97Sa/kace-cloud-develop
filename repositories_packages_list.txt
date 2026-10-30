@@ -1,0 +1,7 @@
+kace_cloud_api_common
+kace_cloud_aws_infra
+kace_cloud_core
+kace_cloud_database
+kace_cloud_eslint
+kace_cloud_prettier_config_shared
+kace_cloud_schemasbuilder

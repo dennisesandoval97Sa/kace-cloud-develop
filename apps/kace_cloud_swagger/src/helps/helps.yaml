@@ -1,0 +1,279 @@
+helps:
+  get:
+    tags:
+      - Helps
+    summary: Get all helps
+    responses:
+      '200':
+        description: Returns a list of helps
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HelpsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Helps
+    summary: Create a help instance
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateHelp"
+    responses:
+      '201':
+        description: help instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+helps_id:
+  get:
+    tags:
+      - Helps
+    summary:  Fetch a help by ID
+    parameters: 
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        descripcion: Return a help instance
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: "#/components/schemas/message"
+                data:
+                  $ref: "#/components/schemas/Help"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Helps
+    summary: Update a help instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateHelp"
+    responses:
+      '200':
+        description: help instance updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+helps_delete:
+  get:
+    tags:
+      - Helps
+    summary: Delete a help instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: help instance deleted succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+helps_search:
+  post:
+    tags:
+      - Helps
+    summary: Search help instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of helps which match with the search
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/HelpsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+  schemas:
+    message:
+      type: string
+      example: Success
+    titulo:
+      type: string
+      example: titulo prueba
+    descripcion:
+      type: string
+      example: descripcion de prueba
+    color:
+      type: string
+      example: '#ffffff'
+    is_active:
+      type: string
+      example: 1
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    Deleted:
+      type: object
+      properties:
+        deleted_at:
+          $ref: "../common/fields.yaml#/schemas/deleted_at"
+        deleted_by:
+          $ref: "../common/fields.yaml#/schemas/deleted_by"
+    HelpBase:
+      type: object
+      properties:
+        titulo:
+          $ref: "#/components/schemas/titulo"
+        descripcion:
+          $ref: "#/components/schemas/descripcion"
+        color:
+          $ref: "#/components/schemas/color"
+        is_active:
+          $ref: "#/components/schemas/is_active"
+    Help:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/HelpBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+        - $ref: "#/components/schemas/Deleted"
+    HelpsCollection:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Help"
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"  
+    CreateHelp:
+        allOf:
+          - type: object  
+            properties:
+              id:
+                $ref: "../common/fields.yaml#/schemas/id"
+          - $ref: "#/components/schemas/HelpBase"
+          - type: object
+            properties:
+              created_at:
+                $ref: "../common/fields.yaml#/schemas/created_at"
+              created_by:
+                $ref: "#/components/schemas/created_by"
+    UpdateHelp:
+        allOf:
+        - $ref: "#/components/schemas/HelpBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: descripcion
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: example description
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

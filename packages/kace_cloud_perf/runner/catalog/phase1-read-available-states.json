@@ -1,0 +1,13 @@
+{
+    "phase": "F1-R",
+    "description": "Re-run individual de cases-available-states tras detectar token expiration durante el primer run.",
+    "scenarios": [
+        {
+            "id": "cases-available-states",
+            "service": "case-available-states",
+            "endpoint": "GET /case-available-states/{id}",
+            "script": "scenarios/cases/available-states.js",
+            "mutating": false
+        }
+    ]
+}

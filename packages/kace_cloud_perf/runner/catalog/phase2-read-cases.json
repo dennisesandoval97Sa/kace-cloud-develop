@@ -1,0 +1,80 @@
+{
+    "phase": "F2-R",
+    "subCatalogId": "cases",
+    "description": "Cobertura exhaustiva de cases (sustituye F1-R cases) — 7 servicios fusionados",
+    "notes": [
+        "case-attachments-view-by-id-delete eliminado: GET /case-attachments/{id}/delete invoca actionDelete -> CaseAttachmentDeleter (soft-delete real, mutating).",
+        "case-descriptions-view-by-id y comments-view-by-id eliminados: las tablas reales (cases_descripciones, cases_comentarios) no existen con la forma id+deleted_at; sin pool de IDs el escenario no es ejecutable.",
+        "case-attachments-search, case-descriptions (both endpoints), and comments (both endpoints) removed: search bodies are placeholder filters that don't return meaningful results, and the sub-resource list endpoints add little signal."
+    ],
+    "scenarios": [
+        {
+            "id": "cases-view-list",
+            "service": "cases",
+            "endpointId": "view-list",
+            "endpoint": "GET /cases",
+            "script": "scenarios/cases/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "cases-view-by-id",
+            "service": "cases",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /cases/{id}",
+            "script": "scenarios/cases/view-by-id.js",
+            "mutating": false,
+            "idTable": "cases"
+        },
+        {
+            "id": "cases-search",
+            "service": "cases",
+            "endpointId": "search",
+            "endpoint": "POST /cases/view/search",
+            "script": "scenarios/cases/search.js",
+            "mutating": false
+        },
+        {
+            "id": "case-attachments-view-list",
+            "service": "case-attachments",
+            "endpointId": "view-list",
+            "endpoint": "GET /case-attachments",
+            "script": "scenarios/case-attachments/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "case-attachments-view-by-id",
+            "service": "case-attachments",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /case-attachments/{id}",
+            "script": "scenarios/case-attachments/view-by-id.js",
+            "mutating": false,
+            "idTable": "case_attachments"
+        },
+        {
+            "id": "cases-count-view-list",
+            "service": "cases-count",
+            "endpointId": "view-list",
+            "endpoint": "GET /cases-count",
+            "script": "scenarios/cases-count/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "cases-count-by-group-view-by-id",
+            "service": "cases-count-by-group",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /cases-count-by-group/{id}",
+            "script": "scenarios/cases-count-by-group/view-by-id.js",
+            "mutating": false,
+            "idTable": "cases"
+        },
+        {
+            "id": "case-available-states-view-by-id",
+            "service": "case-available-states",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /case-available-states/{id}",
+            "script": "scenarios/case-available-states/view-by-id.js",
+            "mutating": false,
+            "idTable": "cases"
+        }
+    ]
+}

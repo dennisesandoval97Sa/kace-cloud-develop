@@ -1,0 +1,35 @@
+[
+  {
+    "entity": "cases",
+    "field": "refernece",
+    "alias": "caso",
+    "position": 2,
+    "is_filterable": true,
+    "data_type": "NUMBER",
+    "format": null,
+    "group_by": false,
+    "function": null
+  },
+  {
+    "entity": "case_client",
+    "field": "documento",
+    "alias": "documento",
+    "position": 2,
+    "is_filterable": true,
+    "data_type": "STRING",
+    "format": null,
+    "group_by": false,
+    "function": null
+  },
+  {
+    "entity": "cases",
+    "field": "id",
+    "alias": "total",
+    "position": 2,
+    "is_filterable": true,
+    "data_type": "NUMBER",
+    "format": null,
+    "group_by": false,
+    "function": "count"
+  }
+]

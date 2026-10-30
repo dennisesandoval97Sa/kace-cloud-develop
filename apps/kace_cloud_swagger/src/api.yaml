@@ -1,0 +1,1017 @@
+openapi: 3.1.0
+info:
+    title: Kace API
+    summary: Summary.
+    description: Description.
+    termsOfService: https://grupokonecta.co/kace/terms
+    contact:
+        name: API Support
+        url: https://grupokonecta.co/kace/support
+        email: kace@konecta-group.com
+    license:
+        name: pending
+        url: https://grupokonecta.co/kace/license
+    version: 0.2.0
+servers:
+    - url: http://localhost:3000/
+      description: Local server
+    - url: https://correos-api.kace-cloudtest.com/
+      description: Correos server
+security:
+    - ApiKeyAuth: []
+      TenantId: []
+    - OAuth2:
+          - openid
+          - email
+          - profile
+      TenantId: []
+
+tags:
+    - name: Action update model
+      description: Module in which you can manage everything related to Action update model
+    - name: Actions
+      description: Module in which you can manage everything related to Actions
+    - name: Ans
+      description: Module in which you can manage everything related to Ans
+    - name: Ans Types
+      description: Module in which you can manage everything related to Ans Types
+    - name: Ans Calculate
+      description: Module in which you can manage everything related to Ans Calculate
+    - name: Aux cases
+      description: Module in which you can manage everything related to Aux cases
+    - name: Aux clients
+      description: Module in which you can manage everything related to Aux clients
+    - name: Allowed connections
+      description: Module in which you can manage everything related to Allowed connections
+    - name: Case attachments
+      description: Module in which you can manage everything related to Case attachments
+    - name: Cases
+      description: Module in which you can manage everything related to Cases
+    - name: Cases Transitions
+      description: Module in which you can manage everything related to Cases Transitions
+    - name: Cases Close
+      description: Module in which you can manage everything related to Cases Close
+    - name: Cases Clone
+      description: Module in which you can manage everything related to Cases Clone
+    - name: Cases Re Open
+      description: Module in which you can manage everything related to Cases Re Open
+    - name: Cases Calculate Ans
+      description: Module in which you can manage everything related to Cases Calculate Ans
+    - name: Cases Reclassify
+      description: Module in which you can manage everything related to Cases Reclassify
+    - name: Case descriptions
+      description: Module in which you can manage everything related to Case descriptions
+    - name: Cases Count
+      description: Module in which you can manage everything related to Cases Count
+    - name: Cases Count By Group
+      description: Module in which you can manage everything related to Cases Count By Group
+    - name: Cases Count By Responsable
+      description: Module in which you can manage everything related to Cases Count By Responsable
+    - name: Cases Available States
+      description: Module in which you can manage everything related to Cases Available States
+    - name: Cases Bulk
+      description: Bulk operations on cases (transition, close, assign)
+    - name: Classification group relationships
+      description: Module in which you can manage everything related to Classification group relationships
+    - name: Classification group relationships batch
+      description: Module in which you can manage everything related to Classification group relationships batch
+    - name: Classification group relationships batch delete
+      description: Module in which you can manage everything related to Classification group relationships batch delete
+    - name: Classifications
+      description: Module in which you can manage everything related to Classifications
+    - name: Classifications Levels
+      description: Module in which you can manage everything related to Classifications levels
+    - name: Users
+      description: Module in which you can manage everything related to Users
+    - name: Global configuration
+      description: Module in which you can manage everything related to Global configuration
+    - name: Set Global configuration
+      description: Module in which you can manage everything related to Set Global configuration
+    - name: Get Global configuration
+      description: Module in which you can manage everything related to Get Global configuration
+    - name: User notifications
+      description: Module in which you can manage everything related to User notifications
+    - name: Client notifications
+      description: Module in which you can manage everything related to Client notifications
+    - name: Classification template relations
+      description: Module in which you can manage everything related to Classification template relationships
+    - name: Comments
+      description: Module in which you can manage everything related to Comments
+    - name: Comments batch
+      description: Module in which you can manage everything related to Comments batch
+    - name: Groups
+      description: Module in which you can manage everything related to Groups
+    - name: Groups Cases Assignment
+      description: Module in which you can manage everything related to Groups Cases Assignment
+    - name: User Cases Assignment
+      description: Module in which you can manage everything related to User Cases Assignment
+    - name: User lists
+      description: Module in which you can manage everything related to User lists
+    - name: Clients
+      description: Module in which you can manage everything related to Clients
+    - name: Clients Contacts
+      description: Module in which you can manage everything related to Clients Contacts
+    - name: Clients Docs Types
+      description: Module in which you can manage everything related to Clients Docs Types
+    - name: Flows
+      description: Module in which you can manage everything related to Flows
+    - name: Roles
+      description: Module in which you can manage everything related to Roles
+    - name: Templates
+      description: Module in which you can manage everything related to Templates
+    - name: Literals
+      description: Module in which you can manage everything related to Literals
+    - name: Group lists
+      description: Module in which you can manage everything related to Group lists
+    - name: Mail Accounts
+      description: Module in which you can manage everything related to Mail Accounts
+    - name: User group relationships
+      description: Module in which you can manage everything related to User group relationships
+    - name: Transitions
+      description: Module in which you can manage everything related to Transitions
+    - name: S3 files
+      description: Module in which you can manage everything related to S3 files
+    - name: S3 files Upload
+      description: Module in which you can manage everything related to S3 files Upload
+    - name: S3 files Download
+      description: Module in which you can manage everything related to S3 files Upload
+    - name: Secrets vault
+      description: Module in which you can manage everything related to Secrets vault
+    - name: Helps
+      description: Module in which you can manage everything related to Helps
+    - name: Helps Attachments
+      description: Module in which you can manage everything related to Helps Attachments
+    - name: WS rest endpoints
+      description: Module in which you can manage everything related to WS Rest Endpoints
+    - name: WS rest flows
+      description: Module in which you can manage everything related to WS Rest Flows
+    - name: WS hook rest flows
+      description: Module in which you can manage everything related to WS Hook Rest Flows
+    - name: WS rest functions
+      description: Module in which you can manage everything related to WS Rest Functions
+    - name: Template Attachments
+      description: Module in which you can manage everything related to Template Attachments
+    - name: One Script
+      description: Module in which you can manage everything related to One Script
+    - name: Actions Queue Executor
+      description: Module in which you can manage everything related to Actions Queue Executor
+    - name: Actions Queue Executions
+      description: Module in which you can manage everything related to Actions Queue Executions
+    - name: Field list
+      description: Module in which you can manage everything related to Field list
+    - name: Cognito Authorization
+      description: Module in which you can manage everything related to Cognito Authorization
+    - name: States
+      description: Module in which you can manage everything related to States
+    - name: States distinct
+      description: Module in which you can manage everything related to States distinct
+    - name: Shift Management
+      description: Module in which you can manage everything related to Shift Management
+    - name: Permissions
+      description: Module in which you can manage everything related to Permissions
+    - name: Agenda
+      description: Module in which you can manage everything related to Agenda
+    - name: Agenda groups
+      description: Module in which you can manage everything related to Agenda groups
+    - name: Appointments time slots
+      description: Module in which you can manage everything related to Appointments time slots
+    - name: Appointments
+      description: Module in which you can manage everything related to Appointments
+    - name: Fake cases
+      description: Module in which you can manage everything related to Fake cases
+    - name: Fake clients
+      description: Module in which you can manage everything related to Fake clients
+    - name: Autocalculated Functions
+      description: Technical documentation of the available functions for automatic calculations in system records.
+    - name: Banners
+      description: Module in which you can manage everything related to Banners
+    - name: Case session durations
+      description: Module in which you can manage everything related to Case session durations
+    - name: Event Log
+      description: Module in which you can manage everything related to Event Log
+    - name: Mail Accounts Types
+      description: Module in which you can manage everything related to Mail Accounts Types
+    - name: Automation settings
+      description: Module in which you can manage everything related to Automation settings
+    - name: Geolocation
+      description: Module in which you can manage everything related to Geolocation
+    - name: Auxiliaries
+      description: Module in which you can manage everything related to Auxiliaries
+    - name: Schemas
+      description: Module in which you can manage everything related to Schemas
+    - name: Generate csv
+      description: Module in which you can manage everything related to Generate csv
+    - name: Workspaces
+      description: Module in which you can manage everything related to Workspaces
+    - name: Emails
+      description: Module in which you can manage everything related to Emails
+    - name: Interactions
+      description: Module in which you can manage everything related to Interactions
+    - name: Interactions Bulk
+      description: Bulk operations on interactions (move, close, delete)
+
+paths:
+    /action-update-model:
+        $ref: './action_update_model/action_update_model.yaml#/action_model_update'
+
+    /action-update-model/{id}:
+        $ref: './action_update_model/action_update_model.yaml#/action_model_update_id'
+
+    /action-update-model/{id}/delete:
+        $ref: './action_update_model/action_update_model.yaml#/action_model_update_delete'
+
+    /action-update-model/search:
+        $ref: './action_update_model/action_update_model.yaml#/action_model_update_search'
+
+    /actions:
+        $ref: './actions/actions.yaml#/actions'
+
+    /actions-queue-executions:
+        $ref: './actions-queue-executions/actions-queue-executions.yaml#/actions_queue_executions'
+
+    /actions/{id}:
+        $ref: './actions/actions.yaml#/actions_id'
+
+    /actions/{id}/delete:
+        $ref: './actions/actions.yaml#/actions_delete'
+
+    /actions/search:
+        $ref: './actions/actions.yaml#/actions_search'
+
+    /agendas:
+        $ref: './agenda/agenda.yaml#/Agenda'
+
+    /agendas-groups:
+        $ref: './agenda-groups/agenda-groups.yaml#/Agenda-groups'
+
+    /agendas-groups/agenda/{agendaId}/group/{groupId}:
+        $ref: './agenda-groups/agenda-groups.yaml#/Agenda-groups_id'
+
+    /agendas-groups/agenda/{agendaId}/group/{groupId}/delete:
+        $ref: './agenda-groups/agenda-groups.yaml#/Agenda-groups_delete'
+
+    /agendas-groups/batch:
+        $ref: './agenda-groups/agenda-groups.yaml#/Agenda-groups_batch'
+
+    /agendas-groups/batch/delete:
+        $ref: './agenda-groups/agenda-groups.yaml#/Agenda-groups_batch_delete'
+
+    /agendas/{id}:
+        $ref: './agenda/agenda.yaml#/Agenda_id'
+
+    /agendas/{id}/delete:
+        $ref: './agenda/agenda.yaml#/Agenda_delete'
+
+    /agendas/search:
+        $ref: './agenda/agenda.yaml#/Agenda_search'
+
+    /allowed-connections:
+        $ref: './allowed-connections/allowed-connections.yaml#/allowed-connections'
+
+    /allowed-connections/{id}:
+        $ref: './allowed-connections/allowed-connections.yaml#/allowed-connections_id'
+
+    /allowed-connections/{id}/delete:
+        $ref: './allowed-connections/allowed-connections.yaml#/allowed-connections_delete'
+
+    /allowed-connections/search:
+        $ref: './allowed-connections/allowed-connections.yaml#/allowed-connections_search'
+
+    /ans:
+        $ref: './ans/ans.yaml#/ans'
+
+    /ans-calculate:
+        $ref: './ans-calculate/ans-calculate.yaml#/ans-calculate'
+
+    /ans-types:
+        $ref: './ans-types/ans-types.yaml#/ans-types'
+
+    /ans/{id}:
+        $ref: './ans/ans.yaml#/ans-id'
+
+    /ans/{id}/delete:
+        $ref: './ans/ans.yaml#/ans-delete'
+
+    /ans/search:
+        $ref: './ans/ans.yaml#/ans-search'
+
+    /appointment-time-slots:
+        $ref: './appointment-time-slots/appointment-time-slots.yaml#/Appointments-time-slots'
+
+    /appointment-time-slots/{id}:
+        $ref: './appointment-time-slots/appointment-time-slots.yaml#/Appointments-time-slots_id'
+
+    /appointment-time-slots/{id}/delete:
+        $ref: './appointment-time-slots/appointment-time-slots.yaml#/Appointments-time-slots_delete'
+
+    /appointment-time-slots/search:
+        $ref: './appointment-time-slots/appointment-time-slots.yaml#/Appointments-time-slots_search'
+
+    /appointments:
+        $ref: './appointments/appointments.yaml#/Appointments'
+
+    /appointments/{id}:
+        $ref: './appointments/appointments.yaml#/Appointments_id'
+
+    /appointments/{id}/delete:
+        $ref: './appointments/appointments.yaml#/Appointments_delete'
+
+    /appointments/{id}/re-scheduler:
+        $ref: './appointments/appointments.yaml#/Appointments_re_scheduler'
+
+    /appointments/by-case/count/{id}:
+        $ref: './appointments/appointments.yaml#/Appointments_by_case_count'
+
+    /appointments/search:
+        $ref: './appointments/appointments.yaml#/Appointments_search'
+
+    /assignment-users-list:
+        $ref: './user-lists/user-lists.yaml#/user-lists'
+
+    /assignment-users-list/{id}:
+        $ref: './user-lists/user-lists.yaml#/user-lists_id'
+
+    /assignment-users-list/{id}/delete:
+        $ref: './user-lists/user-lists.yaml#/user-lists_delete'
+
+    /assignment-users-list/search:
+        $ref: './user-lists/user-lists.yaml#/user-lists_search'
+
+    /auth-cognito:
+        $ref: './auth-cognito/auth-cognito.yaml#/auth-cognito'
+
+    /auth-cognito/logout:
+        $ref: './auth-cognito/auth-cognito.yaml#/auth-cognito_logout'
+
+    /autocalculated-functions:
+        $ref: './aux-cases/functions.yaml#/autocalculated-functions'
+
+    /automation-settings:
+        $ref: './automation-settings/automation-settings.yaml#/automationSetting'
+
+    /automation-settings/{id}:
+        $ref: './automation-settings/automation-settings.yaml#/automationSetting_id'
+
+    /automation-settings/{id}/delete:
+        $ref: './automation-settings/automation-settings.yaml#/automationSetting_delete'
+
+    /automation-settings/search:
+        $ref: './automation-settings/automation-settings.yaml#/automationSettings_search'
+
+    /aux-cases:
+        $ref: './aux-cases/aux-cases.yaml#/aux-cases'
+
+    /aux-cases/:
+        $ref: './aux-cases/aux-casesByFunctions.yaml#/aux-casesByFunctions'
+
+    /aux-cases/{id}:
+        $ref: './aux-cases/aux-cases.yaml#/aux-case_id'
+
+    /aux-clients:
+        $ref: './aux-clients/aux-clients.yaml#/aux-clients'
+
+    /aux-clients/{id}:
+        $ref: './aux-clients/aux-clients.yaml#/aux-client_id'
+
+    /auxiliaries/{entity}/list:
+        $ref: './auxiliaries/auxiliaries.yaml#/auxiliaries_list'
+
+    /banners:
+        $ref: './banners/banners.yaml#/banners'
+
+    /banners/{id}:
+        $ref: './banners/banners.yaml#/banners_id'
+
+    /banners/{id}/delete:
+        $ref: './banners/banners.yaml#/banners_delete'
+
+    /banners/search:
+        $ref: './banners/banners.yaml#/banners_search'
+
+    /case-attachments:
+        $ref: './case-attachments/case-attachments.yaml#/case_attachments'
+
+    /case-attachments/{id}:
+        $ref: './case-attachments/case-attachments.yaml#/case_attachments-id'
+
+    /case-attachments/{id}/delete:
+        $ref: './case-attachments/case-attachments.yaml#/case_attachments-delete'
+
+    /case-attachments/search:
+        $ref: './case-attachments/case-attachments.yaml#/case_attachments-search'
+
+    /case-session-durations:
+        $ref: './case-session-durations/case-session-durations.yaml#/case_session_durations'
+
+    /case-session-durations/{id}:
+        $ref: './case-session-durations/case-session-durations.yaml#/case_session_durations-id'
+
+    /case-session-durations/{id}/delete:
+        $ref: './case-session-durations/case-session-durations.yaml#/case_session_durations-delete'
+
+    /case-available-states/{id}:
+        $ref: './case-available-states/case-available-states.yaml#/case_available-states'
+
+    /case-calculate-ans/{id}:
+        $ref: './case-calculate-ans/case-calculate-ans.yaml#/cases_calculate-ans'
+
+    /case-clone/{id}:
+        $ref: './cases-clone/cases-clone.yaml#/case_clone'
+
+    /case-close/{id}:
+        $ref: './case-close/case-close.yaml#/case_close'
+
+    /case-descriptions:
+        $ref: './case-descriptions/case-descriptions.yaml#/case_descriptions'
+
+    /case-descriptions/{id}:
+        $ref: './case-descriptions/case-descriptions.yaml#/case_description-id'
+
+    /case-descriptions/search:
+        $ref: './case-descriptions/case-descriptions.yaml#/case_descriptions-search'
+
+    /case-re-open/{id}:
+        $ref: './case-re-open/case-re-open.yaml#/case_reopen'
+
+    /case-reclassification/{id}:
+        $ref: './cases-reclassify/cases-reclassify.yaml#/cases_reclassify'
+
+    /case-reclassification-precheck/{id}:
+        $ref: './cases-reclassify/cases-reclassify.yaml#/cases_reclassify_precheck'
+
+    /case-transitions/{id}:
+        $ref: './case-transitions/case-transitions.yaml#/case_transitions'
+
+    /cases:
+        $ref: './cases/cases.yaml#/cases'
+
+    /cases-bulk/assign:
+        $ref: './cases-bulk/cases-bulk.yaml#/cases_bulk_assign'
+
+    /cases-bulk/close:
+        $ref: './cases-bulk/cases-bulk.yaml#/cases_bulk_close'
+
+    /cases-bulk/transition:
+        $ref: './cases-bulk/cases-bulk.yaml#/cases_bulk_transition'
+
+    /cases-count:
+        $ref: './cases-count/cases-count.yaml#/cases_count'
+
+    /cases-count-by-group/{id}:
+        $ref: './cases-count-by-group/cases-count-by-group.yaml#/cases_count-group'
+
+    /cases-count-by-responsable/{id}:
+        $ref: './cases-count-by-responsable/cases-count-by-responsable.yaml#/cases_count-by-responsable'
+
+    /cases/{id}:
+        $ref: './cases/cases.yaml#/cases_id'
+
+    /cases/{id}/delete:
+        $ref: './cases/cases.yaml#/cases_delete'
+
+    /cases/{id}/sub-cases:
+        $ref: './cases/cases.yaml#/cases_sub_cases'
+
+    /cases/{id}/sub-cases/delete:
+        $ref: './cases/cases.yaml#/cases_sub_cases_delete'
+
+    /cases/{id}/sub-cases/search:
+        $ref: './cases/cases.yaml#/cases_sub_cases_search'
+
+    /cases/{id}/transition:
+        $ref: './cases/cases.yaml#/cases_transition'
+
+    /cases/advance-search:
+        $ref: './cases/cases.yaml#/cases_advance_search'
+
+    /cases/auxiliary:
+        $ref: './cases/cases.yaml#/cases_auxiliary'
+
+    /cases/auxiliary/{id}:
+        $ref: './cases/cases.yaml#/cases_auxiliary_id'
+
+    /cases/search:
+        $ref: './cases/cases.yaml#/cases_search'
+
+    /classification-template-relations:
+        $ref: './classification-template-relationships/classification-template-relationships.yaml#/classification-template-relationships'
+
+    /classification-template-relations/delete:
+        $ref: './classification-template-relationships/classification-template-relationships.yaml#/classification-template-relationships_batch_delete'
+
+    /classification-template-relations/search:
+        $ref: './classification-template-relationships/classification-template-relationships.yaml#/classification-template-relationships_search'
+
+    /classifications:
+        $ref: './classification/classification.yaml#/classification'
+
+    /classifications-groups-relationships:
+        $ref: './classification-group-relationships/classification-group-relationships.yaml#/classification-group-relationships'
+
+    /classifications-groups-relationships-batch:
+        $ref: './classifications-groups-relationships-batch/classifications-groups-relationships-batch.yaml#/classifications-groups-relationships-batch'
+
+    /classifications-groups-relationships-batch-delete:
+        $ref: './classifications-groups-relationships-batch-delete/classifications-groups-relationships-batch-delete.yaml#/classifications-groups-relationships-batch-delete'
+
+    /classifications-groups-relationships/classification/{classificationId}/group/{groupId}:
+        $ref: './classification-group-relationships/classification-group-relationships.yaml#/classification-group-relationships_id'
+
+    /classifications-groups-relationships/classification/{classificationId}/group/{groupId}/delete:
+        $ref: './classification-group-relationships/classification-group-relationships.yaml#/classification-group-relationships_delete'
+
+    /classifications-groups-relationships/search:
+        $ref: './classification-group-relationships/classification-group-relationships.yaml#/classification-group-relationships_search'
+
+    /classifications-levels/{level}:
+        $ref: './classifications-levels/classifications-levels.yaml#/classifications-levels'
+
+    /classifications/{id}:
+        $ref: './classification/classification.yaml#/classification_id'
+
+    /classifications/{id}/delete:
+        $ref: './classification/classification.yaml#/classification_delete'
+
+    /classifications/list:
+        $ref: './classification/classification.yaml#/classification_list'
+
+    /classifications/search:
+        $ref: './classification/classification.yaml#/classification_search'
+
+    /client-notifications:
+        $ref: './client-notifications/client-notifications.yaml#/client-notifications'
+
+    /client-notifications/{id}:
+        $ref: './client-notifications/client-notifications.yaml#/client-notifications_id'
+
+    /client-notifications/{id}/delete:
+        $ref: './client-notifications/client-notifications.yaml#/client-notifications_delete'
+
+    /client-notifications/search:
+        $ref: './client-notifications/client-notifications.yaml#/client-notifications_search'
+
+    /clients:
+        $ref: './clients/clients.yaml#/clients'
+
+    /clients_contacts/{id}:
+        $ref: './client_contacts/client_contacts.yaml#/client_contacts_id'
+
+    /clients_doc_types:
+        $ref: './clients_doc_types/clients_doc_types.yaml#/clients_doc_types'
+
+    /clients/{id}:
+        $ref: './clients/clients.yaml#/clients_id'
+
+    /clients/{id}/delete:
+        $ref: './clients/clients.yaml#/clients_delete'
+
+    /clients/search:
+        $ref: './clients/clients.yaml#/clients_search'
+
+    /comments:
+        $ref: './comments/comments.yaml#/comments'
+
+    /comments/{id}:
+        $ref: './comments/comments.yaml#/comments_id'
+
+    /comments/search:
+        $ref: './comments/comments.yaml#/comments_search'
+
+    /comments-batch:
+        $ref: './comments-batch/comments-batch.yaml#/comments-batch'
+
+    /download-s3-files:
+        $ref: './download-s3-files/download-s3-files.yaml#/download-s3-files'
+
+    /event-logs:
+        $ref: './event-log/event-log.yaml#/event-logs'
+
+    /event-logs/{id}:
+        $ref: './event-log/event-log.yaml#/event-logs_id'
+
+    /event-logs/case/{id}:
+        $ref: './event-log/event-log.yaml#/event-logs_case_id'
+
+    /event-logs/search:
+        $ref: './event-log/event-log.yaml#/event-logs_search'
+
+    /emails:
+        $ref: './emails/emails.yaml#/emails'
+    /emails/{id}:
+        $ref: './emails/emails.yaml#/emails_id'
+    /emails/{id}/delete:
+        $ref: './emails/emails.yaml#/emails_id_delete'
+    /emails/search:
+        $ref: './emails/emails.yaml#/emails_search'
+
+    /flows:
+        $ref: './flow/flow.yaml#/flow'
+
+    /flows/{id}:
+        $ref: './flow/flow.yaml#/flow_id'
+
+    /flows/{id}/delete:
+        $ref: './flow/flow.yaml#/flow_delete'
+
+    /flows/search:
+        $ref: './flow/flow.yaml#/flow_search'
+
+    /generate-csv:
+        $ref: './generate-csv/generate-csv.yaml#/Generate-csv'
+
+    /geolocation:
+        $ref: './geolocation/geolocation.yaml#/Geolocation'
+
+    /geolocation/{id}:
+        $ref: './geolocation/geolocation.yaml#/Geolocation_id'
+
+    /geolocation/{id}/delete:
+        $ref: './geolocation/geolocation.yaml#/Geolocation_delete'
+
+    /geolocation/search:
+        $ref: './geolocation/geolocation.yaml#/Geolocation_search'
+
+    /global-configuration:
+        $ref: './global-configuration/global-configuration.yaml#/global-configuration'
+
+    /global-configuration-get/{id}:
+        $ref: './global-configuration-get/global-configuration-get.yaml#/global-configuration_get'
+
+    /global-configuration-set/{id}:
+        $ref: './global-configuration-set/global-configuration-set.yaml#/global-configuration_set'
+
+    /global-configuration/{id}:
+        $ref: './global-configuration/global-configuration.yaml#/global-configuration_id'
+
+    /global-configuration/{id}/delete:
+        $ref: './global-configuration/global-configuration.yaml#/global-configuration_delete'
+
+    /global-configuration/search:
+        $ref: './global-configuration/global-configuration.yaml#/global-configuration_search'
+
+    /group_cases_assignment/{id}:
+        $ref: './group_cases_assignment/group_cases_assignment.yaml#/group_cases_assignment_id'
+
+    /group-lists:
+        $ref: './group-lists/group-lists.yaml#/group-lists'
+
+    /group-lists/{id}:
+        $ref: './group-lists/group-lists.yaml#/group-lists_id'
+
+    /group-lists/{id}/delete:
+        $ref: './group-lists/group-lists.yaml#/group-lists_delete'
+
+    /group-lists/search:
+        $ref: './group-lists/group-lists.yaml#/group-lists_search'
+
+    /groups:
+        $ref: './group/group.yaml#/group'
+
+    /groups/{id}:
+        $ref: './group/group.yaml#/group_id'
+
+    /groups/{id}/delete:
+        $ref: './group/group.yaml#/group_delete'
+
+    /groups/{id}/shift-management:
+        $ref: './group/group.yaml#/group_shiftmanagement'
+
+    /groups/search:
+        $ref: './group/group.yaml#/group_search'
+
+    /helps:
+        $ref: './helps/helps.yaml#/helps'
+
+    /helps_attachments/:
+        $ref: './helps_attachments/helps_attachments.yaml#/helps_attachments'
+
+    /helps_attachments/{id}:
+        $ref: './helps_attachments/helps_attachments.yaml#/helps_attachments_id'
+
+    /helps_attachments/{id}/delete:
+        $ref: './helps_attachments/helps_attachments.yaml#/helps_attachments_delete'
+
+    /helps_attachments/search:
+        $ref: './helps_attachments/helps_attachments.yaml#/helps_attachments_search'
+
+    /helps/{id}:
+        $ref: './helps/helps.yaml#/helps_id'
+
+    /helps/{id}/delete:
+        $ref: './helps/helps.yaml#/helps_delete'
+
+    /helps/search:
+        $ref: './helps/helps.yaml#/helps_search'
+
+    /interactions:
+        $ref: './interactions/interactions.yaml#/interactions'
+    /interactions/{id}:
+        $ref: './interactions/interactions.yaml#/interactions_id'
+    /interactions/{id}/delete:
+        $ref: './interactions/interactions.yaml#/interactions_id_delete'
+    /interactions/search:
+        $ref: './interactions/interactions.yaml#/interactions_search'
+    /interactions/interaction-cases:
+        $ref: './interactions/interactions.yaml#/interactions_cases'
+    /interactions/interaction-cases/search:
+        $ref: './interactions/interactions.yaml#/interactions_cases_search'
+    /interactions/webhook:
+        $ref: './interactions/interactions.yaml#/interactions_webhook'
+
+    /interactions-batch:
+        $ref: './interactions-batch/interactions-batch.yaml#/interactions-batch'
+
+    /interactions-bulk/move:
+        $ref: './interactions-bulk/interactions-bulk.yaml#/interactions_bulk_move'
+    /interactions-bulk/close:
+        $ref: './interactions-bulk/interactions-bulk.yaml#/interactions_bulk_close'
+    /interactions-bulk/delete:
+        $ref: './interactions-bulk/interactions-bulk.yaml#/interactions_bulk_delete'
+
+    /literals:
+        $ref: './literals/literals.yaml#/literals'
+
+    /literals/{id}:
+        $ref: './literals/literals.yaml#/literals_id'
+
+    /literals/{id}/delete:
+        $ref: './literals/literals.yaml#/literals_delete'
+
+    /literals/{id}/list:
+        $ref: './literals/literals.yaml#/literals_list'
+
+    /literals/search:
+        $ref: './literals/literals.yaml#/literals_search'
+
+    /mail-accounts:
+        $ref: './mail-accounts/mail-accounts.yaml#/mail-accounts'
+
+    /mail-accounts-types:
+        $ref: './mail-accounts-types/mail-accounts-types.yaml#/mail-accounts_types'
+
+    /mail-accounts/{id}:
+        $ref: './mail-accounts/mail-accounts.yaml#/mail-accounts_id'
+
+    /mail-accounts/{id}/delete:
+        $ref: './mail-accounts/mail-accounts.yaml#/mail-accounts_delete'
+
+    /mail-accounts/search:
+        $ref: './mail-accounts/mail-accounts.yaml#/mail-accounts_search'
+
+    /one_script:
+        $ref: './one-script/one-script.yaml#/one-script'
+
+    /one_script/{id}:
+        $ref: './one-script/one-script.yaml#/one-script_id'
+
+    /one_script/{id}/delete:
+        $ref: './one-script/one-script.yaml#/one-script_delete'
+
+    /one_script/search:
+        $ref: './one-script/one-script.yaml#/one-script_search'
+
+    /permissions:
+        $ref: './permissions/permissions.yaml#/permissions'
+
+    /roles:
+        $ref: './roles/roles.yaml#/role'
+
+    /roles/{id}:
+        $ref: './roles/roles.yaml#/role_id'
+
+    /roles/{id}/delete:
+        $ref: './roles/roles.yaml#/role_delete'
+
+    /roles/search:
+        $ref: './roles/roles.yaml#/role_search'
+
+    /s3-files:
+        $ref: './s3-files/s3-files.yaml#/s3-files'
+
+    /s3-files/{id}:
+        $ref: './s3-files/s3-files.yaml#/s3-files_id'
+
+    /s3-files/{id}/delete:
+        $ref: './s3-files/s3-files.yaml#/s3-files_delete'
+
+    /s3-files/search:
+        $ref: './s3-files/s3-files.yaml#/s3-files_search'
+
+    /schema-fields/{table_name}:
+        $ref: './field-list/field-list.yaml#/field-list'
+
+    /schemas/functions:
+        $ref: './schemas/schemas.yaml#/schemas-functions'
+
+    /schemas/rules/search:
+        $ref: './schemas/schemas.yaml#/schemas-rules-search'
+
+    /secrets-vaults:
+        $ref: './secrets-vault/secrets-vault.yaml#/secrets-vault'
+
+    /secrets-vaults/{id}:
+        $ref: './secrets-vault/secrets-vault.yaml#/secrets-vault_id'
+
+    /secrets-vaults/{id}/delete:
+        $ref: './secrets-vault/secrets-vault.yaml#/secrets-vault_delete'
+
+    /secrets-vaults/search:
+        $ref: './secrets-vault/secrets-vault.yaml#/secrets-vault_search'
+
+    /shift-management:
+        $ref: './shift-management/shift-management.yaml#/shift-management'
+
+    /shift-management/{id}:
+        $ref: './shift-management/shift-management.yaml#/shift-management_id'
+
+    /shift-management/{id}/delete:
+        $ref: './shift-management/shift-management.yaml#/shift-management_delete'
+
+    /shift-management/search:
+        $ref: './shift-management/shift-management.yaml#/shift-management_search'
+
+    /states:
+        $ref: './state/state.yaml#/states'
+
+    /states-distinct:
+        $ref: './states/states.yaml#/states'
+
+    /states/{id}:
+        $ref: './state/state.yaml#/states_id'
+
+    /states/{id}/delete:
+        $ref: './state/state.yaml#/states_delete'
+
+    /states/list:
+        $ref: './state/state.yaml#/states_list'
+
+    /states/search:
+        $ref: './state/state.yaml#/states_search'
+
+    /tempcases:
+        $ref: './fake-cases/fake-cases.yaml#/fake-cases'
+
+    /tempcases/{id}:
+        $ref: './fake-cases/fake-cases.yaml#/fake-cases_id'
+
+    /tempcases/{id}/delete:
+        $ref: './fake-cases/fake-cases.yaml#/fake-cases_delete'
+
+    /tempclients:
+        $ref: './fake-clients/fake-clients.yaml#/fake-clients'
+
+    /tempclients/{id}:
+        $ref: './fake-clients/fake-clients.yaml#/fake-clients_id'
+
+    /tempclients/{id}/delete:
+        $ref: './fake-clients/fake-clients.yaml#/fake-clients_delete'
+
+    /template-attachments:
+        $ref: './template-attachments/template-attachments.yaml#/templateAttachments'
+
+    /template-attachments/{id}:
+        $ref: './template-attachments/template-attachments.yaml#/templateAttachment_id'
+
+    /template-attachments/{id}/delete:
+        $ref: './template-attachments/template-attachments.yaml#/templateAttachment_delete'
+
+    /template-attachments/search:
+        $ref: './template-attachments/template-attachments.yaml#/templateAttachment_search'
+
+    /templates:
+        $ref: './templates/templates.yaml#/templates'
+
+    /templates/{id}:
+        $ref: './templates/templates.yaml#/templates_id'
+
+    /templates/{id}/delete:
+        $ref: './templates/templates.yaml#/templates_delete'
+
+    /templates/search:
+        $ref: './templates/templates.yaml#/templates_search'
+
+    /transitions:
+        $ref: './transition/transition.yaml#/transitions'
+
+    /transitions/{id}:
+        $ref: './transition/transition.yaml#/transitions_id'
+
+    /transitions/search:
+        $ref: './transition/transition.yaml#/transitions_search'
+
+    /upload-s3-files:
+        $ref: './upload-s3-files/upload-s3-files.yaml#/upload-s3-files'
+
+    /user-cases-assignment:
+        $ref: './user_cases_assignment/user_cases_assignment.yaml#/user_cases_assignment'
+
+    /user-group-relationships:
+        $ref: './user-group-relationships/user-group-relationships.yaml#/user-group-relationships'
+
+    /user-group-relationships/delete:
+        $ref: './user-group-relationships/user-group-relationships.yaml#/user-group-relationships_batch_delete'
+
+    /user-group-relationships/search:
+        $ref: './user-group-relationships/user-group-relationships.yaml#/user-group-relationships_search'
+
+    /users:
+        $ref: './users/users.yaml#/users'
+
+    /users-notifications:
+        $ref: './user-notifications/user-notifications.yaml#/user-notifications'
+
+    /users-notifications/{id}:
+        $ref: './user-notifications/user-notifications.yaml#/user-notifications_id'
+
+    /users-notifications/{id}/delete:
+        $ref: './user-notifications/user-notifications.yaml#/user-notifications_delete'
+
+    /users-notifications/search:
+        $ref: './user-notifications/user-notifications.yaml#/user-notifications_search'
+
+    /users/{id}:
+        $ref: './users/users.yaml#/users_id'
+
+    /users/{id}/delete:
+        $ref: './users/users.yaml#/users_delete'
+
+    /users/search:
+        $ref: './users/users.yaml#/users_search'
+
+    /users/session/alive:
+        $ref: './users/users.yaml#/users_session'
+
+    /workspaces:
+        $ref: './workspaces/workspaces.yaml#/workspaces'
+    /workspaces/{id}:
+        $ref: './workspaces/workspaces.yaml#/workspaces_id'
+    /workspaces/{id}/delete:
+        $ref: './workspaces/workspaces.yaml#/workspaces_id_delete'
+    /workspaces/search:
+        $ref: './workspaces/workspaces.yaml#/workspaces_search'
+
+    /ws-hook-rest-flow:
+        $ref: './ws-hook-rest-flows/ws-hook-rest-flows.yaml#/wsHookRestFlow'
+
+    /ws-rest-endpoints:
+        $ref: './ws-rest-endpoints/ws-rest-endpoints.yaml#/wsRestEndpoints'
+
+    /ws-rest-endpoints/{id}:
+        $ref: './ws-rest-endpoints/ws-rest-endpoints.yaml#/wsRestEndpoint_id'
+
+    /ws-rest-endpoints/{id}/delete:
+        $ref: './ws-rest-endpoints/ws-rest-endpoints.yaml#/wsRestEndpoint_delete'
+
+    /ws-rest-endpoints/search:
+        $ref: './ws-rest-endpoints/ws-rest-endpoints.yaml#/wsRestEndpoints_search'
+
+    /ws-rest-flows:
+        $ref: './ws-rest-flows/ws-rest-flows.yaml#/wsRestFlows'
+
+    /ws-rest-flows/{id}:
+        $ref: './ws-rest-flows/ws-rest-flows.yaml#/wsRestFlow_id'
+
+    /ws-rest-flows/{id}/delete:
+        $ref: './ws-rest-flows/ws-rest-flows.yaml#/wsRestFlow_delete'
+
+    /ws-rest-flows/list:
+        $ref: './ws-rest-flows/ws-rest-flows.yaml#/wsRestFlows_list'
+
+    /ws-rest-flows/search:
+        $ref: './ws-rest-flows/ws-rest-flows.yaml#/wsRestFlows_search'
+
+    /ws-rest-functions:
+        $ref: './ws-rest-functions/ws-rest-functions.yaml#/wsRestFunctions'
+
+    /ws-rest-functions/{id}:
+        $ref: './ws-rest-functions/ws-rest-functions.yaml#/wsRestFunction_id'
+
+    /ws-rest-functions/{id}/delete:
+        $ref: './ws-rest-functions/ws-rest-functions.yaml#/wsRestFunction_delete'
+
+    /ws-rest-functions/search:
+        $ref: './ws-rest-functions/ws-rest-functions.yaml#/wsRestFunctions_search'
+
+components:
+    securitySchemes:
+        ApiKeyAuth:
+            type: apiKey
+            in: header
+            name: Authorization
+        TenantId:
+            type: apiKey
+            in: header
+            name: X-Tenant-ID
+            description: Tenant identifier for multi-tenant context
+        OAuth2:
+            type: oauth2
+            flows:
+                authorizationCode:
+                    authorizationUrl: https://us-east-19gjum8s1z.auth.us-east-1.amazoncognito.com/oauth2/authorize
+                    tokenUrl: https://us-east-19gjum8s1z.auth.us-east-1.amazoncognito.com/oauth2/token
+                    x-tokenName: id_token
+                    scopes:
+                        openid: OpenID Connect scope
+                        email: Access to email
+                        profile: Access to profile
+    schemas:

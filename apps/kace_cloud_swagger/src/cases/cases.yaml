@@ -1,0 +1,923 @@
+cases:
+    get:
+        tags:
+            - Cases
+        summary: Get all cases instances
+        responses:
+            '200':
+                description: List of cases
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CasesCollection'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+    post:
+        tags:
+            - Cases
+        summary: Create a case instance
+        description: |
+            Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+            - cliente_id  -> ID de un cliente (Clients)
+            - transicion_id -> ID de una transicion (transitions)
+            - responsable_id -> ID de un usuario (Users) (este usuario debe pertenecer al grupo referenciado anteriormente)
+            - clasificacion_id -> ID de una clasificacion (Classifications)
+            - descripcion_caso_id -> ID de una descripcion de caso (Case descriptions)
+            - grupo_id -> ID de un grupo (Groups)
+        requestBody:
+            required:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/CreateCase'
+        responses:
+            '201':
+                description: Case instance created successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/created_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+cases_auxiliary:
+    post:
+        tags:
+            - Cases
+        summary: Create a case instance with auxiliary
+        description: |
+            Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+            - cliente_id  -> ID de un cliente (Clients)
+            - transicion_id -> ID de una transicion (transitions)
+            - responsable_id -> ID de un usuario (Users) (este usuario debe pertenecer al grupo referenciado anteriormente)
+            - clasificacion_id -> ID de una clasificacion (Classifications)
+            - descripcion_caso_id -> ID de una descripcion de caso (Case descriptions)
+            - grupo_id -> ID de un grupo (Groups)
+
+            Para el auxiliar:
+            - "id"
+            - "caso_id"
+              "data": {
+                  "direccion": "calle # 123"
+              }
+        requestBody:
+            required:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/CreateCaseAuxiliary'
+        responses:
+            '201':
+                description: Case instance with auxiliary created successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/created_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+cases_auxiliary_id:
+    post:
+        tags:
+            - Cases
+        summary: Update a case instance with auxiliary by ID
+        description: |
+            Enviar los campos que se requieren actualizar.
+        requestBody:
+            required:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UpdateCaseAuxiliary'
+        responses:
+            '201':
+                description: Case instance with auxiliary updated successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/created_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+cases_id:
+    get:
+        tags:
+            - Cases
+        summary: Get a case instance by ID
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        responses:
+            '200':
+                description: Case instance fetched successfully
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                message:
+                                    $ref: '#/components/schemas/message'
+                                data:
+                                    $ref: '#/components/schemas/Cases'
+                                metadata:
+                                    type: object
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+    post:
+        tags:
+            - Cases
+        summary: Update a case instance by ID
+        description: |
+            Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+            - cliente_id  -> ID de un cliente (Clients)
+            - transicion_id -> ID de una transicion (transitions)
+            - responsable_id -> ID de un usuario (Users) (este usuario debe pertenecer al grupo referenciado anteriormente)
+            - clasificacion_id -> ID de una clasificacion (Classifications)
+            - descripcion_caso_id -> ID de una descripcion de caso (Case descriptions)
+            - grupo_id -> ID de un grupo (Groups)
+            - parent_id -> ID de otro caso (Cases) que actúa como caso padre (opcional)
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UpdateCase'
+        responses:
+            '200':
+                description: Case instance updated successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+cases_search:
+    post:
+        tags:
+            - Cases
+        summary: Get cases by specifics filters
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/SearchCollection'
+        responses:
+            '200':
+                description: Returns a list of cases which match with the search
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CasesCollection'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+cases_advance_search:
+    post:
+        tags:
+            - Cases
+        summary: Advanced search for cases using dynamic filters, relationships, and grouping
+        description: >
+            This endpoint allows performing advanced searches over cases using filters, relationships,
+            grouping, distinct selection, and HAVING clauses.  
+            It provides flexibility to query cases based on multiple dynamic criteria.
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/SearchCollection'
+                    examples:
+                        all_new_props:
+                            summary: All new properties (select, group_by, having, relationship, etc.)
+                            value:
+                                select: ['cases.antiguedad', 'cases.expired_at', 'cases.reference']
+                                group_by: ['cases.expired_at']
+                                having:
+                                    - column: 'cases.expired_at'
+                                      operator: 'notNull'
+                                      value: null
+                                relationship:
+                                    - table: 'usuarios'
+                                      condition:
+                                          column: 'usuarios.id'
+                                          refColumn: 'cases.responsable_id'
+                                      type: 'left'
+                                limit: 100
+                                offset: 0
+                                filter:
+                                    - field: 'cases.fecha_resolucion'
+                                      operator: 'null'
+                                      value: 'null'
+                                      type: 'AND'
+
+                        user_closed_cases:
+                            summary: Cases closed by users (select + distinct + relationship)
+                            value:
+                                select: ['usuarios.nombres', 'cases.reference']
+                                distinct: true
+                                relationship:
+                                    - table: 'usuarios'
+                                      condition:
+                                          column: 'usuarios.id'
+                                          refColumn: 'cases.responsable_id'
+                                      type: 'left'
+                                limit: 100
+                                offset: 0
+                                filter:
+                                    - field: 'cases.fecha_resolucion'
+                                      operator: 'notNull'
+                                      value: 'null'
+                                      type: 'AND'
+
+                        only_select:
+                            summary: Query with only SELECT and filters
+                            value:
+                                select: ['cases.antiguedad', 'cases.expired_at']
+                                limit: 100
+                                offset: 0
+                                filter:
+                                    - field: 'cases.fecha_resolucion'
+                                      operator: 'null'
+                                      value: 'null'
+                                      type: 'AND'
+
+                        without_select:
+                            summary: Query without SELECT (default columns)
+                            value:
+                                distinct: true
+                                relationship:
+                                    - table: 'usuarios'
+                                      condition:
+                                          column: 'usuarios.id'
+                                          refColumn: 'cases.responsable_id'
+                                      type: 'left'
+                                limit: 100
+                                offset: 0
+                                filter:
+                                    - field: 'cases.fecha_resolucion'
+                                      operator: 'null'
+                                      value: 'null'
+                                      type: 'AND'
+        responses:
+            '200':
+                description: Returns a list of cases matching the advanced search criteria
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CasesCollection'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+cases_delete:
+    post:
+        tags:
+            - Cases
+        summary: Delete a case instance
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/DeleteCase'
+        responses:
+            '200':
+                description: Case instance deleted successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+cases_transition:
+    post:
+        tags:
+            - Cases
+        summary: Update transition case instance
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/TransitionCase'
+        responses:
+            '200':
+                description: Case transition updated successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+cases_sub_cases:
+    post:
+        tags:
+            - Cases
+        operationId: createSubcaseRelation
+        summary: Creates a case–subcase relationship
+        parameters:
+            - $ref: '#/components/parameters/CaseIdParam'
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/SubcaseRelationCreateRequest'
+                    examples:
+                        createExample:
+                            value:
+                                child_case_id: '845a0490-0b29-4858-963b-487462c89fa8'
+        responses:
+            '201':
+                description: Case-subcase relationship created successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/created_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+cases_sub_cases_delete:
+    post:
+        tags:
+            - Cases
+        operationId: deleteSubcaseRelation
+        summary: Deletes a case–subcase relationship
+        parameters:
+            - $ref: '#/components/parameters/CaseIdParam'
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/SubcaseRelationDeleteRequest'
+                    examples:
+                        deleteExample:
+                            value:
+                                child_case_id: '845a0490-0b29-4858-963b-487462c89fa8'
+        responses:
+            '200':
+                description: Case–subcase relationship deleted successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+cases_sub_cases_search:
+    post:
+        tags:
+            - Cases
+        summary: Lists subcases (child cases) of a parent case
+        description: >
+            Returns child cases linked to the parent. Optional `relationship` adds joins (e.g. `aux_cases`)
+            and optional `select` lists extra columns (additive to the default grid fields). Each alias from
+            `select` is returned as an extra property on each item (for example `aux_cases_data` when using
+            `aux_cases.data as aux_cases_data`). Extra `select` columns must reference tables included in
+            `relationship` or base tables `cases` / `rel_cases_subcases`.
+        parameters:
+            - $ref: '#/components/parameters/CaseIdParam'
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/SearchSubCasesCollection'
+                    examples:
+                        basic:
+                            summary: Basic pagination
+                            value:
+                                filter: []
+                                limit: 10
+                                offset: 0
+                        withAuxCases:
+                            summary: Include auxiliary case JSON via join and select
+                            value:
+                                filter: []
+                                limit: 10
+                                offset: 0
+                                relationship:
+                                    - table: aux_cases
+                                      condition:
+                                          column: aux_cases.caso_id
+                                          refColumn: cases.id
+                                      type: left
+                                select:
+                                    - 'aux_cases.data as aux_cases_data'
+        responses:
+            '200':
+                description: >
+                    List of subcases. Items include default grid fields; dynamic fields from `select` appear as additional properties.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SubcasesSearchCasesCollection'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+    parameters:
+        CaseIdParam:
+            name: id
+            in: path
+            required: true
+            description: ID del caso padre (UUID)
+            schema:
+                type: string
+                format: uuid
+    schemas:
+        message:
+            type: string
+            example: Success
+        cliente_id:
+            type: string
+            format: uuid
+        transicion_id:
+            type: string
+            format: uuid
+        responsable_id:
+            type: string
+            format: uuid
+        clasificacion_id:
+            type: string
+            format: uuid
+        descripcion_caso_id:
+            type: string
+            format: uuid
+        descripcion_caso:
+            type: string
+            example: This is a test description
+        mail_item_id:
+            type: string
+            format: uuid
+            example: null
+        canal_id:
+            type: string
+            example: null
+        grupo_id:
+            type: string
+            format: uuid
+        fecha_resolucion:
+            type: string
+            format: date-time
+            example: null
+        antiguedad:
+            type: number
+            example: 2
+        ans_posicion:
+            type: number
+            example: 1
+        antiguedad_dias:
+            type: number
+            example: 20
+        antiguedad_horas:
+            type: number
+            example: 33
+        antiguedad_minutos:
+            type: number
+            example: 98
+        motivo_baja:
+            type: string
+            example: motivo baja
+        alto_impacto:
+            type: number
+            example: 1
+        vista:
+            type: string
+            example: vista
+        comment:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: 'Identificador único del comentario'
+                    example: 'c7b496d6-ffcb-4214-a17b-abd2766025fa'
+                descripcion:
+                    type: string
+                    description: 'Descripción del comentario'
+                    example: 'prueba'
+                calificacion:
+                    type: integer
+                    description: 'Calificación del comentario'
+                    example: 1
+        TransitionCase:
+            type: object
+            properties:
+                transicion_id:
+                    type: string
+                    description: 'Identificador único de la transición'
+                    example: 'c7b496d6-ffcb-4214-a17b-abd2766025fa'
+        updated_by:
+            type: string
+            format: uuid
+        created_by:
+            type: string
+            format: uuid
+        deleted_by:
+            type: string
+            format: uuid
+        parent_id:
+            type: string
+            format: uuid
+            nullable: true
+            description: 'Identificador del caso padre. Puede ser nulo si el caso no tiene un caso padre.'
+            example: 'c2b6b9f0-25a9-4c9b-b1a2-ff5bbd1d3e2a'
+        Created:
+            type: object
+            properties:
+                created_at:
+                    $ref: '../common/fields.yaml#/schemas/created_at'
+                created_by:
+                    $ref: '../common/fields.yaml#/schemas/created_by'
+        Updated:
+            type: object
+            properties:
+                updated_at:
+                    $ref: '../common/fields.yaml#/schemas/updated_at'
+                    nullable: true
+                updated_by:
+                    $ref: '../common/fields.yaml#/schemas/updated_by'
+                    nullable: true
+        Deleted:
+            type: object
+            properties:
+                deleted_at:
+                    $ref: '../common/fields.yaml#/schemas/deleted_at'
+                deleted_by:
+                    $ref: '../common/fields.yaml#/schemas/deleted_by'
+        CasesBase:
+            type: object
+            properties:
+                cliente_id:
+                    $ref: '#/components/schemas/cliente_id'
+                transicion_id:
+                    $ref: '#/components/schemas/transicion_id'
+                responsable_id:
+                    $ref: '#/components/schemas/responsable_id'
+                clasificacion_id:
+                    $ref: '#/components/schemas/clasificacion_id'
+                descripcion_caso_id:
+                    $ref: '#/components/schemas/descripcion_caso_id'
+                descripcion_caso:
+                    $ref: '#/components/schemas/descripcion_caso'
+                mail_item_id:
+                    $ref: '#/components/schemas/mail_item_id'
+                canal_id:
+                    $ref: '#/components/schemas/canal_id'
+                grupo_id:
+                    $ref: '#/components/schemas/grupo_id'
+                fecha_resolucion:
+                    $ref: '#/components/schemas/fecha_resolucion'
+                motivo_baja:
+                    $ref: '#/components/schemas/motivo_baja'
+                alto_impacto:
+                    $ref: '#/components/schemas/alto_impacto'
+                vista:
+                    $ref: '#/components/schemas/vista'
+                parent_id:
+                    $ref: '#/components/schemas/parent_id'
+
+        Cases:
+            allOf:
+                - type: object
+                  properties:
+                      id:
+                          $ref: '../common/fields.yaml#/schemas/id'
+                - $ref: '#/components/schemas/CasesBase'
+                - $ref: '#/components/schemas/Created'
+                - $ref: '#/components/schemas/Updated'
+                - $ref: '#/components/schemas/Deleted'
+        CasesCollection:
+            type: object
+            properties:
+                message:
+                    $ref: '#/components/schemas/message'
+                data:
+                    type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/Cases'
+                metadata:
+                    type: object
+                    properties:
+                        count:
+                            type: object
+                            properties:
+                                count:
+                                    type: string
+                                    example: '1'
+        CreateCase:
+            allOf:
+                - type: object
+                  properties:
+                      id:
+                          $ref: '../common/fields.yaml#/schemas/id'
+                - $ref: '#/components/schemas/CasesBase'
+                - type: object
+                  properties:
+                      created_at:
+                          $ref: '../common/fields.yaml#/schemas/created_at'
+                      created_by:
+                          $ref: '#/components/schemas/created_by'
+        CreateCaseAuxiliary:
+            type: object
+            properties:
+                case:
+                    type: object
+                    properties:
+                        id:
+                            $ref: '../common/fields.yaml#/schemas/id'
+                        cliente_id:
+                            $ref: '#/components/schemas/cliente_id'
+                        transicion_id:
+                            $ref: '#/components/schemas/transicion_id'
+                        clasificacion_id:
+                            $ref: '#/components/schemas/clasificacion_id'
+                        descripcion_caso_id:
+                            $ref: '#/components/schemas/descripcion_caso_id'
+                        grupo_id:
+                            $ref: '#/components/schemas/grupo_id'
+                        responsable_id:
+                            $ref: '#/components/schemas/responsable_id'
+                aux_cases:
+                    type: object
+                    properties:
+                        id:
+                            $ref: '../common/fields.yaml#/schemas/id'
+                        caso_id:
+                            type: string
+                            format: uuid
+                        data:
+                            type: object
+                            properties:
+                                direccion:
+                                    type: string
+                                    example: 'calle # 123'
+            required:
+                - case
+                - aux_cases
+        UpdateCaseAuxiliary:
+            type: object
+            properties:
+                case:
+                    type: object
+                    properties:
+                        external_code:
+                            type: string
+                            description: 'Código externo único para el caso'
+                            example: 'JUYK582'
+                aux_cases:
+                    type: object
+                    description: 'Objeto auxiliar, actualmente vacío pero extensible'
+                    additionalProperties: true
+            required:
+                - case
+                - aux_cases
+        UpdateCase:
+            allOf:
+                - $ref: '#/components/schemas/CasesBase'
+                - type: object
+                  properties:
+                      updated_at:
+                          $ref: '../common/fields.yaml#/schemas/updated_at'
+                      updated_by:
+                          $ref: '#/components/schemas/updated_by'
+        DeleteCase:
+            type: object
+            properties:
+                comment:
+                    $ref: '#/components/schemas/comment'
+                motivo_baja:
+                    type: string
+                    description: 'Motivo de la baja o eliminación'
+                    example: 'Prueba'
+        SearchCollection:
+            type: object
+            properties:
+                filter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            field:
+                                type: string
+                                example: casos.cliente_id
+                            operator:
+                                type: string
+                                example: like
+                            value:
+                                type: string
+                                format: uuid
+                            type:
+                                type: string
+                                example: AND
+                relationship:
+                    type: array
+                    items:
+                limit:
+                    type: integer
+                    example: 10
+                offset:
+                    type: integer
+                    example: 0
+        SearchIdCollection:
+            type: object
+            properties:
+                limit:
+                    type: integer
+                    example: 10
+                offset:
+                    type: integer
+                    example: 0
+
+        SearchRelationshipItem:
+            type: object
+            required: [table, condition, type]
+            properties:
+                table:
+                    type: string
+                    example: aux_cases
+                condition:
+                    type: object
+                    properties:
+                        column:
+                            type: string
+                            example: aux_cases.caso_id
+                        refColumn:
+                            type: string
+                            example: cases.id
+                type:
+                    type: string
+                    enum: [join, left, right]
+                    example: left
+
+        SearchSubCasesCollection:
+            type: object
+            properties:
+                filter:
+                    type: array
+                    nullable: true
+                    items:
+                        type: object
+                relationship:
+                    type: array
+                    nullable: true
+                    items:
+                        $ref: '#/components/schemas/SearchRelationshipItem'
+                select:
+                    type: array
+                    items:
+                        type: string
+                limit:
+                    type: integer
+                    nullable: true
+                offset:
+                    type: integer
+                    nullable: true
+                order:
+                    type: object
+                    nullable: true
+
+        SubcasesSearchCaseItem:
+            allOf:
+                - $ref: '#/components/schemas/Cases'
+                - type: object
+                  description: May include extra properties from request `select` (e.g. aux_cases_data)
+                  additionalProperties: true
+
+        SubcasesSearchCasesCollection:
+            type: object
+            properties:
+                message:
+                    $ref: '#/components/schemas/message'
+                data:
+                    type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/SubcasesSearchCaseItem'
+                metadata:
+                    type: object
+                    properties:
+                        count:
+                            type: object
+                            properties:
+                                count:
+                                    type: string
+                                    example: '1'
+
+        SubcaseRelationCreateRequest:
+            type: object
+            required: [child_case_id]
+            properties:
+                child_case_id:
+                    type: string
+                    format: uuid
+                    description: Subcase (child case) identifier
+
+        SubcaseRelationDeleteRequest:
+            type: object
+            required: [child_case_id]
+            properties:
+                child_case_id:
+                    type: string
+                    format: uuid
+                    description: Subcase (child case) identifier to delete
+
+        SubcaseRelation:
+            type: object
+            properties:
+                parent_case_id:
+                    type: string
+                    format: uuid
+                    description: Parent case identifier
+                child_case_id:
+                    type: string
+                    format: uuid
+                    description: Subcase (child case) identifier
+
+        SubcaseRelationListResponse:
+            type: object
+            properties:
+                data:
+                    type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/SubcaseRelation'
+                metadata:
+                    type: object
+                    properties:
+                        count:
+                            type: integer
+                            example: 1

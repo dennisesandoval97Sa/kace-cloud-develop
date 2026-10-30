@@ -1,0 +1,79 @@
+cases_count-group:
+  get:
+    tags:
+      - Cases Count By Group
+    summary: Gets the number of cases by ans and state of active group
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - id -> ID de un grupo (Groups)
+
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Returns the number of cases per active group
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CountCasesResponse"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+
+components:
+  schemas:
+    toovercome: 
+      type: number
+      example: "0"
+    defeated: 
+      type: number
+      example: "0"
+    managed: 
+      type: number
+      example: "0"
+    pending: 
+      type: number
+      example: "0"
+    statusCount:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+          example: En proceso
+        icon_class:
+          example: user-icon
+        count:
+          type: number
+          example: 10
+    CountCasesResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            ans:
+              type: object
+              properties:
+                toovercome: 
+                  $ref: "#/components/schemas/toovercome"
+                defeated: 
+                  $ref: "#/components/schemas/defeated"
+                managed: 
+                  $ref: "#/components/schemas/managed"
+                pending: 
+                  $ref: "#/components/schemas/pending"
+        states:
+          type: array
+          items:
+            $ref: "#/components/schemas/statusCount"
+          
+        
+      

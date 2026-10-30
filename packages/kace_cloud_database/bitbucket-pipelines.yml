@@ -1,0 +1,24 @@
+image: node:22 # SONAR-EXC: document-start no requerido aquí
+
+clone:
+    depth: full
+
+definitions:
+    steps:
+        - step: &bump_version
+              name: Bump version (patch) on merge
+              caches:
+                  - node
+              script:
+                  - git config user.name "$GIT_USER"
+                  - git config user.email "$GIT_EMAIL"
+                  - git remote set-url origin "git@bitbucket.org:${BITBUCKET_REPO_FULL_NAME}.git"
+                  - npm ci
+                  - npm version patch -m "chore(release) %s [skip ci]"
+                  - git push origin HEAD:$BITBUCKET_BRANCH
+                  - git push origin --follow-tags
+
+pipelines:
+    branches:
+        develop:
+            - step: *bump_version

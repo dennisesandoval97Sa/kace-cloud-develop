@@ -1,0 +1,48 @@
+{
+    "service": "group",
+    "postmanFolder": "Groups",
+    "endpoints": [
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/groups",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/groups/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "view-by-id-shift-managment",
+            "method": "GET",
+            "path": "/groups/{id}/shift-managment",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/groups/search",
+            "requiresId": false,
+            "body": {
+                "filter": [
+                    {
+                        "field": "nombre",
+                        "operator": "like",
+                        "value": "example name",
+                        "type": "AND"
+                    },
+                    {
+                        "field": "nombre",
+                        "operator": "like",
+                        "value": "example name",
+                        "type": "AND"
+                    }
+                ],
+                "limit": 10,
+                "offset": 0
+            }
+        }
+    ]
+}

@@ -1,0 +1,33 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "classificationsInitPanel",
+      "type": "panel",
+      "title": "Al cargar (solo creación de caso)",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "classificationsInitDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Valores por defecto y bloqueo</p><p class=\"small text-muted mb-2\"><strong>Solo al crear un caso</strong> (no en edición). El script se evalúa <strong>una sola vez</strong> cuando el contexto del caso está listo <strong>y Auth terminó</strong> (<code>kaceAuthData</code> / <code>config.kace_auth_ready</code>). Si el caso resuelve antes que Auth, espera sin marcar el script como ejecutado. Si llamás <code>setDefaultSelections(...)</code> antes de que exista el árbol de opciones, la selección queda en cola y se aplica al cargar las opciones <strong>sin volver a ejecutar</strong> el script. No se re-ejecuta en <code>redraw</code> (p. ej. colapsar un panel). Los niveles que definan un prefijo válido desde <code>nivel1</code> quedan <strong>bloqueados</strong>. Si definís la <strong>última hoja</strong> del árbol, se propagan <code>clasificacion_id</code> y <code>flujo_id</code> al formulario.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Nombre</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; font-weight: bold;\">setDefaultSelections(obj)</span></td><td>Ej. <code>{ nivel1: 'Ventas', nivel2: 'Retail' }</code>. Valida contra el árbol; bloquea solo ese prefijo consecutivo. Sin árbol: encola y aplica al cargar.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">setLevelLabels(obj)</span></td><td>Opcional. Etiquetas de nivel, ej. <code>{ nivel1: 'Área' }</code>.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">store</span></td><td>Store plano Kace (<code>store.user.user_data</code>, <code>store.config.selected_group_id</code>). Preferido para leer groups tras Auth.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">storeService</span></td><td>API <code>.get(path)</code> / <code>.set(path, value)</code>. Ej. <code>storeService.get('user.user_data')</code>.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">kaceEngine</span></td><td>Motor Kace. Para el store plano: <code>kaceEngine.getService('store')</code>.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">apiService</span></td><td>Servicio API.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">url_api</span></td><td>URL base API.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">data</span></td><td>Datos del formulario.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">root</span></td><td>Raíz Form.io.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">options</span></td><td>Árbol de opciones cargado (puede estar vacío en la única evaluación).</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">caseData</span></td><td>Datos del caso.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">isEditCase</span></td><td>En edición el script no se ejecuta.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth. Disponibles tras Auth.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code>. Disponible tras Auth.</td></tr></tbody></table>"
+        },
+        {
+          "key": "classificationsInitCode",
+          "type": "textarea",
+          "label": "JavaScript",
+          "description": "Solo creación de caso. Se ejecuta una vez tras Auth. Usar setDefaultSelections y la tabla anterior.",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 12,
+          "validate": {
+            "javascript": true
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+[
+  {
+    "primary_entity": "cases",
+    "related_entity": "clients",
+    "alias": "case_client",
+    "join_type": "left",
+    "on": [
+      {
+        "left": "case_client.id",
+        "operator": "eq",
+        "right": "cases.cliente_id",
+        "type": "and"
+      }
+    ],
+    "relations": [
+      {
+        "primary_entity": "case_client",
+        "related_entity": "usuarios",
+        "alias": "client_user_creator",
+        "join_type": "left",
+        "on": [
+          {
+            "left": "client_user_creator.id",
+            "operator": "eq",
+            "right": "case_client.created_by",
+            "type": "and"
+          }
+        ],
+        "relations": [
+          {
+            "primary_entity": "client_user_creator",
+            "related_entity": "roles",
+            "alias": "user_role",
+            "on": [
+              {
+                "left": "user_role.id",
+                "operator": "eq",
+                "right": "client_user_creator.rol_id",
+                "type": "and"
+              }
+            ],
+            "relations": [
+              {
+                "primary_entity": "user_role",
+                "related_entity": "usuarios",
+                "alias": "rol_user_creator",
+                "on": [
+                  {
+                    "left": "rol_user_creator.id",
+                    "operator": "eq",
+                    "right": "user_role.created_by",
+                    "type": "and"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "primary_entity": "cases",
+    "related_entity": "clasificaciones",
+    "alias": "case_clasificaciones",
+    "join_type": "left",
+    "on": [
+      {
+        "left": "case_clasificaciones.id",
+        "operator": "eq",
+        "right": "cases.clasificacion_id",
+        "type": "and"
+      }
+    ],
+    "relations": [
+      {
+        "primary_entity": "case_clasificaciones",
+        "related_entity": "usuarios",
+        "alias": "clasification_user_creator",
+        "join_type": "left",
+        "on": [
+          {
+            "left": "clasification_user_creator.id",
+            "operator": "eq",
+            "right": "case_clasificaciones.created_by",
+            "type": "and"
+          }
+        ],
+        "relations": []
+      }
+    ]
+  }
+]

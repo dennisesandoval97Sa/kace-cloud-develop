@@ -1,0 +1,12 @@
+{
+    "service": "case-available-states",
+    "postmanFolder": "Cases Available States",
+    "endpoints": [
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/case-available-states/{id}",
+            "requiresId": true
+        }
+    ]
+}

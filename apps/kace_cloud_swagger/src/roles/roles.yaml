@@ -1,0 +1,311 @@
+role:
+  get:
+    tags:
+      - Roles
+    summary: Get all Roles
+    responses:
+      '200':
+        description: Returns a list of Roles
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RolesCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Roles
+    summary: Create a Role instance
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateRole"
+    responses:
+      '201':
+        description: Role instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+role_id:
+  get:
+    tags:
+      - Roles
+    summary:  Fetch a Role by ID
+    parameters: 
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        descripcion: Return a Role instance
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: "#/components/schemas/Role"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Roles
+    summary: Update a Role instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateRole"
+    responses:
+      '200':
+        description: Role updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+role_delete:
+  get:
+    tags:
+      - Roles
+    summary: Delete a Role instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Role instance deleted succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+role_search:
+  post:
+    tags:
+      - Roles
+    summary: Search Role instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of Roles which match with the search
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/RolesCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+        
+components:
+  schemas:
+    descripcion:
+      type: string
+      example: this is a description
+    permisos:
+      type: object
+      properties:
+        agente:
+          type: array
+          items:
+            type: object
+            properties:
+              name: 
+                type: string
+                example: CasesCreate
+              granted: 
+                type: boolean
+                example: true 
+              module_id:
+                type: string
+                example: cases
+              description: 
+                type: string
+                example: Crear caso
+        administrador:
+          type: array
+          items:
+            type: object
+            properties:
+              name: 
+                type: string
+                example: UsersCreate
+              granted: 
+                type: boolean
+                example: true 
+              module_id:
+                type: string
+                example: users
+              description: 
+                type: string
+                example: Crear usuarios
+    status:
+      type: number
+      example: 1
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    Deleted:
+      type: object
+      properties:
+        deleted_at:
+          $ref: "../common/fields.yaml#/schemas/deleted_at"
+        deleted_by:
+          $ref: "../common/fields.yaml#/schemas/deleted_by"
+    RoleBase:
+      type: object
+      properties:
+        descripcion:
+          $ref: "#/components/schemas/descripcion"
+        permisos:
+          $ref: "#/components/schemas/permisos"
+        status:
+          $ref: "#/components/schemas/status"
+    Role:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/RoleBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+        - $ref: "#/components/schemas/Deleted"
+    RolesCollection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Role"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: array
+              items:
+                type: object
+                properties:
+                  count:
+                    type: string
+                    example: '198'
+    CreateRole:
+        allOf:
+          - type: object  
+            properties:
+              id:
+                $ref: "../common/fields.yaml#/schemas/id"
+          - $ref: "#/components/schemas/RoleBase"
+          - type: object
+            properties:
+              created_at:
+                $ref: "../common/fields.yaml#/schemas/created_at"
+              created_by:
+                $ref: "#/components/schemas/created_by"
+    UpdateRole:
+        allOf:
+        - $ref: "#/components/schemas/RoleBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: descripcion
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: descripcion example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

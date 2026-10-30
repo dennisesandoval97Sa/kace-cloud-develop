@@ -1,0 +1,107 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "standard",
+        "plugin:react/recommended"
+        //"plugin:jsdoc/recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": ["react", "no-commented-code", "import", "jsdoc"],
+    "rules": {
+        "react/react-in-jsx-scope": "off",
+        // Enforce functional components defined with arrow functions
+        "react/function-component-definition": [
+            "error",
+            {
+                "namedComponents": "arrow-function",
+                "unnamedComponents": "arrow-function"
+            }
+        ],
+        // Ensure component names are PascalCase
+        "react/jsx-pascal-case": "error",
+        // Prevent unstable nested components (helps enforce good component structure)
+        "react/no-unstable-nested-components": "error",
+        // Prefer functional components over class components
+        "react/prefer-stateless-function": "error",
+        // Enforce 4-space indentation for JSX
+        "react/jsx-indent": ["error", 4],
+        // Ensure props are indented correctly in JSX
+        "react/jsx-indent-props": ["error", 4],
+
+        // === INDENTATION & WHITESPACE ===
+        "indent": ["error", 4, { "SwitchCase": 1, "ignoredNodes": ["TemplateLiteral"] }],
+        "no-multiple-empty-lines": ["error", { "max": 1, "maxBOF": 0, "maxEOF": 0 }],
+        // Enforce space before function parentheses
+        "space-before-function-paren": [
+            "error",
+            {
+                "anonymous": "always",
+                "named": "never",
+                "asyncArrow": "always"
+            }
+        ],
+        // Enforce spaces around keywords (if, else, for, etc.)
+        "keyword-spacing": ["error", { "before": true, "after": true }],
+        // Enforce consistent spacing for unary operators
+        "space-unary-ops": [
+            "error",
+            {
+                "words": true,
+                "nonwords": false,
+                "overrides": {
+                    "typeof": false
+                }
+            }
+        ],
+        // Enforce spaces around infix operators (e.g., `a + b`)
+        "space-infix-ops": "error",
+
+        // === QUOTES ===
+        // Enforce double quotes for strings, allow backticks for template literals.
+        // `avoidEscape: true` allows single quotes only when it avoids escaping a double quote.
+        // This overrides the 'standard' config's preference for single quotes.
+        "quotes": ["error", "double", { "avoidEscape": true, "allowTemplateLiterals": true }],
+
+        // === SEMICOLONS ===
+        // Require semicolons at the end of statements.
+        "semi": ["error", "always"],
+
+        // === TRAILING COMMAS ===
+        // Require trailing commas always (for objects, arrays, functions, etc.)
+        "comma-dangle": ["error", "always-multiline"],
+
+        // === CONSOLE LOGS ===
+        // Disallow all console.* statements (log, warn, error, etc.)
+        "no-console": "error",
+
+        // === IMPORTS ===
+        // Require a newline after import statements
+        // This rule comes from 'eslint-plugin-import', which is often included with 'standard' or similar configs.
+        "import/newline-after-import": ["error", { "count": 1 }],
+
+        // === COMMENTS ===
+        // Warn about TODO and FIXME comments (does not fail the running command)
+        "no-warning-comments": ["warn", { "terms": ["todo", "fixme"], "location": "anywhere" }],
+        // Enforce a specific style for multiline comments (JSDoc-style blocks)
+        "multiline-comment-style": ["error", "starred-block"],
+        // Enforce consistent spacing after // or /* in comments
+        "spaced-comment": ["error", "always"],
+
+        "camelcase": "off",
+        "multiline-ternary": "off"
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "globals": {
+        "__APP_VERSION__": "readonly"
+    }
+}

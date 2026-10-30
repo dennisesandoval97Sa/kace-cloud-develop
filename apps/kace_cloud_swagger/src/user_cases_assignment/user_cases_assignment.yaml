@@ -1,0 +1,44 @@
+user_cases_assignment:
+  post:
+    tags:
+      - User Cases Assignment
+    summary: Assing cases to user
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - id -> ID de un caso (Cases)
+      - grupo_id -> ID de un grupo (Groups)
+      - responsable_id -> ID de un usuario (Users)
+      
+      IMPORTANTE: El caso no debe tener fecha de resolucion
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AssignCaseToUserBody"
+    responses:
+      '200':
+        description: Cases assigned successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+  schemas:
+    AssignCaseToUserBody:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        grupo_id:
+          type: string
+          format: uuid
+        responsable_id:
+          type: string
+          format: uuid

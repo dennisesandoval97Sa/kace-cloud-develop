@@ -1,0 +1,221 @@
+.kace-timer-overlay {
+  position: fixed;
+  z-index: 9999;
+  min-width: 220px;
+  max-width: 280px;
+  background-color: #ffffff;
+  border: 0.2rem solid #004085;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  transition:
+    right 0.3s ease,
+    transform 0.3s ease;
+}
+
+.kace-timer-overlay.kace-timer-overlay--drawer {
+  right: 0;
+  top: 250px;
+  left: auto !important;
+  transform: translateY(-50%);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  /* Overrides .kace-timer-overlay overflow:hidden so the panel is not clipped (no inner scroll). */
+  overflow: visible;
+}
+
+/* Toggle button for drawer mode */
+.kace-timer-toggle-button {
+  position: fixed;
+  right: 0;
+  top: 250px;
+  transform: translateY(-50%);
+  z-index: 9998;
+  background-color: #004085;
+  color: #ffffff;
+  border: 0.2rem solid #004085;
+  border-right: none;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  padding: 30px 8px;
+  cursor: pointer;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.2s ease;
+}
+
+.kace-timer-toggle-button:hover {
+  background-color: #003570;
+}
+
+.kace-timer-toggle-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.kace-timer-overlay--minimized {
+  min-width: 110px;
+  min-height: 20px;
+}
+
+.kace-timer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background-color: #004085;
+  color: #ffffff;
+  user-select: none;
+}
+
+.kace-timer-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.kace-timer-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kace-timer-icon-button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 0 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.kace-timer-icon-button--danger {
+  color: #ffc9c9;
+}
+
+.kace-timer-icon-button:hover {
+  opacity: 0.85;
+}
+
+.kace-timer-body {
+  padding: 0.5rem 0.75rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.kace-timer-pause-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-align: center;
+  margin-bottom: 0.125rem;
+  line-height: 1.2;
+}
+
+.kace-timer-time {
+  font-family:
+    SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+  color: #212529;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+}
+
+.kace-timer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.kace-timer-actions .kace-timer-action-btn {
+  margin: 0;
+}
+
+.kace-timer-error {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #c92a2a;
+  cursor: pointer;
+}
+
+.kace-timer-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.kace-timer-modal {
+  background-color: #ffffff;
+  border: 0.2rem solid #004085;
+  border-radius: 8px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.kace-timer-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.kace-timer-modal-body {
+  padding: 10px 12px;
+}
+
+.kace-timer-modal-footer {
+  padding: 8px 12px 10px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #e9ecef;
+}
+
+.kace-loader {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: block;
+  position: relative;
+  margin: 6px auto;
+  background: #fff;
+  box-shadow:
+    -24px 0 #fff,
+    24px 0 #fff;
+  box-sizing: border-box;
+  animation: shadowPulse 2s linear infinite;
+}
+
+@keyframes shadowPulse {
+  33% {
+    background: #fff;
+    box-shadow:
+      -24px 0 #004085,
+      24px 0 #fff;
+  }
+  66% {
+    background: #004085;
+    box-shadow:
+      -24px 0 #fff,
+      24px 0 #fff;
+  }
+  100% {
+    background: #fff;
+    box-shadow:
+      -24px 0 #fff,
+      24px 0 #004085;
+  }
+}

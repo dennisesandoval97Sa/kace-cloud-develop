@@ -1,0 +1,19 @@
+.classification-levels-card .card-header {
+  background-color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0.875rem 1.25rem;
+}
+
+.classification-levels-card .card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.classification-levels-card .card-body {
+  padding: 1.25rem;
+}
+
+.classification-levels-grid .form-group {
+  margin-bottom: 1rem;
+}

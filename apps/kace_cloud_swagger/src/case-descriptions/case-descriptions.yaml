@@ -1,0 +1,245 @@
+case_descriptions:
+  get:
+    tags:
+      - Case descriptions
+    summary: Get all case descriptions instances
+    responses:
+      '200':
+        description: Returns a list of case descriptions
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaseDescriptionsCollections"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Case descriptions
+    summary: Create a case descriptions instances
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateCaseDescriptions"
+    responses:
+      '201':
+        description: Case instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+case_description-id:
+  get:
+    tags:
+      - Case descriptions
+    summary: Fetch a case description by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:  
+      '200':
+        description: Returns a case description instance
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref:  "#/components/schemas/message"
+                data:
+                  $ref: "#/components/schemas/CaseDescriptions"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post:
+    tags:
+      - Case descriptions
+    summary: Update a case description instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schemas:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateCaseDescriptions"
+    responses:
+      '200':
+        description: Case instance updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+
+case_descriptions-search:
+  post:
+    tags:
+      - Case descriptions
+    summary:  Search cases descriptions instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of cases descriptions which match with the search
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/CaseDescriptionsCollections"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    message:
+      type: string
+      example: Success
+    descripcion:
+      type: string
+      example: This is my case description
+    created_by:
+      type: string
+      format: uuid
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+    updated_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    CaseDescriptions:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+            descripcion:
+              $ref: "#/components/schemas/descripcion"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    CaseDescriptionsCollections:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/CaseDescriptions"  
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"
+    CreateCaseDescriptions:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+            descripcion:
+              $ref: "#/components/schemas/descripcion"
+        - type: object
+          properties:
+            created_by:
+              $ref: "#/components/schemas/created_by"
+            created_at:
+              $ref: "#/components/schemas/created_at"
+    UpdateCaseDescriptions:
+      allOf:
+        - type: object
+          properties:
+            descripcion:
+              $ref: "#/components/schemas/descripcion"
+        - type: object
+          properties:
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+            updated_at:
+              $ref: "#/components/schemas/updated_at"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: descripcion
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: description example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

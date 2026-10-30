@@ -1,0 +1,127 @@
+global-configuration_get:
+  get:
+    tags:
+      - Get Global configuration 
+    summary: Retrieve the settings of the Global configuration instance
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - id -> ID de una configuracion global (Global configuration)
+      - type -> Alguno de los bloques de configuracion (behaviors, custom_fields, layouts)
+      - application -> Una de las aplicaciones registradas en las configuraciones (Estan dentro de la seccion de application)
+      - module -> Uno de los modulos registrados en las aplicaciones (Estan dentro de la aplicacion seleccionada anteriormente)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: type
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: application
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: module
+        in: query
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Global configuration instance retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/settings"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    settings:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            layouts:
+              type: object
+              properties:
+                headerSection:
+                  type: object
+                  properties:
+                    ayudas:
+                      type: boolean
+                    casosImpacto:
+                      type: boolean
+                    casosAbiertos:
+                      type: boolean
+                    busquedaCliente:
+                      type: boolean
+                clientVisibleFields:
+                  type: object
+                  properties:
+                    email:
+                      type: boolean
+                    nombres:
+                      type: boolean
+                    telefono:
+                      type: boolean
+                    apellido1:
+                      type: boolean
+                    apellido2:
+                      type: boolean
+                    documento:
+                      type: boolean
+                    campos_extra1:
+                      type: boolean
+                    campos_extra2:
+                      type: boolean
+                    campos_extra3:
+                      type: boolean
+                    tipo_documento:
+                      type: boolean
+                    telefono_alterno:
+                      type: boolean
+                auxClientVisibleFields:
+                  type: object
+                  additionalProperties: false
+            behaviors:
+              type: object
+              properties:
+                asignacion:
+                  type: string
+                  enum:
+                    - cola_de_trabajo
+                verColumnasAux:
+                  type: boolean
+                useInteractions:
+                  type: boolean
+                cantidadUsuarios:
+                  type: boolean
+                casosReabrirCasos:
+                  type: boolean
+                casosDiaReabrirCaso:
+                  type: boolean
+                parametrizarColumnas:
+                  type: boolean
+                envioListaDistribucion:
+                  type: boolean
+                agentesCasosDescripcion:
+                  type: boolean
+                casosPeriodoReabrirCaso:
+                  type: boolean
+                agentesCasosEditarDocumento:
+                  type: boolean
+                casosCondicionesReabrirCaso:
+                  type: string
+                  enum:
+                    - periodicamente
+                agentesCasosEditarEstadoSinResponsabilidad:
+                  type: boolean

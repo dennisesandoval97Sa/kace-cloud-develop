@@ -1,0 +1,2 @@
+export const CLOSE_REASON_MIN_LENGTH = 3;
+export const CLOSE_REASON_MAX_LENGTH = 5000;

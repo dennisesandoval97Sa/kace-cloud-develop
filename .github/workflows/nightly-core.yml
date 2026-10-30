@@ -1,0 +1,56 @@
+name: nightly-core
+
+on:
+    schedule:
+        # 05:00 UTC = 23:00 America/Mexico_City
+        - cron: '0 5 * * *'
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    core-suite:
+        runs-on: ubuntu-latest
+        timeout-minutes: 90
+        services:
+            postgres:
+                # postgres:16 pineado a digest (política DevSecOps §6.3)
+                image: postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b
+                env:
+                    POSTGRES_USER: kace_test
+                    POSTGRES_PASSWORD: kace_test
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U kace_test"
+                    --health-interval 5s
+                    --health-timeout 5s
+                    --health-retries 20
+        steps:
+            # ref develop: los schedules corren desde la rama default (master), pero la
+            # suite debe probar el estado de integración; el core de master (última
+            # release) no tiene la infraestructura de tests nueva.
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+              with:
+                  ref: develop
+
+            - uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+
+            - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+              with:
+                  node-version: 22
+                  cache: pnpm
+
+            - run: pnpm install --frozen-lockfile
+
+            # La infraestructura de tests crea una BD por archivo clonada de una
+            # plantilla (CREATE DATABASE ... TEMPLATE ...); POSTGRES_USER es
+            # superusuario del contenedor, así que tiene CREATEDB.
+            - name: Suite completa de @kace/core (paralela)
+              run: pnpm --filter @kace/core run tests
+              env:
+                  DB_TEST_HOST: localhost
+                  DB_TEST_PORT: '5432'
+                  DB_TEST_USER: kace_test
+                  DB_TEST_PASSWORD: kace_test

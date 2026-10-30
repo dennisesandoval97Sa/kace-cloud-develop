@@ -1,0 +1,12 @@
+{
+    "service": "aux-cases",
+    "postmanFolder": "Aux cases",
+    "endpoints": [
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/aux-cases/{id}",
+            "requiresId": true
+        }
+    ]
+}

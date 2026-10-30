@@ -1,0 +1,42 @@
+{
+    "service": "case-descriptions",
+    "postmanFolder": "Case descriptions",
+    "endpoints": [
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/case-descriptions",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/case-descriptions/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/case-descriptions/search",
+            "requiresId": false,
+            "body": {
+                "filter": [
+                    {
+                        "field": "descripcion",
+                        "operator": "like",
+                        "value": "description example",
+                        "type": "AND"
+                    },
+                    {
+                        "field": "descripcion",
+                        "operator": "like",
+                        "value": "description example",
+                        "type": "AND"
+                    }
+                ],
+                "limit": 10,
+                "offset": 0
+            }
+        }
+    ]
+}

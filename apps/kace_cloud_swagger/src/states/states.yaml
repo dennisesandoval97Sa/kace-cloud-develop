@@ -1,0 +1,64 @@
+states:
+  get:
+    tags:
+      - States distinct
+    summary: Get the unique values of all states
+    description: Get all unique states from the database.
+    responses:
+      '200':
+        description: A list of unique states
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatesCollection'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    message:
+      type: string
+      example: Success
+    estado:
+      type: string
+      example: status name
+    total:
+      type: string
+      example: '1'
+    StatesBase:
+      type: object
+      properties:
+        estado:
+          $ref: "#/components/schemas/estado"
+        total:
+          $ref: "#/components/schemas/total"
+    States:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/StatesBase"
+    StatesCollection:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/States"
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"

@@ -1,0 +1,223 @@
+schemas-functions:
+    get:
+        tags:
+            - Schemas
+        summary: Get all available schema functions
+        description: |
+            Retorna todas las funciones disponibles que se pueden usar en las fórmulas de los schemas.  
+            Cada función incluye su nombre, parámetros y si los parámetros son variádicos.
+        responses:
+            '200':
+                description: Functions fetched successfully
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                data:
+                                    type: object
+                                    properties:
+                                        dates:
+                                            type: array
+                                            items:
+                                                $ref: '#/components/schemas/FunctionItem'
+                                        math:
+                                            type: array
+                                            items:
+                                                $ref: '#/components/schemas/FunctionItem'
+                                        chains:
+                                            type: array
+                                            items:
+                                                $ref: '#/components/schemas/FunctionItem'
+                                        utilities:
+                                            type: array
+                                            items:
+                                                $ref: '#/components/schemas/FunctionItem'
+                                        comparators:
+                                            type: array
+                                            items:
+                                                $ref: '#/components/schemas/FunctionItem'
+                                event:
+                                    type: object
+                        examples:
+                            full-example:
+                                summary: Full example of schema functions
+                                value:
+                                    data:
+                                        dates:
+                                            - name: 'addDays'
+                                              params:
+                                                  - name: 'date'
+                                                    type: 'date'
+                                                  - name: 'n'
+                                                    type: 'number'
+                                            - name: 'startOfMonth'
+                                              params:
+                                                  - name: 'date'
+                                                    type: 'date'
+                                        math:
+                                            - name: 'sum'
+                                              params:
+                                                  - name: 'values'
+                                                    type: 'number'
+                                                    variadic: true
+                                            - name: 'round'
+                                              params:
+                                                  - name: 'n'
+                                                    type: 'number'
+                                                  - name: 'd'
+                                                    type: 'number'
+                                        chains:
+                                            - name: 'concat'
+                                              params:
+                                                  - name: 'values'
+                                                    type: 'string'
+                                                    variadic: true
+                                            - name: 'upper'
+                                              params:
+                                                  - name: 's'
+                                                    type: 'string'
+                                        utilities:
+                                            - name: 'if'
+                                              params:
+                                                  - name: 'cond'
+                                                    type: 'boolean'
+                                                  - name: 'a'
+                                                    type: 'any'
+                                                  - name: 'b'
+                                                    type: 'any'
+                                        comparators:
+                                            - name: 'eq'
+                                              params:
+                                                  - name: 'a'
+                                                    type: 'any'
+                                                  - name: 'b'
+                                                    type: 'any'
+                                            - name: 'and'
+                                              params:
+                                                  - name: 'conds'
+                                                    type: 'boolean[]'
+                                    event: {}
+            '403':
+                $ref: '../common/fields.yaml#/schemas/forbidden_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+schemas-rules-search:
+    post:
+        tags:
+            - Schemas
+        summary: Buscar schemas con reglas y data_structure resuelto
+        description: |
+            Aplica los mismos criterios de búsqueda avanzada que el resto de módulos (`filter`, `order`, `limit`, `offset`, etc.).
+            Los campos `limit` y `offset` son obligatorios en el cuerpo (pueden ser `null` según validación del API).
+            Cada elemento de `data.items` corresponde a un schema cuyo `data_structure` incluye reglas anidadas resueltas
+            (referencias `schema_id` en tipos `array` u `object`), de forma análoga a `GET /schemas/{id}/rules`.
+            Requiere permiso de lectura de schemas (`SchemasRead`).
+        operationId: postSchemasRulesSearch
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '../common/fields.yaml#/schemas/search_body_request'
+                    examples:
+                        byName:
+                            summary: Filtro por nombre (AND) y por id (OR)
+                            value:
+                                filter:
+                                    - field: name
+                                      operator: eq
+                                      value: Mi formulario
+                                      type: AND
+                                    - groupType: OR
+                                      filters:
+                                          - field: id
+                                            operator: eq
+                                            value: 5b090fbb-926e-4997-9242-12fa7847bf5b
+                                            type: OR
+                                limit: 10
+                                offset: 0
+                        minimal:
+                            summary: Solo paginación
+                            value:
+                                limit: 5
+                                offset: 0
+        responses:
+            '200':
+                description: Lista de schemas con reglas resueltas y total coincidente
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SchemaRulesSearchResponse'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '403':
+                $ref: '../common/fields.yaml#/schemas/forbidden_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+    schemas:
+        SchemaRulesSearchItem:
+            type: object
+            properties:
+                id:
+                    $ref: '../common/fields.yaml#/schemas/id'
+                name:
+                    type: string
+                is_active:
+                    type: boolean
+                data_structure:
+                    type: object
+                    additionalProperties: true
+                    description: Estructura del formulario con referencias anidadas resueltas
+                created_at:
+                    $ref: '../common/fields.yaml#/schemas/created_at'
+                created_by:
+                    $ref: '../common/fields.yaml#/schemas/created_by'
+                updated_at:
+                    $ref: '../common/fields.yaml#/schemas/updated_at'
+                updated_by:
+                    $ref: '../common/fields.yaml#/schemas/updated_by'
+                deleted_at:
+                    $ref: '../common/fields.yaml#/schemas/deleted_at'
+                deleted_by:
+                    $ref: '../common/fields.yaml#/schemas/deleted_by'
+        SchemaRulesSearchResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: Success
+                data:
+                    type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/SchemaRulesSearchItem'
+                metadata:
+                    type: object
+                    properties:
+                        count:
+                            type: integer
+                            description: Total de filas que cumplen el criterio (sin recorte por limit)
+                event:
+                    type: object
+        FunctionItem:
+            type: object
+            properties:
+                name:
+                    type: string
+                params:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            name:
+                                type: string
+                            type:
+                                type: string
+                            variadic:
+                                type: boolean

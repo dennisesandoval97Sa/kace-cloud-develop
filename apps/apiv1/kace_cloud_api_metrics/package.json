@@ -1,0 +1,45 @@
+{
+    "name": "@kace/api-metrics",
+    "version": "1.26.1",
+    "bin": {
+        "metrics": "bin/metrics.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
+        "cdk": "cdk",
+        "cdk:synth": "rm -rf cdk.out && cdk synth",
+        "cdk:single-deploy": "cdk deploy --require-approval never",
+        "cdk:clean": "rm -rf cdk.out",
+        "eslint-check": "eslint .",
+        "eslint-fix": "eslint --fix .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "devDependencies": {
+        "@kace/prettier_config": "workspace:*",
+        "@jest/globals": "^29.7.0",
+        "@types/jest": "^29.5.12",
+        "@types/node": "20.14.9",
+        "aws-cdk": "^2.1005.0",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.1.5",
+        "ts-node": "^10.9.2",
+        "typescript": "~5.5.3",
+        "prettier": "^3.3.3"
+    },
+    "dependencies": {
+        "@kace/api-common": "workspace:*",
+        "@kace/aws-infra": "workspace:*",
+        "@kace/core": "workspace:*",
+        "@kace/error-codes": "workspace:*",
+        "@kace/eslint-config": "workspace:*",
+        "@aws-sdk/client-dynamodb": "^3.962.0",
+        "@aws-sdk/lib-dynamodb": "^3.962.0",
+        "aws-cdk-lib": "^2.185.0",
+        "constructs": "^10.0.0",
+        "joi": "^17.13.3",
+        "source-map-support": "^0.5.21"
+    }
+}

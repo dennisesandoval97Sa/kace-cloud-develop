@@ -1,0 +1,51 @@
+{
+    "name": "@kace/api-ws-rest-function",
+    "version": "1.26.1",
+    "bin": {
+        "ws_rest_function": "bin/ws_rest_function.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
+        "cdk": "cdk",
+        "api": "pnpm run cdk:synth && sam local start-api -t cdk.out/DEVAPIWSRestFunctionStack.template.json --docker-network kace_cloud_main_global-network --port 60333",
+        "cdk:synth": "rm -rf cdk.out && cdk synth",
+        "cdk:deploy": "cdk deploy --require-approval never",
+        "version:patch": "pnpm version patch -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:minor": "pnpm version minor -m \"Upgrade to %s\" && git push --follow-tags",
+        "version:major": "pnpm version major -m \"Upgrade to %s\" && git push --follow-tags",
+        "predeploy:audit": "pnpm audit --omit=dev",
+        "eslint-check": "eslint .",
+        "eslint-fix": "eslint --fix .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "cdk:clean": "rm -rf cdk.out"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.12",
+        "@types/node": "22.5.4",
+        "aws-cdk": "^2.1005.0",
+        "chance": "^1.1.12",
+        "dotenv": "^16.4.7",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.2.5",
+        "ts-node": "^10.9.2",
+        "typescript": "~5.6.2",
+        "@kace/prettier_config": "workspace:*",
+        "prettier": "^3.3.3"
+    },
+    "dependencies": {
+        "@kace/api-common": "workspace:*",
+        "@kace/aws-infra": "workspace:*",
+        "@kace/core": "workspace:*",
+        "@kace/database": "workspace:*",
+        "@kace/eslint-config": "workspace:*",
+        "@kace/prettier_config": "workspace:*",
+        "aws-cdk-lib": "^2.185.0",
+        "constructs": "^10.0.0",
+        "joi": "^17.13.3",
+        "pg": "^8.16.3",
+        "source-map-support": "^0.5.21"
+    }
+}

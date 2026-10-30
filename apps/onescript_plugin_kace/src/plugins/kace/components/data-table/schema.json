@@ -1,0 +1,164 @@
+{
+  "horizontalScroll": true,
+  "pinActionsColumn": true,
+  "columnResizeEnabled": true,
+  "initialData_type": "js",
+  "columns_type": "js",
+  "actions_type": "editgrid",
+  "bulkActions": [
+    {
+      "label": "Cerrar",
+      "code": "const closedCases = selectedRows\n    .filter(c => c?.fecha_resolucion !== null)\n    .map(c => c?.expediente);\n\nif (closedCases.length) {\n    Swal.fire({\n        icon: \"error\",\n        title: \"Error\",\n        text: `Los casos con expediente (${closedCases.join(\", \")}) están cerrados, solo puedes cerrar casos abiertos.`,\n    });\n    return;\n}\n\nSwal.fire({\n    icon: \"warning\",\n    title: \"¿Estás seguro de querer cerrar los casos?\",\n    text: \"Esta acción es irreversible.\",\n    showCancelButton: true,\n    confirmButtonText: \"Sí, cerrar\",\n    cancelButtonText: \"Cancelar\",\n}).then(async (result) => {\n    if (result.isConfirmed) {\n        let loadingSwal = Swal.fire({\n            title: \"Cerrando casos...\",\n            text: \"Por favor espera mientras se cierran los casos.\",\n            allowOutsideClick: false,\n            allowEscapeKey: false,\n            didOpen: () => {\n                Swal.showLoading();\n            }\n        });\n        try {\n            const case_ids = selectedRows.map((c) => c.id);\n            await apiService.post('/cases-bulk/close', {\n                close_reason: modalFormData.description,\n                case_ids\n            });\n            Swal.fire({\n                icon: \"success\",\n                title: \"Success\",\n                text: \"Los casos se han cerrado correctamente.\",\n            });\n        } catch (error) {\n            Swal.fire({\n                icon: \"error\",\n                title: \"Error\",\n                text: \"Ocurrió un error al cerrar los casos.\",\n            });\n        } finally {\n            loadingSwal.close();\n        }\n    } else if (result.isDismissed) {\n        Swal.fire({\n            icon: \"info\",\n            title: \"Info\",\n            text: \"No se cerraron los casos.\",\n        });\n    }\n});\n",
+      "showModalBeforeExecute": true,
+      "modalTitle": "Cerrar caso",
+      "modalInitCode": "",
+      "modalFields": [
+        {
+          "fieldType": "textarea",
+          "fieldKey": "description",
+          "fieldLabel": "Descripcion",
+          "placeholder": "",
+          "showWhen": ""
+        }
+      ]
+    },
+    {
+      "label": "Cambiar estado",
+      "code": "\r\nconst closedCases = selectedRows\r\n    .filter(c => c?.fecha_resolucion !== null)\r\n    .map(c => c?.expediente);\r\n\r\nif (closedCases.length > 0) {\r\n    Swal.fire({\r\n        icon: \"error\",\r\n        title: \"Error\",\r\n        text: `Los casos con expediente (${closedCases.join(\", \")}) están cerrados, solo puedes cambiar estado a casos abiertos.`,\r\n    });\r\n    return;\r\n}\r\n\r\nconst casesWithDifferentTransition = selectedRows.filter(c => c?.transicion_id !== selectedRows[0]?.transicion_id);\r\n\r\nif (casesWithDifferentTransition.length > 0) {\r\n    Swal.fire({\r\n        icon: \"Error\",\r\n        title: \"Error\",\r\n        text: `Los casos con expediente (${casesWithDifferentTransition.join(\", \")}) no tienen el mismo estado, solo puedes cambiar estado a casos con el mismo estado.`,\r\n    });\r\n    return;\r\n}\r\n\r\nSwal.fire({\r\n    icon: \"warning\",\r\n    title: \"¿Estás seguro de querer cambiar estado a los casos?\",\r\n    text: \"Esta acción es irreversible.\",\r\n    showCancelButton: true,\r\n    confirmButtonText: \"Sí, cambiar estado\",\r\n    cancelButtonText: \"Cancelar\",\r\n}).then(async (result) => {\r\n    if (result.isConfirmed) {\r\n        let loadingSwal = Swal.fire({\r\n            title: \"cambiar estado a los casos...\",\r\n            text: \"Por favor espera mientras se cabian los casos.\",\r\n            allowOutsideClick: false,\r\n            allowEscapeKey: false,\r\n            didOpen: () => {\r\n                Swal.showLoading();\r\n            }\r\n        });\r\n        try {\r\n            const case_ids = selectedRows.map((c) => c.id);\r\n            await apiService.post('/cases-bulk/transition', {\r\n                transition_id: modalFormData.state,\r\n                case_ids,\r\n                update_source: 'bulk',\r\n            });\r\n            Swal.fire({\r\n                icon: \"success\",\r\n                title: \"Success\",\r\n                text: \"Los casos se han cabiado estado correctamente.\",\r\n            });\r\n        } catch (error) {\r\n            Swal.fire({\r\n                icon: \"error\",\r\n                title: \"Error\",\r\n                text: \"Error al cambiar el estado del caso. No cumplen las reglas para realizar el cambio de estado.\",\r\n            });\r\n        } finally {\r\n            loadingSwal.close();\r\n        }\r\n    } else if (result.isDismissed) {\r\n        Swal.fire({\r\n            icon: \"info\",\r\n            title: \"Info\",\r\n            text: \"No se cambiaron los casos.\",\r\n        });\r\n    }\r\n});\r\n\r\n",
+      "showModalBeforeExecute": true,
+      "modalTitle": "Cambiair estado",
+      "modalInitCode": "const casesWithDifferentTransition = selectedRows.filter(\n  c => c?.transicion_id !== selectedRows[0]?.transicion_id\n);\n\nif (casesWithDifferentTransition.length > 0) {\n  const expedientes = casesWithDifferentTransition\n    .map(c => c?.expediente ?? c?.id ?? '')\n    .filter(Boolean);\n  Swal.fire({\n    icon: \"error\",\n    title: \"Error\",\n    text: `Los casos con expediente (${expedientes.join(\", \")}) no tienen el mismo estado; solo puedes cambiar estado a casos con el mismo estado.`,\n  });\n  return { abort: true };\n}\n\nreturn apiService.get(\n  `/case-available-states/${selectedRows[0].id}`\n).then(data=>{\n  const items = data?.data?.data?.items || []\n  if (items.length > 0) {\n    const stateOptions = items.map(state => ({\n      label: state.estado_siguiente.nombre,\n      value: state.transition.id,\n    }))\n\n    return {\n      selectOptions: {\n        state: stateOptions,\n      },\n    };\n  }\n});\n\n",
+      "modalFields": [
+        {
+          "fieldType": "select",
+          "fieldKey": "state",
+          "fieldLabel": "Estado",
+          "placeholder": "",
+          "showWhen": "",
+          "options": []
+        }
+      ]
+    },
+    {
+      "label": "Reasignar",
+      "code": "//logica de reasignacion de caso\r\nconst closedCases = selectedRows\r\n    .filter(c => c?.fecha_resolucion !== null)\r\n    .map(c => c?.expediente);\r\n\r\nif (closedCases.length > 0) {\r\n    Swal.fire({\r\n        icon: \"error\",\r\n        title: \"Error\",\r\n        text: `Los casos con expediente (${closedCases.join(\", \")}) están cerrados, solo puedes reasignar casos abiertos.`,\r\n    });\r\n    return;\r\n}\r\n\r\n\r\nSwal.fire({\r\n    icon: \"warning\",\r\n    title: \"¿Estás seguro de querer reasignar los casos?\",\r\n    text: \"Esta acción es irreversible.\",\r\n    showCancelButton: true,\r\n    confirmButtonText: \"Sí, reasignar\",\r\n    cancelButtonText: \"Cancelar\",\r\n}).then(async (result) => {\r\n\r\n    if (result.isConfirmed) {\r\n        let loadingSwal = Swal.fire({\r\n            title: \"Reasignar los casos...\",\r\n            text: \"Por favor espera mientras se cambian los casos.\",\r\n            allowOutsideClick: false,\r\n            allowEscapeKey: false,\r\n            didOpen: () => {\r\n                Swal.showLoading();\r\n            }\r\n        });\r\n        try {\r\n            const case_ids = selectedRows.map((c) => c.id);\r\n            await apiService.post('/cases-bulk/assign', {\r\n                group_id: modalFormData.group,\r\n                responsible_id: modalFormData.user || null,\r\n                case_ids\r\n            });\r\n            Swal.fire({\r\n                icon: \"success\",\r\n                title: \"Success\",\r\n                text: \"Los casos se han reasignado correctamente.\",\r\n            });\r\n\r\n            await new Promise(resolve => setTimeout(resolve, 2000));\r\n            Swal.close();\r\n\r\n        } catch (error) {\r\n            console.log(\"error: \", error);\r\n\r\n            Swal.fire({\r\n                icon: \"error\",\r\n                title: \"Error\",\r\n                text: \"Ocurrió un error al reasignar los casos.\",\r\n            });\r\n        } finally {\r\n            const varIdElements = document.getElementById(\"cleanButtonFormAdvanceSearch\");\r\n            loadingSwal.close();\r\n            varIdElements.click();\r\n\r\n        }\r\n    } else if (result.isDismissed) {\r\n        Swal.fire({\r\n            icon: \"info\",\r\n            title: \"Info\",\r\n            text: \"No se reasignaron los casos.\",\r\n        });\r\n    }\r\n});\r\n",
+      "showModalBeforeExecute": true,
+      "modalTitle": "Reasignar caso",
+      "modalInitCode": "",
+      "modalFields": [
+        {
+          "fieldType": "select",
+          "fieldKey": "asignamentType",
+          "fieldLabel": "Tipo de asignacion",
+          "placeholder": "",
+          "showWhen": "",
+          "options": [
+            {
+              "label": "Usuario",
+              "value": "user"
+            }
+          ]
+        },
+        {
+          "fieldType": "select",
+          "fieldKey": "user",
+          "fieldLabel": "Usuario",
+          "placeholder": "Seleccionar usuario",
+          "showWhen": "if (loadPass) {\r\n  return (async () => {\r\n    const fechaActual = new Date();\r\n    const lastConectionTime = new Date(fechaActual.getTime() - 5 * 60 * 1000);\r\n    const zonaHoraria = 'America/Bogota';\r\n    const parts = new Intl.DateTimeFormat('en-US', {\r\n      timeZone: zonaHoraria,\r\n      year: 'numeric', month: '2-digit', day: '2-digit',\r\n      hour: '2-digit', minute: '2-digit', second: '2-digit',\r\n      hour12: false\r\n    }).formatToParts(lastConectionTime);\r\n    const d = Object.fromEntries(parts.map(p => [p.type, p.value]));\r\n    const ms = lastConectionTime.getMilliseconds().toString().padStart(3, '0');\r\n    const offsetMinutes = lastConectionTime.getTimezoneOffset();\r\n    const absOffset = Math.abs(offsetMinutes);\r\n    const sign = offsetMinutes <= 0 ? '+' : '-';\r\n    const offsetHours = Math.floor(absOffset / 60).toString().padStart(2, '0');\r\n    const offsetMins = (absOffset % 60).toString().padStart(2, '0');\r\n    const timezoneStr = `${sign}${offsetHours}${offsetMins}`;\r\n    const fechaFormateada = `${d.year}-${d.month}-${d.day} ${d.hour}:${d.minute}:${d.second}.${ms} ${timezoneStr}`;\r\n    const searchTerm = (kaceRemoteSearchTerm ?? '').trim();\r\n    const filters = [\r\n      {\r\n        filters: [\r\n          { field: 'last_seen_at', operator: 'gte', type: 'OR', value: fechaFormateada },\r\n          { field: 'nombres', operator: 'ilike', type: 'OR', value: 'gestor' }\r\n        ],\r\n        groupType: 'AND'\r\n      },\r\n      { field: 'deleted_at', operator: 'null', type: 'AND', value: 'null' }\r\n    ];\r\n    if (searchTerm) {\r\n      filters.push({\r\n        filters: [\r\n          { field: 'nombres', operator: 'ilike', type: 'OR', value: searchTerm },\r\n          { field: 'apellido1', operator: 'ilike', type: 'OR', value: searchTerm },\r\n          { field: 'apellido2', operator: 'ilike', type: 'OR', value: searchTerm }\r\n        ],\r\n        groupType: 'AND'\r\n      });\r\n    }\r\n    const response = await apiService.post('/users/search', {\r\n      filter: filters,\r\n      limit: kaceSelectPageSize,\r\n      offset: (kaceSelectPage - 1) * kaceSelectPageSize,\r\n      order: { direction: 'asc', field: 'nombres' },\r\n      relationship: null\r\n    });\r\n    const users = response?.data?.data?.items ?? [];\r\n    const mappedUsers = users.map((user) => ({\r\n      label: `${user.nombres ?? ''} ${user.apellido1 ?? ''} ${user.apellido2 ?? ''}`.replace(/\\s+/g, ' ').trim(),\r\n      value: user.id\r\n    }));\r\n    const pageItems = kaceSelectPage === 1\r\n      ? [{ label: 'Seleccionar usuario', value: '' }, ...mappedUsers]\r\n      : mappedUsers;\r\n    setSelectOptions('user', pageItems, { append: kaceSelectPage > 1 });\r\n    return true;\r\n  })();\r\n}\r\n\r\nif (modalFormData.asignamentType !== 'user') {\r\n  return false;\r\n}\r\n\r\nreturn true;",
+          "options": [
+            {
+              "label": "Seleccionar usuario",
+              "value": ""
+            }
+          ]
+        },
+        {
+          "fieldType": "select",
+          "fieldKey": "group",
+          "fieldLabel": "Grupo",
+          "placeholder": "Seleccionar grupo",
+          "localSearchOnly": true,
+          "showWhen": "if (loadPass) {\r\n  return (async () => {\r\n    if (!modalFormData.user) {\r\n      return false;\r\n    }\r\n    const response = await apiService.post('/user-group-relationships/search', {\r\n      filter: [\r\n        {\r\n          field: 'usuario_id',\r\n          operator: 'eq',\r\n          value: modalFormData.user,\r\n          type: 'AND'\r\n        }\r\n      ],\r\n      relationship: null,\r\n      limit: kaceSelectPageSize,\r\n      offset: (kaceSelectPage - 1) * kaceSelectPageSize\r\n    });\r\n    const items = response?.data?.data?.items ?? [];\r\n    const mappedGroups = items.map((item) => ({\r\n      label: item?.grupo?.nombre,\r\n      value: item?.grupo_id\r\n    }));\r\n    const pageItems = kaceSelectPage === 1\r\n      ? [{ label: 'Seleccionar grupo', value: '' }, ...mappedGroups]\r\n      : mappedGroups;\r\n    setSelectOptions('group', pageItems, { append: kaceSelectPage > 1 });\r\n    return true;\r\n  })();\r\n}\r\n\r\nif (!modalFormData.user) {\r\n  return false;\r\n}\r\n\r\nreturn true;",
+          "options": []
+        }
+      ]
+    }
+  ],
+  "type": "kace-5881fcf9aaaa4c3b8bc37a3281704634",
+  "initialData": "window.loadCasesData = (data_table = []) => {\n  setData(data_table)\n};\n\nwindow.loadCasesData();",
+  "columns": "setColumns([\n  { key: 'expediente', header: 'Expediente', sortable: true },\n  { key: 'placa', header: 'Placa', sortable: true, width: \"100px\", pinLeft: true },\n  { key: 'fecha_cita', header: 'F cita', sortable: true },\n  { key: 'fecha_solicitud', header: 'F solicitud', sortable: true },\n  { key: 'estado_servicio', header: 'Estado del servicio', sortable: true },\n  { key: 'estado_expediente', header: 'Estado del expediente', sortable: true },\n  { key: 'asignado_a', header: 'Asignado a', sortable: true },\n  { key: 'depto_mpio', header: 'Depto / Mpio', sortable: true },\n  { key: 'proveedor', header: 'Proveedor', sortable: true },\n  { key: 'servicio', header: 'Servicio', sortable: true },\n  { key: 'clase', header: 'Clase', sortable: true },\n  { key: 'gestor_coordinacion', header: 'Gestor', sortable: true },\n])",
+  "actions": [
+    {
+      "label": "",
+      "icon": "fa fa-pencil",
+      "title": "Editar",
+      "className": "btn btn-sm btn-primary",
+      "onClick": "if(row.id) {\n  try {\n    window.parent.postMessage(\n      {\n        type: \"advancedSearch\",\n        route: `/agent/update/${row.id}?action=edit`\n      },\n      \"*\"  // origen permitido\n    );\n  } catch(error){\n    console.error(error)\n  }\n} else {\n  console.log(\"Id no existe\")\n}\n\n\n",
+      "disabled": false
+    }
+  ],
+  "stickyCheckboxColumn": true,
+  "label": "DataTable Component",
+  "tableView": false,
+  "key": "data_table",
+  "input": true,
+  "placeholder": "",
+  "prefix": "",
+  "customClass": "",
+  "suffix": "",
+  "multiple": false,
+  "defaultValue": null,
+  "protected": false,
+  "unique": false,
+  "persistent": true,
+  "hidden": false,
+  "clearOnHide": true,
+  "refreshOn": "",
+  "redrawOn": "",
+  "modalEdit": false,
+  "dataGridLabel": false,
+  "labelPosition": "top",
+  "description": "",
+  "errorLabel": "",
+  "tooltip": "",
+  "hideLabel": false,
+  "tabindex": "",
+  "disabled": false,
+  "autofocus": false,
+  "dbIndex": false,
+  "customDefaultValue": "",
+  "calculateValue": "",
+  "calculateServer": false,
+  "widget": null,
+  "attributes": {},
+  "validateOn": "change",
+  "validate": {
+    "required": false,
+    "custom": "",
+    "customPrivate": false,
+    "strictDateValidation": false,
+    "multiple": false,
+    "unique": false
+  },
+  "conditional": {
+    "show": null,
+    "when": null,
+    "eq": ""
+  },
+  "overlay": {
+    "style": "",
+    "left": "",
+    "top": "",
+    "width": "",
+    "height": ""
+  },
+  "allowCalculateOverride": false,
+  "encrypted": false,
+  "showCharCount": false,
+  "showWordCount": false,
+  "properties": {},
+  "allowMultipleMasks": false,
+  "addons": [],
+  "id": "e3pj2x",
+  "keyModified": true
+}

@@ -1,0 +1,213 @@
+name: ci
+
+on:
+    pull_request:
+        branches: [develop, master, 'release/**']
+    push:
+        branches: [develop, master, 'release/**']
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    lint:
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+              with:
+                  fetch-depth: 0
+
+            - uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+
+            - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+              with:
+                  node-version: 22
+                  cache: pnpm
+
+            - run: pnpm install --frozen-lockfile
+
+            - name: Prettier (solo archivos cambiados vs base)
+              run: |
+                  BASE=$(git merge-base "origin/${{ github.base_ref }}" HEAD)
+                  CHANGED=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD)
+                  if [ -n "$CHANGED" ]; then
+                      echo "$CHANGED" | xargs -d '\n' pnpm exec prettier --check --ignore-unknown
+                  else
+                      echo "Sin archivos cambiados."
+                  fi
+
+    # Sharding + 2 workers: un runner estandar tiene 2 vCPU y 7 GB. Con los 6
+    # workers por defecto (6 GB de heap cada uno) el runner colapso a los 41 min
+    # -pool timeouts, 16 min congelado y SIGTERM- sin llegar ni al 40% de la
+    # suite (medido 2026-08-24, run 32750249075).
+    test-core:
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+        strategy:
+            fail-fast: false
+            matrix:
+                shard: [1, 2, 3, 4]
+        services:
+            # La suite clona una BD por archivo de test desde una plantilla
+            # (CREATE DATABASE ... TEMPLATE ...), por eso necesita CREATEDB.
+            postgres:
+                image: postgres:16@sha256:95206741a5b214807675e14165369d05b93a9cf692223b616d07cca227e74b0b
+                env:
+                    POSTGRES_USER: kace_test
+                    POSTGRES_PASSWORD: kace_test
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U kace_test"
+                    --health-interval 5s
+                    --health-timeout 5s
+                    --health-retries 20
+        steps:
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+            - uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+
+            - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+              with:
+                  node-version: 22
+                  cache: pnpm
+
+            - run: pnpm install --frozen-lockfile
+
+            # La suite carga ../../.env (jest.config.js de core). Sin el, los tests
+            # que resuelven el tenant local mueren con "subdomain: The value cannot
+            # be null" (verificado 2026-08-24, run 32756084063: 25 suites en el shard 1).
+            - name: Entorno sintetico de CI
+              run: cp scripts/ci/ci.env .env
+
+            - name: '@kace/core — shard ${{ matrix.shard }}/4'
+              # JEST_SHARD via env, no como argumento: `pnpm run tests -- --shard=1/4`
+              # llega a jest como `-- --shard\=1/4` (= escapado) y lo toma por patron
+              # de busqueda -> "0 matches" (verificado 2026-08-24, run 32755186933).
+              run: pnpm --filter "@kace/core" run tests
+              env:
+                  # El runner corre en UTC y el proyecto asume Bogota: sin esto,
+                  # los calculos de horario laboral (SLA, dias habiles) dan otro
+                  # resultado. Coincide con TIMEZONE del .env.
+                  TZ: America/Bogota
+                  JEST_SHARD: ${{ matrix.shard }}/4
+                  JEST_MAX_WORKERS: 2
+                  DB_TEST_HOST: localhost
+                  DB_TEST_PORT: '5432'
+                  DB_TEST_USER: kace_test
+                  DB_TEST_PASSWORD: kace_test
+
+            # Contrato de onescript_reference_id en el API. Solo el unitario del schema:
+            # el E2E de la Lambda necesita SAM local. Un solo shard basta.
+            - name: '@kace/api-one-script — OneScriptSchema'
+              if: ${{ !cancelled() && matrix.shard == 1 }}
+              run: pnpm --filter '@kace/api-one-script' run test -- tests/OneScriptSchema.test.mjs
+
+    test-saas:
+        if: github.event_name == 'pull_request'
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+            - uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+            - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+              with:
+                  node-version: 22
+                  cache: pnpm
+            - run: pnpm install --frozen-lockfile
+            # Falla si el import '?worker&url' o el bump de major rompen el bundle.
+            - run: pnpm --filter './apps/kace-saas' run build
+            # Falla si la CSP deja de declarar worker-src 'self' blob:.
+            - run: pnpm --filter './apps/kace-saas' exec vitest run infraestructura
+            # Contrato de onescript_reference_id en el formulario (form + schema).
+            - name: 'kace-saas — OneScript form + schema'
+              run: pnpm --filter './apps/kace-saas' exec vitest run src/pages/OneScript src/schemas/OneScriptSchema
+
+    # Check unico y estable para la proteccion de ramas: no cambia de nombre si
+    # se ajusta el numero de shards.
+    tests-passed:
+        if: always() && github.event_name == 'pull_request'
+        needs: [lint, test-core, test-saas]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Verificar resultado de lint y shards
+              run: |
+                  echo "lint:      ${{ needs.lint.result }}"
+                  echo "test-core: ${{ needs.test-core.result }}"
+                  echo "test-saas: ${{ needs.test-saas.result }}"
+                  [ "${{ needs.lint.result }}" = "success" ] || exit 1
+                  [ "${{ needs.test-core.result }}" = "success" ] || exit 1
+                  [ "${{ needs.test-saas.result }}" = "success" ] || exit 1
+                  echo "OK"
+
+    security-scan:
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+            # Instalacion directa pineada por version + checksum (§6.3). Se dejo de usar
+            # aquasecurity/trivy-action porque su instalador interno (setup-trivy) falla
+            # de forma reproducible en los runners (verificado 2026-08-11, 2 intentos).
+            - name: Instalar Trivy (version y checksum pineados)
+              env:
+                  TRIVY_VERSION: 0.73.0
+                  TRIVY_SHA256: 2edd39da482bb4e9831962487b68f68e3928ec3137794757f54d00383d79547b
+              run: |
+                  curl -sSfL -o trivy.tgz "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+                  echo "${TRIVY_SHA256}  trivy.tgz" | sha256sum -c -
+                  tar xzf trivy.tgz trivy
+                  sudo mv trivy /usr/local/bin/trivy
+                  rm trivy.tgz
+                  trivy --version
+
+            # SBOM CycloneDX (§3.5). Lo emite el propio Trivy ya instalado: meter
+            # anchore/sbom-action seria una action de terceros mas que auditar y
+            # SHA-pinear para producir el mismo artefacto. Medido 2026-08-24:
+            # ~1390 componentes, CycloneDX 1.7, 5,7 s.
+            #
+            # Va ANTES de los gates: si fuera despues, un gate rojo abortaria el job
+            # y no habria SBOM justo cuando hace falta para investigar.
+            - name: Generar SBOM CycloneDX
+              run: trivy fs --format cyclonedx --output sbom.cdx.json .
+
+            - name: Publicar SBOM
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+              with:
+                  name: sbom
+                  path: sbom.cdx.json
+                  retention-days: 90
+
+            # Gate de secretos (politica DevSecOps §3.6, pre-build): BLOQUEANTE.
+            # Verificado 2026-08-11: el arbol trackeado esta limpio.
+            - name: Trivy — deteccion de secretos (bloqueante)
+              run: trivy fs --scanners secret --exit-code 1 .
+
+            # Gate de vulnerabilidades (§3.6, pre-build): BLOQUEANTE desde 2026-08-24.
+            # El triage inicial (1 critical + 38 high) se cerro consolidando el bloque
+            # `overrides` de pnpm-workspace.yaml; el arbol quedo en 0 Critical/High.
+            # Excepciones justificadas: .trivyignore, siempre con fecha de caducidad.
+            #
+            # La tabla va a stdout Y al artifact: con --output a secas, un fallo del
+            # gate no imprime nada en el log y el motivo queda invisible.
+            - name: Trivy — vulnerabilidades de dependencias (bloqueante)
+              run: |
+                  set -o pipefail
+                  trivy fs --scanners vuln --severity CRITICAL,HIGH --exit-code 1 \
+                      --format table . | tee trivy-vulns.txt
+
+            - name: Publicar informe de vulnerabilidades
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+              with:
+                  name: trivy-vuln-report
+                  path: trivy-vulns.txt
+                  retention-days: 30

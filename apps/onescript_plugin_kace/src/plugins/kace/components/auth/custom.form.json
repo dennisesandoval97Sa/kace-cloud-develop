@@ -1,0 +1,46 @@
+{
+  "key": "kace_config",
+  "label": "Kace Config",
+  "components": [
+    {
+      "key": "url_api",
+      "type": "url",
+      "label": "URL API",
+      "placeholder": "https://kaceapi.kace-cloud.com",
+      "validate": {
+        "required": true,
+        "custom": "valid = !input.endsWith('/') ? true : 'La URL no debe terminar en /';"
+      }
+    },
+    {
+      "key": "tenant_id",
+      "type": "textfield",
+      "label": "Tenant ID",
+      "placeholder": "8ce06db5-0dd3-4aba-a63d-42ed8f96ca4a",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "key": "cognito_client_id",
+      "type": "textfield",
+      "label": "Cognito Client ID",
+      "placeholder": "abcde12345example"
+    },
+    {
+      "key": "cognito_url",
+      "type": "url",
+      "label": "URL Cognito",
+      "placeholder": "https://cognito.mazoncognito.com",
+      "validate": {
+        "custom": "valid = !input.endsWith('/') ? true : 'La URL no debe terminar en /';"
+      }
+    },
+    {
+      "key": "one_script_form_id",
+      "type": "textfield",
+      "label": "Formulario One Script ID",
+      "placeholder": "6adb2852-af60-48b9-b590-593f33f4a6b4"
+    }
+  ]
+}

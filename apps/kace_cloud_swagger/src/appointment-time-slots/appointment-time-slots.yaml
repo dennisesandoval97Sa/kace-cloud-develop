@@ -1,0 +1,259 @@
+Appointments-time-slots:
+  get:
+    tags:
+      - Appointments time slots
+    summary: Get all Appointments time slots instances
+    responses:
+      '200':
+        description: A list of Appointments time slots
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentsTimeSlotsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post: 
+    tags: 
+      - Appointments time slots
+    summary: Create a new Appointments time slots instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - agenda_id -> ID de una agenda (Agendas)
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AppointmentsTimeSlotsCreate"
+    responses:
+      '201':
+        description: Appointments time slots created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+Appointments-time-slots_id:
+  get:
+    tags:
+      - Appointments time slots
+    summary: Fetch an Appointments time slots instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Appointments time slots instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/AppointmentsTimeSlots"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post: 
+    tags: 
+      - Appointments time slots
+    summary: Update Appointments time slots instance 
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - agenda_id -> ID de una agenda (Agendas)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AppointmentsTimeSlotsUpdate"
+    responses:
+      '200':
+        description: Appointments time slots updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+Appointments-time-slots_delete:
+  get:
+    tags:
+      - Appointments time slots
+    summary: Delete Appointments time slots instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Appointments time slots deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+Appointments-time-slots_search:
+  post:
+    tags:
+      - Appointments time slots
+    summary: Search AppointmentsTimeSlots instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Appointments time slots instances fetched successfully
+        content:
+          application/json:
+            schema:
+              data:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AppointmentsTimeSlots"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'                
+
+components:
+  schemas:
+    AppointmentsTimeSoltsBase:
+      type: object
+      properties:
+        description:
+          type: string
+          example: description example
+        start_time:
+          type: string
+          format: time
+          example: 08:00
+        end_time:
+          type: string
+          format: time
+          example: 09:00
+        agenda_id:
+          type: string
+          format: uuid
+        is_active:
+          type: boolean
+          example: true
+        max_appointments:
+          type: number
+          example: 10
+          
+    AppointmentsTimeSlots:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AppointmentsTimeSoltsBase"
+        - type: object
+          properties:
+            created_at:
+              type: string
+              format: date-time
+            created_by:
+              type: string
+              format: uuid
+            updated_at:
+              type: string
+              format: date-time
+            updated_by:
+              type: string
+              format: uuid
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: description
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: description example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+    AppointmentsTimeSlotsCollection:
+      type: object
+      properties:
+        message:
+          $ref: "../common/fields.yaml#/schemas/message_ok"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/AppointmentsTimeSlots"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: '0'
+    AppointmentsTimeSlotsCreate:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AppointmentsTimeSoltsBase"
+
+    AppointmentsTimeSlotsUpdate:
+      allOf:
+        - $ref: "#/components/schemas/AppointmentsTimeSoltsBase"

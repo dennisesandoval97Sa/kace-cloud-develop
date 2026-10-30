@@ -1,0 +1,29 @@
+{
+    "service": "schemas",
+    "postmanFolder": "Schemas",
+    "endpoints": [
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/schemas/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/schemas/search",
+            "requiresId": false,
+            "body": {
+                "filter": [],
+                "limit": 10,
+                "offset": 0
+            }
+        },
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/schemas",
+            "requiresId": false
+        }
+    ]
+}

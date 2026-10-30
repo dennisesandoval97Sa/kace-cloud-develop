@@ -1,0 +1,46 @@
+classifications-levels:
+  get:
+    tags:
+      - Classifications Levels
+    summary: Get all Classifications Levels
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - level -> El nivel de la clasificacion, ejemplo: nivel1, nivel2... hasta nivel10
+    parameters:
+      - name: level
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Returns a list of Classifications Levels
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassificationCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    ClassificationCollection:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Success
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                type: string
+                example: "funuf"
+          example:
+            items: ["funuf", "cutoh", "vocek", "sulwo", "ozepa"]
+        metadata:
+          type: object

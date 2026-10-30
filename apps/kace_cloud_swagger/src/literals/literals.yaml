@@ -1,0 +1,385 @@
+literals:
+  get:
+    tags:
+      - Literals
+    summary: Get all literals
+    responses:
+      '200':
+        description: Returns a list of literals
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LiteralsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Literals
+    summary: Create a literal instance
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - tipo_literal -> ID de un literal (Literals)
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateLiteral"
+    responses:
+      '201':
+        description: literal instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  
+literals_id:
+  get:
+    tags:
+      - Literals
+    summary:  Fetch a literal by ID
+    parameters: 
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        descripcion: Return a literal instance
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: "#/components/schemas/Literal"
+                metadata:
+                  type: object
+            
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Literals
+    summary: Update a literal instance
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - tipo_literal -> ID de un literal (Literals)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateLiteral"
+    responses:
+      '200':
+        description: literal updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+
+literals_delete:
+  get:
+    tags:
+      - Literals
+    summary: Delete a literal instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: literal instance deleted succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+
+literals_search:
+  post:
+    tags:
+      - Literals
+    summary: Search literals instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of literals which match with the search
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/LiteralsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+literals_list:
+  get:
+    tags:
+      - Literals
+    summary: List Literal options (value/label) by type
+    description: Returns the fields of a literal, mapped as value (UUID) and label (text) pairs for use in selects.
+    parameters:
+          - name: id
+            in: path
+            required: true
+            description: ID **tipo_literal**
+            schema:
+              type: string
+              format: uuid
+    responses:
+        '200':
+          description: A list of Literals (select options)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiteralSelectCollectionResponse'
+              examples:
+                ok:
+                  summary: Example
+                  value:
+                    data:
+                      items:
+                        - value: "e6aea5d9-c640-4f55-82ca-9fc1af955f3f"
+                          label: "Opción A"
+                        - value: "a4b02c17-2bb7-49b8-8d5c-8e21dfb40b42"
+                          label: "Opción B"
+                    metadata:
+                      count: 2
+        '400':
+          description: ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                badRequest:
+                  value:
+                    message: "Invalid id"
+        '403':
+          description: Sin permiso para leer el recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                forbidden:
+                  value:
+                    message: "You do not have permission to read this resource."
+        '500':
+          $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+
+components:
+  schemas:
+    tipo_literal:
+      type: string
+      format: uuid
+    nombre:
+      type: string
+      example: literal name
+    is_active:
+      oneOf:
+      - type: boolean
+      - type: number
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    Deleted:
+      type: object
+      properties:
+        deleted_at:
+          $ref: "../common/fields.yaml#/schemas/deleted_at"
+        deleted_by:
+          $ref: "../common/fields.yaml#/schemas/deleted_by"
+    LiteralBase:
+      type: object
+      properties:
+        tipo_literal:
+          $ref: "#/components/schemas/tipo_literal"
+        nombre:
+          $ref: "#/components/schemas/nombre"
+        is_active:
+          $ref: "#/components/schemas/is_active"
+    Literal:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/LiteralBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+        - $ref: "#/components/schemas/Deleted"
+    LiteralsCollection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Literal"
+        metadata:
+            type: object
+            properties:
+              count:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    count:
+                      type: string
+                      example: '198'
+    CreateLiteral:
+        allOf:
+          - type: object  
+            properties:
+              id:
+                $ref: "../common/fields.yaml#/schemas/id"
+          - $ref: "#/components/schemas/LiteralBase"
+          - type: object
+            properties:
+              created_at:
+                $ref: "../common/fields.yaml#/schemas/created_at"
+              created_by:
+                $ref: "#/components/schemas/created_by"
+    UpdateLiteral:
+        allOf:
+        - $ref: "#/components/schemas/LiteralBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: nombre
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: example name
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+    LiteralSelectItem:
+      type: object
+      properties:
+        value:
+          type: string
+          format: uuid
+          description: ID del literal
+        label:
+          type: string
+          description: Texto a mostrar en el select
+      required: [value, label]
+    LiteralSelectCollectionData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiteralSelectItem'
+      required: [items]
+
+    LiteralSelectCollectionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LiteralSelectCollectionData'
+        metadata:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 2
+          required: [count]
+      required: [data, metadata]
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          nullable: true
+      required: [message]

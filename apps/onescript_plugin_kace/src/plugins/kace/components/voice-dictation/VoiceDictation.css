@@ -1,0 +1,43 @@
+.tomato {
+  color: tomato;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.text-l {
+  font-size: large;
+}
+
+.mic-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition:
+    transform 120ms ease,
+    background 120ms ease,
+    box-shadow 120ms ease;
+  font-size: 18px;
+}
+
+.mic-button:hover {
+  transform: translateY(-1px);
+}
+
+.mic-button.listening {
+  background: #e84e4e;
+  color: white;
+  box-shadow: 0 6px 18px rgba(232, 78, 78, 0.18);
+}
+
+.mic-emoji {
+  line-height: 1;
+}

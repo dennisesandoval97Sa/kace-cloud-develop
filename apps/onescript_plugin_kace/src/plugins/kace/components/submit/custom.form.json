@@ -1,0 +1,14 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "floatingButton",
+      "type": "checkbox",
+      "label": "Botón flotante",
+      "input": true,
+      "defaultValue": false,
+      "description": "Si está activado, el botón Guardar se mostrará como un botón flotante fijo en la interfaz, permitiendo acceso rápido incluso al hacer scroll."
+    }
+  ]
+}

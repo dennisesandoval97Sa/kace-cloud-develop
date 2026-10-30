@@ -1,0 +1,416 @@
+classification:
+  get:
+    tags:
+      - Classifications
+    summary: Get all classifications
+    responses:
+      '200':
+        description: Returns a list of classifications
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassificationCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post:
+    tags:
+      - Classifications
+    summary: Create a classification instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - flujo_id -> ID de un flujo (Flows)
+      - ans_id -> ID de un ans (Ans)
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateClassification"
+    responses:
+      '201':
+        description: Classification instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+classification_id:
+  get:
+    tags:
+      - Classifications
+    summary: Get a classification instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Returns a classification instance
+        content:
+          application/json:
+            schema:
+              properties:
+                message:
+                  $ref: "#/components/schemas/message"
+                data:
+                  $ref: "#/components/schemas/Classification"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post:
+    tags:
+      - Classifications
+    summary: Update a classification instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - flujo_id -> ID de un flujo (Flows)
+      - ans_id -> ID de un ans (Ans)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateClassification"
+    responses:
+      '200':
+        description: Classification instance updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+classification_delete:
+  get:
+    tags:
+      - Classifications
+    summary: Delete a specific classification
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Classification instance deleted succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+classification_search:
+  post:
+    tags:
+      - Classifications
+    summary:  Search a classification by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of classifications
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassificationCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+classification_list:
+  get:
+    tags:
+      - Classifications
+    summary: Get classifications as select options
+    description: |
+      Returns all classifications mapped as select options (`value`/`label`).
+      The `label` is built by concatenating Nivel1..Nivel10 (present values) joined by `>`.
+    responses:
+        '200':
+          description: A list of classifications (select options)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/classifications_select_collection'
+              examples:
+                ok:
+                  summary: Example
+                  value:
+                    data:
+                      items:
+                        - value: "e6aea5d9-c640-4f55-82ca-9fc1af955f3f"
+                          label: "Nivel1>Nivel2"
+                        - value: "a4b02c17-2bb7-49b8-8d5c-8e21dfb40b42"
+                          label: "A>B>C"
+                    metadata:
+                      count: 2
+        '404':
+          $ref: '../common/fields.yaml#/schemas/not_found_response'
+        '403':
+          description: Sin permiso para leer el recurso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                forbidden:
+                  value:
+                    message: "You do not have permission to read this resource."
+        '500':
+          $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+
+components:
+  schemas:
+    message:
+      type: string
+      example: Success
+    nivel1:
+      type: string
+      example: "nivel 1"
+    nivel2:
+      type: string
+      example: "nivel 2"
+    nivel3:
+      type: string
+      example: "nivel 3"
+    nivel4:
+      type: string
+      example: "nivel 4"
+    nivel5:
+      type: string
+      example: "nivel 5"
+    nivel6:
+      type: string
+      example: "nivel 6"
+    nivel7:
+      type: string
+      example: "nivel 7"
+    nivel8:
+      type: string
+      example: "nivel 8"
+    nivel9:
+      type: string
+      example: "nivel 9"
+    nivel10:
+      type: string
+      example: "nivel 10"
+    flujo_id:
+      type: string
+      format: uuid
+    ans_id:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    updated_by:
+      type: string
+      format: uuid
+    is_active:
+      oneOf:
+        - type: number
+        - type: boolean
+      example: true
+    can_start_sub_cases_flow:
+      type: boolean
+      example: true
+    ClassificationBase:
+      type: object
+      properties:
+        nivel1:
+          $ref: "#/components/schemas/nivel1"
+        nivel2:
+          $ref: "#/components/schemas/nivel2"
+        nivel3:
+          $ref: "#/components/schemas/nivel3"
+        nivel4:
+          $ref: "#/components/schemas/nivel4"
+        nivel5:
+          $ref: "#/components/schemas/nivel5"
+        nivel6:
+          $ref: "#/components/schemas/nivel6"
+        nivel7:
+          $ref: "#/components/schemas/nivel7"
+        nivel8:
+          $ref: "#/components/schemas/nivel8"
+        nivel9:
+          $ref: "#/components/schemas/nivel9"
+        nivel10:
+          $ref: "#/components/schemas/nivel10"
+        flujo_id:
+          $ref: "#/components/schemas/flujo_id"
+        ans_id:
+          $ref: "#/components/schemas/ans_id"
+        is_active:
+          $ref: "#/components/schemas/is_active"
+        can_start_sub_cases_flow:
+          $ref: "#/components/schemas/can_start_sub_cases_flow"
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    Classification:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/ClassificationBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    ClassificationCollection:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Classification"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: "1"
+    CreateClassification:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/ClassificationBase"
+        - type: object
+          properties:
+            created_by:
+              $ref: "#/components/schemas/created_by"
+            created_at:
+              $ref: "../common/fields.yaml#/schemas/created_at"
+    UpdateClassification:
+      allOf:
+        - $ref: "#/components/schemas/ClassificationBase"
+        - type: object
+          properties:
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: nivel1
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: level example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+    classifications_select_item:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Classification ID (UUID)
+        label:
+          type: string
+          description: Concatenation of Nivel1..Nivel10 joined by ">"
+      required: [value, label]
+
+    classifications_select_data:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/classifications_select_item'
+      required: [items]
+
+    classifications_select_collection:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/classifications_select_data'
+        metadata:
+          type: object
+          properties:
+            count:
+              type: integer
+              example: 2
+          required: [count]
+      required: [data, metadata]
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          nullable: true
+      required: [message]

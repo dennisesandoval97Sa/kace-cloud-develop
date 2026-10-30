@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "entity": "case_client",
+      "type": "and",
+      "field": "cliente_id",
+      "value": "a66f5b4e-e4d2-4d53-97e9-8ad0a3b1c0a0",
+      "operator": "eq"
+    },
+    {
+      "entity": "cases",
+      "type": "and",
+      "field": "fecha_resolucion",
+      "value": "null",
+      "operator": "null"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+    "service": "states",
+    "postmanFolder": "States",
+    "endpoints": [
+        {
+            "id": "view-list-list",
+            "method": "GET",
+            "path": "/states/list",
+            "requiresId": false
+        },
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/states",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/states/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/states/search",
+            "requiresId": false,
+            "body": {
+                "filter": [
+                    {
+                        "field": "nombre",
+                        "operator": "like",
+                        "value": "example name",
+                        "type": "AND"
+                    },
+                    {
+                        "field": "nombre",
+                        "operator": "like",
+                        "value": "example name",
+                        "type": "AND"
+                    }
+                ],
+                "limit": 10,
+                "offset": 0
+            }
+        }
+    ]
+}

@@ -1,0 +1,42 @@
+ans-types:
+  get:
+    tags:
+      - Ans Types
+    summary: Get all ans types
+    description: Get all ans types
+    operationId: getAnsTypes
+    responses:
+      '200':
+        description: A list of ans types
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnsTypesCollection'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+  schemas:
+    AnsTypesCollection:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Success
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    example: DAYS
+                  value:
+                    type: string
+                    example: days
+        metadata:
+          type: object

@@ -1,0 +1,265 @@
+.tomato {
+  color: tomato;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.text-l {
+  font-size: large;
+}
+
+/* Checkbox column: keep checkboxes inside table and centered in cell */
+.data-table__th-checkbox,
+.data-table__td-checkbox {
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.5rem;
+}
+
+/* Wrappers: full cell area + flex to center checkbox exactly in the middle */
+.data-table__th-checkbox-wrap,
+.data-table__td-checkbox-wrap {
+  width: 100%;
+  min-height: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.data-table__th-checkbox .form-check-input,
+.data-table__td-checkbox .form-check-input {
+  display: block;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Header checkbox: slightly larger than row checkboxes */
+.data-table__form-check-input--header {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Bulk actions bar: explicit gap between label, select and button */
+.data-table__bulk-actions {
+  gap: 1rem;
+}
+
+/* Modal: fijo y por encima del host en desarrollo y producción */
+.data-table__bulk-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1060;
+  display: block !important;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.data-table__bulk-modal .data-table__bulk-modal-dialog {
+  position: relative;
+  z-index: 1061;
+  margin: 1.75rem auto;
+  max-width: 500px;
+}
+
+/* Scroll horizontal: la tabla puede superar el ancho del contenedor */
+.data-table__scroll-wrap {
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table__scroll-wrap .data-table__table {
+  width: 100%;
+  min-width: max-content;
+  table-layout: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Tipografía y celdas más compactas */
+.data-table__table--compact {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.data-table__table--compact thead th,
+.data-table__table--compact tbody td {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+  padding-left: 0.45rem;
+  padding-right: 0.45rem;
+  vertical-align: middle;
+}
+
+.data-table__table--compact .data-table__th-checkbox,
+.data-table__table--compact .data-table__td-checkbox {
+  padding: 0.3rem 0.35rem;
+}
+
+.data-table__scroll-wrap--no-scroll {
+  overflow-x: visible;
+}
+
+.data-table__scroll-wrap--no-scroll .data-table__table {
+  min-width: 0;
+}
+
+/* Sticky: fondo opaco para no ver el contenido al desplazar */
+.data-table__scroll-wrap .table thead th.data-table__th--sticky {
+  background-color: #e9ecef;
+}
+
+/* Checkbox sticky: mismo criterio que Acciones (sombra hacia el contenido que pasa debajo) */
+.data-table__scroll-wrap .table thead th.data-table__th--sticky-checkbox {
+  background-color: #e9ecef;
+  box-shadow: 3px 0 8px rgba(0, 0, 0, 0.12);
+}
+
+/*
+ * Celdas sticky: fondos siempre opacos. rgba tipo Bootstrap (table-active / striped)
+ * deja ver el contenido que pasa bajo al hacer scroll horizontal (especialmente con fila seleccionada).
+ */
+.data-table__scroll-wrap .table tbody tr .data-table__td--sticky {
+  background-color: #ffffff;
+}
+
+.data-table__scroll-wrap .table tbody tr .data-table__td--sticky-checkbox {
+  background-color: #ffffff;
+  box-shadow: 3px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-striped.data-table__scroll-wrap
+  .table
+  tbody
+  tr:nth-of-type(odd)
+  .data-table__td--sticky,
+.data-table__scroll-wrap
+  .table-striped
+  tbody
+  tr:nth-of-type(odd)
+  .data-table__td--sticky {
+  background-color: #f2f2f2;
+}
+
+.table-striped.data-table__scroll-wrap
+  .table
+  tbody
+  tr:nth-of-type(odd)
+  .data-table__td--sticky-checkbox,
+.data-table__scroll-wrap
+  .table-striped
+  tbody
+  tr:nth-of-type(odd)
+  .data-table__td--sticky-checkbox {
+  background-color: #f2f2f2;
+  box-shadow: 3px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.data-table__scroll-wrap .table tbody tr.table-active .data-table__td--sticky {
+  background-color: #ebebeb !important;
+}
+
+.data-table__scroll-wrap
+  .table
+  tbody
+  tr.table-active
+  .data-table__td--sticky-checkbox {
+  background-color: #ebebeb !important;
+  box-shadow: 3px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Columna Acciones fijada a la derecha del área con scroll */
+.data-table__scroll-wrap .table thead th.data-table__th--sticky-right {
+  background-color: #e9ecef;
+  box-shadow: -3px 0 6px rgba(0, 0, 0, 0.08);
+}
+
+.data-table__scroll-wrap .table tbody td.data-table__td--sticky-right {
+  background-color: #fff;
+  box-shadow: -3px 0 6px rgba(0, 0, 0, 0.06);
+}
+
+.table-striped.data-table__scroll-wrap
+  .table
+  tbody
+  tr:nth-of-type(odd)
+  td.data-table__td--sticky-right,
+.data-table__scroll-wrap
+  .table-striped
+  tbody
+  tr:nth-of-type(odd)
+  td.data-table__td--sticky-right {
+  background-color: #f2f2f2;
+}
+
+.data-table__scroll-wrap
+  .table
+  tbody
+  tr.table-active
+  td.data-table__td--sticky-right {
+  background-color: #ebebeb !important;
+}
+
+/* Redimensionar columnas: arrastrar el borde derecho del encabezado */
+.data-table__th--resizable {
+  position: relative;
+}
+
+.data-table__col-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  margin-right: -3px;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  z-index: 6;
+  border-left: 1px solid rgba(108, 117, 125, 0.45);
+  background-color: rgba(248, 249, 250, 0.95);
+}
+
+/* Indicador tipo “empuñadura” siempre visible */
+.data-table__col-resize-handle::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 14px;
+  border-radius: 1px;
+  opacity: 0.85;
+  background: repeating-linear-gradient(
+    to bottom,
+    #6c757d 0px,
+    #6c757d 2px,
+    transparent 2px,
+    transparent 4px
+  );
+}
+
+.data-table__col-resize-handle:hover,
+.data-table__col-resize-handle:focus-visible {
+  background-color: rgba(0, 123, 255, 0.18);
+  border-left-color: rgba(0, 123, 255, 0.65);
+  outline: none;
+}
+
+.data-table__col-resize-handle:hover::before,
+.data-table__col-resize-handle:focus-visible::before {
+  opacity: 1;
+  background: repeating-linear-gradient(
+    to bottom,
+    #007bff 0px,
+    #007bff 2px,
+    transparent 2px,
+    transparent 4px
+  );
+}

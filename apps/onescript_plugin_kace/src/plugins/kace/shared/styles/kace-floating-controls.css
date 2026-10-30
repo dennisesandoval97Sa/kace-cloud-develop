@@ -1,0 +1,723 @@
+/**
+ * Coordinates fixed Kace UI controls (Timer, Estados drawer tab, floating Guardar).
+ * Vertical order: Timer → Estados → Guardar.
+ * Typography and padding use shared tokens so all floating tabs stay uniform at every breakpoint.
+ */
+:root {
+  --kace-floating-case-refresh-reserve: 0px;
+  --kace-floating-toolbar-z: 10050;
+  --kace-floating-timer-z: 10058;
+  --kace-floating-drawer-tab-z: 10052;
+  --kace-floating-submit-z: 10048;
+  --kace-floating-stack-gap: 16px;
+  --kace-floating-timer-slot-h: 124px;
+  --kace-floating-drawer-slot-h: 102px;
+  --kace-floating-submit-slot-h: 110px;
+  /* Uniform typography (aligned with Bootstrap / Form.io sans stack) */
+  --kace-floating-font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --kace-floating-font-weight: 600;
+  --kace-floating-label-font-size: 0.875rem;
+  --kace-floating-timer-digit-font-size: 1rem;
+  /* Strip buttons: first value = padding along the text run (vertical-rl strip), second = toward content */
+  --kace-floating-btn-pad-a: 12px;
+  --kace-floating-btn-pad-b: 8px;
+  /* Font Awesome glyph size when icon-only */
+  --kace-floating-icon-glyph-size: 1rem;
+  /* Timer drawer body: keep time/actions off the inner border (matches Bootstrap ~p-2 / p-3) */
+  --kace-floating-timer-body-pad-inline: 0.75rem;
+  --kace-floating-timer-body-pad-block-end-offset: 6px;
+  /* Timer drawer open panel: wide enough for HH:MM:SS + icon actions + padding (no horizontal clip). */
+  --kace-floating-timer-drawer-panel-max-width: 320px;
+}
+
+.kace-drawer-toggle-button,
+.kace-timer-toggle-button,
+.kace-floating-submit {
+  font-family: var(--kace-floating-font-family) !important;
+  font-weight: var(--kace-floating-font-weight) !important;
+}
+
+.kace-timer-overlay .kace-timer-icon-button {
+  font-family: var(--kace-floating-font-family) !important;
+  font-size: var(--kace-floating-label-font-size) !important;
+}
+
+.kace-timer-overlay .kace-timer-actions .btn {
+  font-family: var(--kace-floating-font-family) !important;
+  font-weight: var(--kace-floating-font-weight) !important;
+}
+
+/* Shared: floating save (position applied per breakpoint below) */
+.kace-floating-submit {
+  position: fixed;
+  right: 0;
+  z-index: 99999;
+  cursor: pointer;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  box-sizing: border-box;
+}
+
+@media (max-width: 767.98px) {
+  :root {
+    --kace-mobile-strip-max-width: 42px;
+    --kace-floating-btn-pad-a: 10px;
+    --kace-floating-btn-pad-b: 5px;
+    --kace-floating-label-font-size: 0.8125rem;
+    --kace-mobile-stack-total: calc(
+      var(--kace-floating-case-refresh-reserve) +
+        var(--kace-floating-timer-slot-h) + var(--kace-floating-stack-gap) +
+        var(--kace-floating-drawer-slot-h) + var(--kace-floating-stack-gap) +
+        var(--kace-floating-submit-slot-h)
+    );
+    --kace-mobile-viewport-mid-y: calc(
+      env(safe-area-inset-top, 0px) +
+        (
+          100vh - env(safe-area-inset-top, 0px) -
+            env(safe-area-inset-bottom, 0px)
+        ) *
+        0.5
+    );
+    --kace-mobile-stack-centered-start: calc(
+      var(--kace-mobile-viewport-mid-y) - (var(--kace-mobile-stack-total) * 0.5)
+    );
+    --kace-mobile-stack-anchor-top: clamp(
+      calc(env(safe-area-inset-top, 0px) + var(--kace-floating-stack-gap)),
+      var(--kace-mobile-stack-centered-start),
+      calc(
+        100vh - env(safe-area-inset-bottom, 0px) -
+          var(--kace-floating-stack-gap) - var(--kace-mobile-stack-total)
+      )
+    );
+    --kace-mobile-timer-toggle-top: calc(
+      var(--kace-mobile-stack-anchor-top) +
+        var(--kace-floating-case-refresh-reserve)
+    );
+    --kace-mobile-drawer-toggle-top: calc(
+      var(--kace-mobile-timer-toggle-top) + var(--kace-floating-timer-slot-h) +
+        var(--kace-floating-stack-gap)
+    );
+    --kace-mobile-submit-top: calc(
+      var(--kace-mobile-drawer-toggle-top) +
+        var(--kace-floating-drawer-slot-h) + var(--kace-floating-stack-gap)
+    );
+  }
+
+  .kace-drawer-toggle-button {
+    top: var(--kace-mobile-drawer-toggle-top) !important;
+    right: 0 !important;
+    left: auto !important;
+    width: var(--kace-mobile-strip-max-width) !important;
+    max-width: var(--kace-mobile-strip-max-width) !important;
+    min-height: var(--kace-floating-drawer-slot-h) !important;
+    height: auto !important;
+    max-height: var(--kace-floating-drawer-slot-h) !important;
+    transform: none !important;
+    writing-mode: vertical-rl !important;
+    text-orientation: mixed !important;
+    border-radius: 6px 0 0 6px !important;
+    padding: var(--kace-floating-btn-pad-a) var(--kace-floating-btn-pad-b) !important;
+    font-size: var(--kace-floating-label-font-size) !important;
+    z-index: var(--kace-floating-drawer-tab-z) !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+  }
+
+  .kace-timer-toggle-button {
+    top: var(--kace-mobile-timer-toggle-top) !important;
+    right: 0 !important;
+    left: auto !important;
+    width: var(--kace-mobile-strip-max-width) !important;
+    max-width: var(--kace-mobile-strip-max-width) !important;
+    min-height: var(--kace-floating-timer-slot-h) !important;
+    height: auto !important;
+    max-height: var(--kace-floating-timer-slot-h) !important;
+    transform: none !important;
+    padding: var(--kace-floating-btn-pad-a) var(--kace-floating-btn-pad-b) !important;
+    border-radius: 6px 0 0 6px !important;
+    font-size: var(--kace-floating-label-font-size) !important;
+    z-index: var(--kace-floating-timer-z) !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+  }
+
+  .kace-timer-toggle-text {
+    writing-mode: vertical-rl !important;
+    text-orientation: mixed !important;
+    font-family: var(--kace-floating-font-family) !important;
+    font-weight: var(--kace-floating-font-weight) !important;
+    font-size: var(--kace-floating-label-font-size) !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  .kace-timer-overlay--drawer {
+    top: var(--kace-mobile-timer-toggle-top) !important;
+    right: 0 !important;
+    left: auto !important;
+    width: min(
+      var(--kace-floating-timer-drawer-panel-max-width),
+      calc(100vw - var(--kace-floating-stack-gap))
+    ) !important;
+    max-width: min(
+      var(--kace-floating-timer-drawer-panel-max-width),
+      calc(100vw - var(--kace-floating-stack-gap))
+    ) !important;
+    /* Space from timer strip top to Estados strip top (do not subtract gap again). */
+    max-height: calc(
+      var(--kace-mobile-drawer-toggle-top) - var(--kace-mobile-timer-toggle-top)
+    ) !important;
+    transform: none !important;
+    border-radius: 8px 0 0 8px !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    z-index: var(--kace-floating-timer-z) !important;
+    box-sizing: border-box !important;
+    font-family: var(--kace-floating-font-family) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-header {
+    padding: var(--kace-floating-btn-pad-a) var(--kace-floating-btn-pad-b) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-title {
+    font-family: var(--kace-floating-font-family) !important;
+    font-weight: var(--kace-floating-font-weight) !important;
+    font-size: var(--kace-floating-label-font-size) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-body {
+    padding: var(--kace-floating-btn-pad-a)
+      var(--kace-floating-timer-body-pad-inline)
+      calc(
+        var(--kace-floating-btn-pad-a) +
+          var(--kace-floating-timer-body-pad-block-end-offset)
+      ) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-time {
+    font-family:
+      SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+      monospace !important;
+    font-weight: var(--kace-floating-font-weight) !important;
+    font-size: var(--kace-floating-timer-digit-font-size) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0.4rem !important;
+    font-variant-numeric: tabular-nums !important;
+    letter-spacing: 0.03em !important;
+    color: #212529 !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-pause-label {
+    font-family: var(--kace-floating-font-family) !important;
+    font-size: 0.75rem !important;
+    color: #6c757d !important;
+    margin-bottom: 0.15rem !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-actions .btn {
+    font-size: 0.78rem !important;
+    line-height: 1.25 !important;
+    padding: 0.28rem 0.55rem !important;
+    margin: 0 !important;
+  }
+
+  .kace-drawer-overlay {
+    top: calc(
+      env(safe-area-inset-top, 0px) + var(--kace-floating-stack-gap)
+    ) !important;
+    right: 0 !important;
+    left: auto !important;
+    bottom: calc(
+      env(safe-area-inset-bottom, 0px) + var(--kace-floating-stack-gap)
+    ) !important;
+    width: min(100vw - var(--kace-floating-stack-gap), 420px) !important;
+    max-width: min(100vw - var(--kace-floating-stack-gap), 420px) !important;
+    min-width: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    transform: none !important;
+    border-radius: 8px 0 0 8px !important;
+    z-index: calc(var(--kace-floating-timer-z) + 4) !important;
+    font-family: var(--kace-floating-font-family) !important;
+  }
+
+  .kace-drawer-overlay--hidden {
+    transform: translateX(100%) !important;
+  }
+
+  .kace-drawer-overlay--visible {
+    transform: none !important;
+  }
+
+  .kace-floating-submit {
+    top: var(--kace-mobile-submit-top) !important;
+    right: 0 !important;
+    left: auto !important;
+    width: var(--kace-mobile-strip-max-width) !important;
+    max-width: var(--kace-mobile-strip-max-width) !important;
+    min-height: var(--kace-floating-submit-slot-h) !important;
+    height: auto !important;
+    max-height: var(--kace-floating-submit-slot-h) !important;
+    transform: none !important;
+    writing-mode: vertical-rl !important;
+    text-orientation: mixed !important;
+    padding: var(--kace-floating-btn-pad-a) var(--kace-floating-btn-pad-b) !important;
+    border-radius: 6px 0 0 6px !important;
+    font-size: var(--kace-floating-label-font-size) !important;
+    z-index: var(--kace-floating-submit-z) !important;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --kace-floating-btn-pad-a: 12px;
+    --kace-floating-btn-pad-b: 8px;
+    --kace-floating-label-font-size: 0.875rem;
+    --kace-floating-timer-digit-font-size: 1rem;
+    --kace-floating-desk-stack-total: calc(
+      var(--kace-floating-case-refresh-reserve) +
+        var(--kace-floating-timer-slot-h) + var(--kace-floating-stack-gap) +
+        var(--kace-floating-drawer-slot-h) + var(--kace-floating-stack-gap) +
+        var(--kace-floating-submit-slot-h)
+    );
+    --kace-floating-desk-mid-y: calc(
+      env(safe-area-inset-top, 0px) +
+        (
+          100vh - env(safe-area-inset-top, 0px) -
+            env(safe-area-inset-bottom, 0px)
+        ) *
+        0.5
+    );
+    --kace-floating-desk-stack-anchor-top: clamp(
+      calc(env(safe-area-inset-top, 0px) + var(--kace-floating-stack-gap)),
+      calc(
+        var(--kace-floating-desk-mid-y) -
+          (var(--kace-floating-desk-stack-total) * 0.5)
+      ),
+      calc(
+        100vh - env(safe-area-inset-bottom, 0px) -
+          var(--kace-floating-stack-gap) - var(--kace-floating-desk-stack-total)
+      )
+    );
+    --kace-floating-desk-timer-top: calc(
+      var(--kace-floating-desk-stack-anchor-top) +
+        var(--kace-floating-case-refresh-reserve)
+    );
+    --kace-floating-desk-drawer-top: calc(
+      var(--kace-floating-desk-timer-top) + var(--kace-floating-timer-slot-h) +
+        var(--kace-floating-stack-gap)
+    );
+    --kace-floating-desk-submit-top: calc(
+      var(--kace-floating-desk-drawer-top) +
+        var(--kace-floating-drawer-slot-h) + var(--kace-floating-stack-gap)
+    );
+  }
+
+  .kace-timer-toggle-button,
+  .kace-timer-overlay--drawer {
+    top: var(--kace-floating-desk-timer-top) !important;
+    right: 0 !important;
+    left: auto !important;
+    transform: none !important;
+  }
+
+  .kace-timer-toggle-button {
+    min-height: var(--kace-floating-timer-slot-h) !important;
+    max-height: var(--kace-floating-timer-slot-h) !important;
+    z-index: var(--kace-floating-timer-z) !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: var(--kace-floating-btn-pad-a) var(--kace-floating-btn-pad-b) !important;
+    font-size: var(--kace-floating-label-font-size) !important;
+  }
+
+  .kace-timer-overlay--drawer {
+    /* Space from timer strip top to Estados strip top (do not subtract gap again). */
+    max-height: calc(
+      var(--kace-floating-desk-drawer-top) - var(--kace-floating-desk-timer-top)
+    ) !important;
+    width: min(
+      var(--kace-floating-timer-drawer-panel-max-width),
+      calc(100vw - var(--kace-floating-stack-gap))
+    ) !important;
+    max-width: min(
+      var(--kace-floating-timer-drawer-panel-max-width),
+      calc(100vw - var(--kace-floating-stack-gap))
+    ) !important;
+    z-index: var(--kace-floating-timer-z) !important;
+    box-sizing: border-box !important;
+    font-family: var(--kace-floating-font-family) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-header {
+    padding: var(--kace-floating-btn-pad-a) var(--kace-floating-btn-pad-b) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-title {
+    font-family: var(--kace-floating-font-family) !important;
+    font-weight: var(--kace-floating-font-weight) !important;
+    font-size: var(--kace-floating-label-font-size) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-body {
+    padding: var(--kace-floating-btn-pad-a)
+      var(--kace-floating-timer-body-pad-inline)
+      calc(
+        var(--kace-floating-btn-pad-a) +
+          var(--kace-floating-timer-body-pad-block-end-offset)
+      ) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-time {
+    font-family:
+      SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+      monospace !important;
+    font-weight: var(--kace-floating-font-weight) !important;
+    font-size: var(--kace-floating-timer-digit-font-size) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0.45rem !important;
+    font-variant-numeric: tabular-nums !important;
+    letter-spacing: 0.03em !important;
+    color: #212529 !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-pause-label {
+    font-family: var(--kace-floating-font-family) !important;
+    font-size: 0.75rem !important;
+    color: #6c757d !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-actions .btn {
+    font-size: 0.8125rem !important;
+    line-height: 1.25 !important;
+    padding: 0.3rem 0.65rem !important;
+    margin: 0 !important;
+  }
+
+  .kace-drawer-toggle-button {
+    top: var(--kace-floating-desk-drawer-top) !important;
+    right: 0 !important;
+    left: auto !important;
+    transform: none !important;
+    min-height: var(--kace-floating-drawer-slot-h) !important;
+    max-height: var(--kace-floating-drawer-slot-h) !important;
+    z-index: var(--kace-floating-drawer-tab-z) !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: var(--kace-floating-btn-pad-a) var(--kace-floating-btn-pad-b) !important;
+    font-size: var(--kace-floating-label-font-size) !important;
+  }
+
+  .kace-floating-submit {
+    top: var(--kace-floating-desk-submit-top) !important;
+    right: 0 !important;
+    left: auto !important;
+    transform: none !important;
+    min-height: var(--kace-floating-submit-slot-h) !important;
+    max-height: var(--kace-floating-submit-slot-h) !important;
+    z-index: var(--kace-floating-submit-z) !important;
+    padding: var(--kace-floating-btn-pad-a) var(--kace-floating-btn-pad-b) !important;
+    font-size: var(--kace-floating-label-font-size) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
+/* Tight vertical space: smaller slots; same padding tokens for all three tabs */
+@media (min-width: 768px) and (max-height: 780px) {
+  :root {
+    --kace-floating-timer-slot-h: 108px;
+    --kace-floating-drawer-slot-h: 92px;
+    --kace-floating-submit-slot-h: 96px;
+    --kace-floating-btn-pad-a: 10px;
+    --kace-floating-btn-pad-b: 7px;
+    --kace-floating-label-font-size: 0.8125rem;
+    --kace-floating-timer-digit-font-size: 0.9375rem;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-body {
+    padding: 0.45rem var(--kace-floating-timer-body-pad-inline) 0.6875rem !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-actions .btn {
+    font-size: 0.75rem !important;
+    padding: 0.26rem 0.5rem !important;
+  }
+}
+
+/**
+ * Viewport height under 589px (any width): icon-only tabs + compact slots.
+ * Placed last so it overrides desktop/mobile writing-mode and slot sizes.
+ */
+@media (max-height: 390px) {
+  :root {
+    --kace-floating-timer-slot-h: 64px;
+    --kace-floating-drawer-slot-h: 64px;
+    --kace-floating-submit-slot-h: 64px;
+    --kace-floating-stack-gap: 10px;
+    --kace-floating-btn-pad-a: 8px;
+    --kace-floating-btn-pad-b: 6px;
+    --kace-floating-icon-glyph-size: 1rem;
+    --kace-floating-timer-digit-font-size: 0.9rem;
+  }
+
+  .kace-drawer-toggle-button,
+  .kace-timer-toggle-button,
+  .kace-floating-submit {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    padding: var(--kace-floating-btn-pad-a) var(--kace-floating-btn-pad-b) !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .kace-drawer-toggle-button {
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+  }
+
+  .kace-drawer-toggle-button::before {
+    content: '\f0ae';
+    font-family: FontAwesome, var(--kace-floating-font-family);
+    font-size: var(--kace-floating-icon-glyph-size);
+    font-weight: normal;
+    line-height: 1;
+    color: #ffffff;
+    display: block;
+  }
+
+  .kace-timer-toggle-button .kace-timer-toggle-text {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .kace-timer-toggle-button::before {
+    content: '\f017';
+    font-family: FontAwesome, var(--kace-floating-font-family);
+    font-size: var(--kace-floating-icon-glyph-size);
+    font-weight: normal;
+    line-height: 1;
+    color: #ffffff;
+    display: block;
+  }
+
+  .kace-floating-submit {
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+  }
+
+  .kace-floating-submit::before {
+    content: '\f0c7';
+    font-family: FontAwesome, var(--kace-floating-font-family);
+    font-size: var(--kace-floating-icon-glyph-size);
+    font-weight: normal;
+    line-height: 1;
+    color: #ffffff;
+    display: block;
+  }
+
+  .kace-floating-submit i,
+  .kace-floating-submit span {
+    display: none !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-title {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-header {
+    position: relative;
+    min-height: 28px;
+    padding: 6px var(--kace-floating-btn-pad-b) !important;
+    padding-left: calc(var(--kace-floating-btn-pad-b) + 1.35rem) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-header::before {
+    content: '\f017';
+    font-family: FontAwesome, var(--kace-floating-font-family);
+    font-size: var(--kace-floating-icon-glyph-size);
+    color: #ffffff;
+    position: absolute;
+    left: var(--kace-floating-btn-pad-b);
+    top: 50%;
+    transform: translateY(-50%);
+    line-height: 1;
+  }
+
+  /* Room for HH:MM:SS + icon action cluster to the right */
+  .kace-timer-overlay--drawer {
+    width: min(
+      var(--kace-floating-timer-drawer-panel-max-width),
+      calc(100vw - var(--kace-floating-stack-gap))
+    ) !important;
+    max-width: min(
+      var(--kace-floating-timer-drawer-panel-max-width),
+      calc(100vw - var(--kace-floating-stack-gap))
+    ) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-body {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.35rem !important;
+    flex-wrap: nowrap !important;
+    padding: 0.5rem var(--kace-floating-timer-body-pad-inline)
+      calc(0.5rem + var(--kace-floating-timer-body-pad-block-end-offset)) !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-time {
+    font-family:
+      SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+      monospace !important;
+    font-weight: var(--kace-floating-font-weight) !important;
+    font-size: var(--kace-floating-timer-digit-font-size) !important;
+    line-height: 1.15 !important;
+    margin-bottom: 0 !important;
+    font-variant-numeric: tabular-nums !important;
+    color: #212529 !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    text-align: left !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-pause-label {
+    font-size: 0.7rem !important;
+    margin-bottom: 0.1rem !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.25rem !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-actions .text-danger {
+    font-size: 0.65rem !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+  }
+
+  .kace-timer-overlay--drawer .kace-timer-actions .btn.kace-timer-action-btn {
+    position: relative !important;
+    box-sizing: border-box !important;
+    width: 2rem !important;
+    min-width: 2rem !important;
+    max-width: 2rem !important;
+    height: 2rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+    overflow: hidden !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .kace-timer-overlay--drawer
+    .kace-timer-actions
+    .btn.kace-timer-action-btn::before {
+    font-family: FontAwesome, var(--kace-floating-font-family) !important;
+    font-size: var(--kace-floating-icon-glyph-size) !important;
+    font-weight: normal !important;
+    line-height: 1 !important;
+    display: block !important;
+  }
+
+  .kace-timer-overlay--drawer
+    .kace-timer-actions
+    .kace-timer-action-btn--start::before {
+    content: '\f04b';
+    color: #ffffff !important;
+  }
+
+  .kace-timer-overlay--drawer
+    .kace-timer-actions
+    .kace-timer-action-btn--pause::before {
+    content: '\f04c';
+    color: #ffffff !important;
+  }
+
+  .kace-timer-overlay--drawer
+    .kace-timer-actions
+    .kace-timer-action-btn--resume::before {
+    content: '\f04b';
+    color: #ffffff !important;
+  }
+
+  .kace-timer-overlay--drawer
+    .kace-timer-actions
+    .kace-timer-action-btn--cancel-form::before {
+    content: '\f00d';
+    color: #dc3545 !important;
+  }
+
+  .kace-timer-overlay--drawer
+    .kace-timer-actions
+    .btn.kace-timer-action-btn:disabled::before {
+    opacity: 0.45 !important;
+  }
+}

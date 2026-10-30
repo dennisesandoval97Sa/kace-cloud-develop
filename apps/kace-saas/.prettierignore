@@ -1,0 +1,13 @@
+# Ignore artifacts:
+build
+coverage
+cdk.out
+apps/docs
+apps/kace-admin
+apps/kace-agent
+apps/packages
+.idea
+node_modules
+dist
+src/kace/test/example_configuraciones.json
+src/kace/test/example_old_rules.json

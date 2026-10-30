@@ -1,0 +1,228 @@
+schemas:
+    id:
+        type: string
+        format: uuid
+        example: 5b090fbb-926e-4997-9242-12fa7847bf5b
+    status:
+        type: integer
+        enum: [1, 2]
+    created_at:
+        type: string
+        format: date-time
+    updated_at:
+        type: string
+        format: date-time
+        nullable: true
+    deleted_at:
+        type: string
+        format: date-time
+        nullable: true
+    created_by:
+        $ref: '#/components/schemas/User'
+    updated_by:
+        $ref: '#/components/schemas/User'
+    deleted_by:
+        $ref: '#/components/schemas/User'
+    message_ok:
+        type: string
+        example: success
+
+    bad_status_response:
+        $ref: '#/components/schemas/bad_status_response'
+
+    not_found_response:
+        $ref: '#/components/schemas/not_found_response'
+
+    forbidden_response:
+        $ref: '#/components/schemas/forbidden_response'
+
+    custom_error_response:
+        $ref: '#/components/schemas/custom_error_response'
+
+    schedule_lock_conflict_response:
+        $ref: '#/components/schemas/schedule_lock_conflict_response'
+
+    success_response:
+        $ref: '#/components/schemas/success_response'
+
+    created_response:
+        $ref: '#/components/schemas/created_response'
+
+    search_body_request:
+        $ref: '#/components/schemas/search_body_request'
+
+components:
+    schemas:
+        User:
+            type: object
+            properties:
+                nombres:
+                    type: string
+                    example: Jon
+                apellido1:
+                    type: string
+                    example: Doe
+                apellido2:
+                    type: string
+                    example: Lorem
+                email:
+                    type: string
+                    example: jondoe
+                telefono:
+                    type: string
+                    example: 6057845623
+                movil:
+                    type: string
+                    example: 3006589635
+
+        bad_status_response:
+            description: Validation fails
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: Validations fail
+                            data:
+                                type: object
+                            errors:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        field:
+                                            type: string
+                                            example: id
+                                        message:
+                                            type: string
+                                            example: '"id" is required'
+
+        not_found_response:
+            description: Not found
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: Not found
+
+        forbidden_response:
+            description: Forbidden
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: You do not have permission to read this resource.
+
+        schedule_lock_conflict_response:
+            description: The schedule is locked by another request (a schedule delete or a group save); retry the request.
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: The schedule is being modified by another request, try again
+                            data:
+                                type: object
+                                properties:
+                                    code:
+                                        type: string
+                                        description: Public error code `CONFLICT_ERROR`.
+                                        example: '0x050009'
+
+        custom_error_response:
+            description: Unexpected error
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: Unexpected error occurred
+        success_response:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: Success
+                data:
+                    type: object
+                metadata:
+                    type: object
+
+        created_response:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: Resource(s) created
+                data:
+                    type: object
+                metadata:
+                    type: object
+
+        search_body_request:
+            type: object
+            properties:
+                filter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            field:
+                                type: string
+                                example: email
+                            operator:
+                                type: string
+                                example: like
+                            value:
+                                type: string
+                                example: gmail
+                            type:
+                                type: string
+                                example: AND
+                relationship:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            table:
+                                type: string
+                                example: grupos
+                            condition:
+                                type: object
+                                properties:
+                                    column:
+                                        type: string
+                                        example: grupos.created_by
+                                    refColumn:
+                                        type: string
+                                        example: usuarios.id
+                            type:
+                                type: string
+                                example: join
+                order:
+                    type: object
+                    properties:
+                        field:
+                            type: string
+                            example: nombres
+                        direction:
+                            type: string
+                            example: DESC
+                limit:
+                    type: integer
+                    example: 5
+                offset:
+                    type: integer
+                    example: 0

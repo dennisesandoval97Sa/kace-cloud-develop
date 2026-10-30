@@ -1,0 +1,131 @@
+.tomato {
+  color: tomato;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.text-l {
+  font-size: large;
+}
+
+.multi-select-container {
+  position: relative;
+  width: 100%;
+}
+.multi-select-input {
+  min-height: 60px;
+  max-height: 150px;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: white;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-start;
+  overflow-y: auto;
+}
+.multi-select-input:hover {
+  border-color: #80bdff;
+}
+.multi-select-input::-webkit-scrollbar {
+  width: 6px;
+}
+.multi-select-input::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+.multi-select-input::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+.multi-select-input::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.multi-select-input.open {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+.multi-select-placeholder {
+  color: #6c757d;
+  align-self: center;
+}
+.multi-select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.multi-select-option {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.multi-select-option:hover {
+  background-color: #f8f9fa;
+}
+.multi-select-option.selected {
+  background-color: #e7f3ff;
+}
+.badge-close {
+  margin-left: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.badge-close:hover {
+  opacity: 0.7;
+}
+.multi-select-search {
+  padding: 8px 12px;
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+  width: 100%;
+  outline: none;
+}
+.multi-select-search:focus {
+  border-bottom-color: #80bdff;
+}
+.multi-select-actions {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  gap: 8px;
+}
+.btn-action {
+  padding: 4px 12px;
+  font-size: 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-select-all {
+  background-color: #28a745;
+  color: white;
+}
+.btn-select-all:hover {
+  background-color: #218838;
+}
+.btn-clear-all {
+  background-color: #dc3545;
+  color: white;
+}
+.btn-clear-all:hover {
+  background-color: #c82333;
+}
+.no-results {
+  padding: 12px;
+  text-align: center;
+  color: #6c757d;
+}

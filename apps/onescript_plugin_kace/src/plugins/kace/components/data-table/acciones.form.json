@@ -1,0 +1,275 @@
+{
+  "key": "acciones",
+  "label": "Acciones",
+  "components": [
+    {
+      "key": "kaceApiResponseCacheFlagsPanel",
+      "type": "panel",
+      "title": "Caché HTTP del apiService (flags opcionales)",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "kaceApiResponseCacheFlagsDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"small text-muted mb-2\"><strong>Ámbito:</strong> use estas propiedades en la <code>config</code> de Axios <strong>solo</strong> cuando el script evaluado recibe <code>apiService</code> (p. ej. <code>kaceEngine.getService('apiService')</code>): Schema y <strong>Aux Cases Schema</strong> (onMount / onChange / onSubmit), Custom Select / Multiselect / Custom Multiselect (carga y onChange; con &quot;Refetch al abrir&quot; el proxy puede forzar <code>__kaceForceRefresh</code>), DataTable en <strong>datos iniciales</strong> por JS si llama API, <strong>acciones masivas</strong>, <code>modalInitCode</code> y &quot;Mostrar cuando&quot; del modal, Custom Submit / Natura, <strong>antes de enviar subcaso</strong>, scripts Hidden (post-auth / on-mount), <strong>Custom On Change</strong> de campos Kace cuando el motor está disponible.</p><p class=\"small text-muted mb-2\"><strong>No aplica</strong> a: condición de ocultar adjuntos (solo <code>data</code> / <code>row</code>); script de filtros de <strong>literales auxiliares</strong> (<code>selected_group</code>, <code>setFilters</code>); columnas o acciones del DataTable por JS que solo exponen <code>setColumns</code> / <code>setActions</code>; <code>onClick</code> de fila (<code>row</code>, <code>rowIndex</code>).</p><p class=\"font-weight-bold mb-2\">En <code>apiService.get(url, config)</code> y <code>apiService.post(url, body, config)</code></p><p class=\"small text-muted mb-2\">Anexe en la <strong>raíz</strong> de <code>config</code>:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Propiedad</th><th>Efecto</th></tr></thead><tbody><tr><td><code>__kaceForceRefresh: true</code></td><td>No usa la entrada de caché; va a red y, si la respuesta es 2xx, <strong>actualiza</strong> la caché (clave: tenant + método + URL + params/body serializado).</td></tr><tr><td><code>__kaceBypassCache: true</code></td><td>Esa petición no lee ni escribe caché.</td></tr><tr><td><code>__kaceCacheRead: true</code> <span class=\"text-muted\">(solo POST)</span></td><td>Permite caché en POST fuera de la lista blanca por URL (lecturas idempotentes). Los POST de búsqueda/listado habituales ya son elegibles por convención.</td></tr><tr><td><code>__singleFlight: false</code></td><td>Desactiva deduplicación de peticiones idénticas en curso.</td></tr></tbody></table><p class=\"small text-muted mb-2\"><strong>GET:</strong> caché activa salvo <code>__kaceBypassCache</code> / <code>__kaceForceRefresh</code>. <strong>POST:</strong> solo 2xx en URLs de lectura (o con <code>__kaceCacheRead: true</code>). No se cachean mutaciones (p. ej. <code>/cases/auxiliary</code>).</p><p class=\"small text-muted mb-0\"><strong>Invalidación:</strong> al guardar caso/subcaso el motor invalida entradas relacionadas; use <code>__kaceForceRefresh</code> si necesita datos recién escritos al instante.</p>"
+        }
+      ]
+    },
+    {
+      "key": "bulkActionsDoc",
+      "type": "panel",
+      "title": "Variables disponibles en el código de acciones masivas",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "bulkActionsDocContent",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">El código se ejecuta sobre los registros seleccionados. Variables disponibles:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; font-weight: bold;\">selectedRows</span></td><td>Array de objetos con los registros actualmente seleccionados en la tabla.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">selectedCount</span></td><td>Número de registros seleccionados (selectedRows.length).</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">data</span></td><td>Array completo de datos de la tabla.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">component</span></td><td>Configuración del componente DataTable (para leer otras opciones si se necesita).</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">kaceEngine</span></td><td>Instancia del motor Kace; permite acceder a servicios con kaceEngine.getService('nombre').</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">apiService</span></td><td>Servicio de API (Kace); para llamadas HTTP al backend.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">modalFormData</span></td><td>Si la acción usa modal: objeto con las claves definidas en Campos del modal y los valores ingresados por el usuario. Si no hay modal, undefined.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">Swal</span></td><td>SweetAlert2 (ya importado). Use Swal.fire(), Swal.showLoading(), etc. para alertas, confirmaciones y notificaciones. Ej: Swal.fire({ title: 'Éxito', text: 'Proceso completado', icon: 'success' });</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">refreshTable</span></td><td>Función sin argumentos. Vuelve a cargar las filas desde la configuración de datos iniciales del DataTable (misma lógica que al montar). Llámela tras actualizar datos en el servidor para ver los cambios. Si el script de datos es async, devuelve una Promise; use await refreshTable() o .then().</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">clearSelection</span></td><td>Función sin argumentos. Desmarca todas las filas seleccionadas. Suele usarse tras una operación exitosa, a menudo después de refreshTable. Si la acción falla, no la invoque para conservar la selección.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table><p class=\"font-weight-bold mt-3 mb-2\">Código al abrir el modal (modalInitCode):</p><p class=\"mb-2\">Se ejecuta al abrir el modal. Puede ser async. Variables disponibles en <code>Evaluator.evaluate</code>: <code>apiService</code>, <code>kaceEngine</code>, <code>selectedRows</code>, <code>selectedCount</code>, <span style=\"font-family: monospace; font-weight: bold;\">Swal</span>. (<code>data</code> y <code>component</code> no forman parte del contexto de este bloque en la implementación actual.)</p><p class=\"mb-2\">Para no abrir el modal (ej. validación fallida), devuelva <span style=\"font-family: monospace; font-weight: bold;\">{ abort: true }</span>. Para precargar selects y valores:</p><ul class=\"mb-0\"><li><span style=\"font-family: monospace; font-weight: bold;\">selectOptions</span>: { [fieldKey]: [{ label, value }, ...] } — opciones para cada select (ej. desde API).</li><li><span style=\"font-family: monospace; font-weight: bold;\">initialValues</span>: { [fieldKey]: value } — valores iniciales del formulario.</li></ul><p class=\"font-weight-bold mt-3 mb-2\">Mostrar cuando (código por campo):</p><p class=\"mb-2\">En cada campo puede definir <span style=\"font-family: monospace; font-weight: bold;\">Mostrar cuando (código)</span>: bloque JS que se evalúa en cada cambio del modal. <strong>Devuelva true</strong> para mostrar el campo, <strong>false</strong> para ocultarlo.</p><p class=\"mb-2\">Variables disponibles: <span style=\"font-family: monospace;\">modalFormData</span>, <span style=\"font-family: monospace;\">kaceEngine</span>, <span style=\"font-family: monospace;\">apiService</span>, <span style=\"font-family: monospace;\">selectedRows</span>, <span style=\"font-family: monospace;\">selectedCount</span>, <span style=\"font-family: monospace;\">data</span>, <span style=\"font-family: monospace;\">component</span>, <span style=\"font-family: monospace;\">Swal</span>.</p><p class=\"mb-2\">Funciones para setear datos en otros campos:</p><ul class=\"mb-2\"><li><span style=\"font-family: monospace; font-weight: bold;\">setSelectOptions(fieldKey, options)</span> — <span style=\"font-family: monospace;\">options</span> = array de <span style=\"font-family: monospace;\">{ label, value }</span>. Actualiza las opciones del select con esa clave (útil si carga desde API según un campo dependiente).</li><li><span style=\"font-family: monospace; font-weight: bold;\">setFieldValue(fieldKey, value)</span> — Asigna el valor a otro campo del modal.</li></ul><p class=\"mb-0\">Ejemplo: <span style=\"font-family: monospace;\">return modalFormData.tipo === 'usuarios';</span> Para cargar opciones según otro campo: <span style=\"font-family: monospace;\">apiService.get('/api/...').then(r => setSelectOptions('grupo', r.data.map(d => ({ label: d.nombre, value: d.id })))); return true;</span></p><p class=\"font-weight-bold mt-3 mb-2\">Rejilla en este panel</p><p class=\"mb-0\">Defina las acciones masivas en <strong>Acciones masivas</strong> debajo; el código de contexto (panel siguiente) puede filtrarlas por grupo.</p>"
+        },
+        {
+          "key": "bulkActions",
+          "type": "editgrid",
+          "label": "Acciones masivas",
+          "addAnother": "Agregar acción",
+          "description": "Defina una o más acciones que el usuario podrá ejecutar sobre los registros seleccionados. Cada acción tiene un label y código JS con selectedRows, selectedCount, data, component, kaceEngine, apiService, modalFormData (si hay modal), Swal, refreshTable y clearSelection (el autor decide cuándo refrescar y limpiar selección). Active \"Modal combinado de acciones masivas\" en la pestaña Custom para permitir marcar y ejecutar varias de estas acciones juntas desde un solo modal.",
+          "components": [
+            {
+              "type": "textfield",
+              "key": "label",
+              "label": "Label",
+              "input": true,
+              "description": "Texto que verá el usuario en el menú de acciones (ej: Enviar por correo, Eliminar)"
+            },
+            {
+              "type": "textarea",
+              "key": "code",
+              "label": "Código",
+              "input": true,
+              "editor": "ace",
+              "as": "javascript",
+              "rows": 5,
+              "placeholder": "// Ejemplo: alert(selectedCount + ' registros seleccionados');",
+              "description": "Código al ejecutar la acción. Variables: selectedRows, selectedCount, data, component, kaceEngine, apiService, Swal, modalFormData (si hay modal). Funciones: refreshTable() para recargar filas desde datos iniciales; clearSelection() para quitar la selección. Ej. tras API OK: await refreshTable(); clearSelection();"
+            },
+            {
+              "type": "checkbox",
+              "key": "showModalBeforeExecute",
+              "label": "Mostrar modal antes de ejecutar",
+              "input": true,
+              "defaultValue": false,
+              "description": "Si está activo, al hacer clic en Ejecutar se abre un modal con los campos definidos abajo; el usuario completa los datos y al confirmar se ejecuta el código con modalFormData (objeto con clave/valor por cada campo)."
+            },
+            {
+              "type": "textfield",
+              "key": "modalTitle",
+              "label": "Título del modal",
+              "input": true,
+              "placeholder": "Complete los datos",
+              "customConditional": "show = row.showModalBeforeExecute === true;"
+            },
+            {
+              "type": "select",
+              "key": "accentColor",
+              "label": "Color de acento (modal combinado)",
+              "input": true,
+              "data": {
+                "values": [
+                  { "label": "Automático (rotación por orden)", "value": "" },
+                  { "label": "Neutral (secondary)", "value": "neutral" },
+                  { "label": "Primary", "value": "primary" },
+                  { "label": "Info", "value": "info" },
+                  { "label": "Warning", "value": "warning" },
+                  { "label": "Danger", "value": "danger" },
+                  { "label": "Success", "value": "success" }
+                ]
+              },
+              "description": "Solo aplica cuando 'Modal combinado de acciones masivas' está activo (pestaña Custom): borde/fondo de color para diferenciar esta acción de las demás. El color real lo define el theme de Bootstrap del sitio donde se embebe el formulario (variables --bs-primary/--bs-warning/etc.); estas opciones son las categorías semánticas de Bootstrap, no colores fijos."
+            },
+            {
+              "type": "textarea",
+              "key": "modalInitCode",
+              "label": "Código al abrir el modal",
+              "input": true,
+              "editor": "ace",
+              "as": "javascript",
+              "rows": 6,
+              "customConditional": "show = row.showModalBeforeExecute === true;",
+              "description": "Se ejecuta al abrir el modal. Use apiService, kaceEngine, selectedRows, Swal, etc. Para no abrir el modal (ej. validación fallida), devuelva { abort: true }. Para precargar selects: devuelva { selectOptions: { fieldKey: [{ label, value }] }, initialValues: { fieldKey: value } }.",
+              "placeholder": "// Ejemplo: cargar opciones desde API\nconst res = await apiService.get('/api/prioridades');\nreturn {\n  selectOptions: { prioridad: res.data.map(d => ({ label: d.nombre, value: d.id })) },\n  initialValues: { prioridad: '' }\n};"
+            },
+            {
+              "key": "modalFields",
+              "type": "editgrid",
+              "label": "Campos del modal",
+              "addAnother": "Agregar campo",
+              "customConditional": "show = row.showModalBeforeExecute === true;",
+              "description": "Defina uno o más campos (select, textarea, texto). Cada campo tiene una clave (fieldKey) que aparecerá en modalFormData. Use Mostrar cuando (código) para mostrar/ocultar según lógica y para setear opciones o valores en otros campos (setSelectOptions, setFieldValue).",
+              "components": [
+                {
+                  "type": "select",
+                  "key": "fieldType",
+                  "label": "Tipo de campo",
+                  "input": true,
+                  "data": {
+                    "values": [
+                      {
+                        "label": "Select (lista)",
+                        "value": "select"
+                      },
+                      {
+                        "label": "Texto (línea)",
+                        "value": "textfield"
+                      },
+                      {
+                        "label": "Texto (área)",
+                        "value": "textarea"
+                      },
+                      {
+                        "label": "Checkbox",
+                        "value": "checkbox"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "textfield",
+                  "key": "fieldKey",
+                  "label": "Clave (key en modalFormData)",
+                  "input": true,
+                  "description": "Ej: prioridad, notas, motivo"
+                },
+                {
+                  "type": "textfield",
+                  "key": "fieldLabel",
+                  "label": "Etiqueta visible",
+                  "input": true
+                },
+                {
+                  "type": "textfield",
+                  "key": "placeholder",
+                  "label": "Placeholder",
+                  "input": true
+                },
+                {
+                  "type": "select",
+                  "key": "displayAs",
+                  "label": "Estilo visual",
+                  "input": true,
+                  "customConditional": "show = row.fieldType === 'select' || row.fieldType === 'checkbox';",
+                  "data": {
+                    "values": [
+                      { "label": "Por defecto", "value": "" },
+                      {
+                        "label": "Botones (toggle) — solo Select",
+                        "value": "toggle"
+                      },
+                      {
+                        "label": "Interruptor (switch) — solo Checkbox",
+                        "value": "switch"
+                      }
+                    ]
+                  },
+                  "description": "Para Select con pocas opciones: botones en vez de lista desplegable. Para Checkbox: interruptor en vez de casilla."
+                },
+                {
+                  "type": "select",
+                  "key": "variant",
+                  "label": "Énfasis visual",
+                  "input": true,
+                  "customConditional": "show = row.fieldType === 'checkbox';",
+                  "data": {
+                    "values": [
+                      { "label": "Neutral", "value": "" },
+                      {
+                        "label": "Peligro (ícono + color rojo)",
+                        "value": "danger"
+                      }
+                    ]
+                  },
+                  "description": "Úselo en checkboxes que activan acciones irreversibles (ej. 'Cerrar caso') para resaltarlos visualmente."
+                },
+                {
+                  "type": "checkbox",
+                  "key": "noDefaultOption",
+                  "label": "No preseleccionar la primera opción",
+                  "input": true,
+                  "defaultValue": false,
+                  "customConditional": "show = row.fieldType === 'select';",
+                  "description": "Por defecto, un Select con opciones fijas arranca con la primera seleccionada. Actívelo para que arranque vacío y obligue al usuario a elegir (útil en selects tipo toggle donde ninguna opción debería verse premarcada, ej. Usuario/Grupo)."
+                },
+                {
+                  "type": "checkbox",
+                  "key": "keepVisibleWhenHidden",
+                  "label": "Mostrar siempre (deshabilitado en vez de ocultar)",
+                  "input": true,
+                  "defaultValue": false,
+                  "description": "Si 'Mostrar cuando' da false, por defecto el campo desaparece. Actívelo para que en su lugar quede visible pero deshabilitado/atenuado (útil para que el usuario sepa que existe, ej. una Descripción que se habilita solo si se marca un checkbox)."
+                },
+                {
+                  "type": "textarea",
+                  "key": "showWhen",
+                  "label": "Mostrar cuando (código)",
+                  "input": true,
+                  "editor": "ace",
+                  "as": "javascript",
+                  "rows": 5,
+                  "description": "Opcional. Código JS que decide si este campo se muestra (return true/false) y puede cargar opciones del select. Variables: modalFormData, kaceEngine, apiService, selectedRows, selectedCount, data, component, Swal, loadPass (true en carga paginada al abrir/buscar/scroll), kaceSelectPage, kaceRemoteSearchTerm, kaceSelectPageSize. Funciones: setSelectOptions(fieldKey, options), setSelectOptions(fieldKey, options, { append: true }), setSelectOptions(fieldKey, options, { replace: true }), setFieldValue(fieldKey, value). Legacy: setSelectOptions una vez en visibilidad (loadPass false) y búsqueda local en el dropdown. Paginado: bloque if (loadPass) { ... API con limit/offset ... setSelectOptions(..., { append: kaceSelectPage > 1 }) }. Devuelva true/false para visibilidad cuando loadPass es false.",
+                  "placeholder": "// Visibilidad\nif (modalFormData.tipo !== 'usuarios') return false;\n// Carga paginada (opcional)\nif (loadPass) {\n  const res = await apiService.post('/users/search', { filter: [], limit: kaceSelectPageSize, offset: (kaceSelectPage - 1) * kaceSelectPageSize });\n  const items = (res?.data?.data?.items ?? []).map(u => ({ label: u.nombres, value: u.id }));\n  setSelectOptions('user', items, { append: kaceSelectPage > 1 });\n  return true;\n}\nreturn true;"
+                },
+                {
+                  "key": "options",
+                  "type": "editgrid",
+                  "label": "Opciones (solo para tipo Select)",
+                  "addAnother": "Agregar opción",
+                  "customConditional": "show = row.fieldType === 'select';",
+                  "components": [
+                    {
+                      "type": "textfield",
+                      "key": "label",
+                      "label": "Etiqueta",
+                      "input": true
+                    },
+                    {
+                      "type": "textfield",
+                      "key": "value",
+                      "label": "Valor",
+                      "input": true
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bulkActionsContextDoc",
+      "type": "panel",
+      "title": "Contexto de acciones masivas (opcional, por grupo o sesión)",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "bulkActionsContextDocContent",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"mb-2\">Si completa el campo <strong>Código de contexto de acciones masivas</strong> al final de este panel, se ejecuta al montar el componente y cada pocos segundos mientras el formulario esté abierto, para que un cambio de grupo active o desactive acciones sin recargar la página.</p><p class=\"font-weight-bold mb-2\">Valor de retorno del script</p><ul class=\"mb-2\"><li><span style=\"font-family: monospace;\">{ bulkActions: [...], disableBulkActions: boolean }</span> — <span style=\"font-family: monospace;\">bulkActions</span> sustituye a la lista definida en la rejilla; si <span style=\"font-family: monospace;\">disableBulkActions: true</span>, no se muestran acciones masivas ni la barra (salvo que <span style=\"font-family: monospace;\">showCheckbox</span> siga activo solo para selección).</li><li>Un <strong>array</strong> se interpreta como la lista final de acciones.</li><li>Si no devuelve nada o hay error, se usan las acciones de la rejilla sin filtrar.</li></ul><p class=\"font-weight-bold mb-2\">Variables y métodos disponibles</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Nombre</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; font-weight: bold;\">kaceEngine</span></td><td>Instancia Kace (<span style=\"font-family: monospace;\">KaceEngine()</span>). Use <span style=\"font-family: monospace;\">kaceEngine.getService('apiService'|'user'|'group'|'storeService')</span>.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">apiService</span></td><td>Cliente HTTP del plugin (mismo que en el código de cada acción).</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">userService</span></td><td><span style=\"font-family: monospace;\">kaceEngine.getService('user')</span> — datos de usuario vía store/API según implementación.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">groupService</span></td><td><span style=\"font-family: monospace;\">kaceEngine.getService('group')</span> — operaciones de grupos si el proyecto las expone.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">storeService</span></td><td>Store Kace (<span style=\"font-family: monospace;\">get(path)</span> / <span style=\"font-family: monospace;\">set(path, value)</span>). Rutas útiles: <span style=\"font-family: monospace;\">config.selected_group_id</span>, <span style=\"font-family: monospace;\">auth.user_data</span>, <span style=\"font-family: monospace;\">configuration_id_selected_group</span>.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">component</span></td><td>Esquema del DataTable (incluye <span style=\"font-family: monospace;\">bulkActions</span> de la rejilla).</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">baseBulkActions</span></td><td>Copia de la lista configurada en <strong>Acciones masivas</strong> (antes de filtrar).</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">getCurrentGroupId()</span></td><td>Id del grupo activo: <span style=\"font-family: monospace;\">config.selected_group_id</span> o <span style=\"font-family: monospace;\">user.grupo_activo</span> en <span style=\"font-family: monospace;\">auth.user_data</span>.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">getUserDataSync()</span></td><td>Objeto usuario en memoria (<span style=\"font-family: monospace;\">auth.user_data</span>), sin await.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">getCurrentGroupSync()</span></td><td>Elemento de <span style=\"font-family: monospace;\">groups</span> que coincide con el grupo activo, o null.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">getCurrentGroupConfigurationIdSync()</span></td><td><span style=\"font-family: monospace;\">configuration_id</span> del grupo activo o valor en store.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table><p class=\"mb-0 small text-muted\">El script puede ser <span style=\"font-family: monospace;\">async</span> y devolver una Promise con el mismo formato de resultado.</p>"
+        },
+        {
+          "key": "bulkActionsContextCode",
+          "type": "textarea",
+          "label": "Código de contexto de acciones masivas",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 10,
+          "placeholder": "// Ejemplo: solo grupos permitidos ven acciones masivas\nconst id = getCurrentGroupId();\nconst allowed = ['REPLACE_WITH_GROUP_UUID'];\nif (!id || !allowed.includes(String(id))) {\n  return { bulkActions: [], disableBulkActions: true };\n}\nreturn { bulkActions: baseBulkActions, disableBulkActions: false };",
+          "description": "Opcional. Filtra o sustituye las acciones masivas según grupo u otras reglas. Devuelva { bulkActions, disableBulkActions } o un array. Puede ser async."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1963 @@
+{
+    "info": {
+        "name": "KACE · ANS API (kace_cloud_api_ans)",
+        "description": "API REST de Acuerdos de Nivel de Servicio (`apps/apiv1/kace_cloud_api_ans`).\n\n## Configuración\nTodas las variables son de colección: se rellenan una sola vez en la pestaña **Variables** de la colección.\nPon `password` e `idToken` solo en **Current value**: el **Initial value** se exporta y se sincroniza con el workspace.\n\n- `baseUrl`: `https://<AWS_APIGATEWAY_DOMAIN_NAME>`. El servicio cuelga del base path `/ans` del dominio personalizado.\n- `tenantId`: id del tenant (cabecera `X-Tenant-Id`).\n- `cognitoRegion` y `cognitoClientId`: los del user pool del tenant (`AWS_COGNITO_REGION` / `AWS_COGNITO_APP_CLIENT_ID`).\n- `username` y `password` para renovar el token automáticamente, **o** `idToken` pegado a mano (cuentas SSO).\n- `clientFingerprint`: solo para cuentas Active Directory, que además necesitan la cookie `session_key` en el cookie jar.\n\n## Autenticación\nEl Lambda verifica el **IdToken** de Cognito (no el access token) y lo lee de `Authorization` **sin** el prefijo `Bearer`. El script de la colección lo renueva cuando falta o va a caducar.\n\n## Contrato\nSeguridad solo autoriza `GET` y `POST`: la actualización es `POST /ans/{id}` y el borrado `GET /ans/{id}/delete`.\n\n| Método | Ruta | Acción | Permiso |\n|---|---|---|---|\n| GET | `/ans` | Listar (10, `created_at desc`) | `AnsRead` |\n| POST | `/ans` | Crear → 201 sin cuerpo | `AnsCreate` |\n| GET | `/ans/{id}` | Leer | `AnsRead` |\n| POST | `/ans/{id}` | Actualizar (parcial) | `AnsUpdate` |\n| GET | `/ans/{id}/delete` | Borrado lógico | `AnsDelete` |\n| POST | `/ans/search` | Buscar con criterios | `AnsRead` (+ `AnsSearchAdvanced`) |\n| POST | `/ans/advance-search` | Búsqueda genérica | `UsersRead` |\n\n**SAM Local** (`pnpm run api`, puerto 60003) no aplica el base path: allí las rutas cuelgan de la raíz y esta colección no sirve tal cual.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "apikey",
+        "apikey": [
+            {
+                "key": "key",
+                "value": "Authorization",
+                "type": "string"
+            },
+            {
+                "key": "value",
+                "value": "{{idToken}}",
+                "type": "string"
+            },
+            {
+                "key": "in",
+                "value": "header",
+                "type": "string"
+            }
+        ]
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// El Lambda valida el IdToken de Cognito (no el access token) y lo espera en Authorization SIN el prefijo \"Bearer\".",
+                    "// Con username/password se renueva solo cuando falta o le queda menos de un minuto; sin ellos se usa el idToken pegado a mano.",
+                    "if (!pm.request.url.getHost().startsWith('cognito-idp.')) {",
+                    "    const token = pm.collectionVariables.get('idToken');",
+                    "    const expiresAt = (jwt) => {",
+                    "        try {",
+                    "            const part = jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');",
+                    "            return JSON.parse(atob(part + '='.repeat((4 - (part.length % 4)) % 4))).exp * 1000;",
+                    "        } catch (e) {",
+                    "            return 0;",
+                    "        }",
+                    "    };",
+                    "    const isFresh = Boolean(token) && expiresAt(token) - 60000 > Date.now();",
+                    "    const username = pm.variables.get('username');",
+                    "    const password = pm.variables.get('password');",
+                    "",
+                    "    if (!isFresh && username && password) {",
+                    "        pm.sendRequest(",
+                    "            {",
+                    "                url: `https://cognito-idp.${pm.variables.get('cognitoRegion')}.amazonaws.com/`,",
+                    "                method: 'POST',",
+                    "                header: {",
+                    "                    'Content-Type': 'application/x-amz-json-1.1',",
+                    "                    'X-Amz-Target': 'AWSCognitoIdentityProviderService.InitiateAuth',",
+                    "                },",
+                    "                body: {",
+                    "                    mode: 'raw',",
+                    "                    raw: JSON.stringify({",
+                    "                        AuthFlow: 'USER_PASSWORD_AUTH',",
+                    "                        ClientId: pm.variables.get('cognitoClientId'),",
+                    "                        AuthParameters: { USERNAME: username, PASSWORD: password },",
+                    "                    }),",
+                    "                },",
+                    "            },",
+                    "            (error, response) => {",
+                    "                const result = !error && response.code === 200 ? response.json().AuthenticationResult : null;",
+                    "                if (!result || !result.IdToken) {",
+                    "                    console.error('Login en Cognito fallido', error || response.text());",
+                    "                    return;",
+                    "                }",
+                    "                pm.collectionVariables.set('idToken', result.IdToken);",
+                    "            }",
+                    "        );",
+                    "    } else if (!isFresh) {",
+                    "        console.warn('idToken ausente o caducado y sin username/password: la petición saldrá sin credenciales válidas.');",
+                    "    }",
+                    "}"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Los errores llegan con un mensaje genérico y un código público: el detalle real solo está en CloudWatch.",
+                    "if (pm.response.code >= 400 && !pm.request.url.getHost().startsWith('cognito-idp.')) {",
+                    "    let body;",
+                    "    try {",
+                    "        body = pm.response.json();",
+                    "    } catch (e) {",
+                    "        body = pm.response.text();",
+                    "    }",
+                    "    console.log(`${pm.info.requestName} → ${pm.response.code}`, body);",
+                    "}"
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "https://api.example.com",
+            "type": "string",
+            "description": "`https://<AWS_APIGATEWAY_DOMAIN_NAME>`, sin barra final. Las rutas añaden el base path `/ans`."
+        },
+        {
+            "key": "tenantId",
+            "value": "8ce06db5-0dd3-4aba-a63d-42ed8f96ca4a",
+            "type": "string",
+            "description": "Cabecera `X-Tenant-Id` (`VITE_TENANT_ID` del `.env`)."
+        },
+        {
+            "key": "cognitoRegion",
+            "value": "us-east-1",
+            "type": "string",
+            "description": "Región del user pool del tenant."
+        },
+        {
+            "key": "cognitoClientId",
+            "value": "",
+            "type": "string",
+            "description": "App client del user pool del tenant."
+        },
+        {
+            "key": "username",
+            "value": "",
+            "type": "string",
+            "description": "Usuario de Cognito para la renovación automática del token."
+        },
+        {
+            "key": "password",
+            "value": "",
+            "type": "string",
+            "description": "Solo en «Current value» para que no se exporte."
+        },
+        {
+            "key": "idToken",
+            "value": "",
+            "type": "string",
+            "description": "Lo gestiona el script de la colección; con cuentas SSO, pégalo a mano en «Current value»."
+        },
+        {
+            "key": "clientFingerprint",
+            "value": "",
+            "type": "string",
+            "description": "Solo cuentas Active Directory (cabecera `X-Client-Fingerprint`)."
+        },
+        {
+            "key": "ansId",
+            "value": "",
+            "description": "Lo rellena «Buscar ANS creado»."
+        },
+        {
+            "key": "ansNombre",
+            "value": "",
+            "description": "Lo genera «Crear ANS»."
+        },
+        {
+            "key": "ansIntermedio",
+            "value": "",
+            "description": "Lo genera «Crear ANS»."
+        },
+        {
+            "key": "ansVencido",
+            "value": "",
+            "description": "Lo genera «Crear ANS»."
+        },
+        {
+            "key": "ansNombreActualizado",
+            "value": "",
+            "description": "Lo genera «Actualizar ANS»."
+        },
+        {
+            "key": "ansVencidoActualizado",
+            "value": "",
+            "description": "Lo genera «Actualizar ANS»."
+        }
+    ],
+    "item": [
+        {
+            "name": "0. Autenticación",
+            "description": "Login directo contra Cognito con `USER_PASSWORD_AUTH`, el mismo flujo que usa `TestHelper.authenticate()`. No hace falta ejecutarlo a mano: el script de la colección renueva el token solo. Úsalo para comprobar las credenciales. Las cuentas federadas (SSO) no pueden usar este flujo: copia su IdToken del navegador en la variable `idToken`.",
+            "item": [
+                {
+                    "name": "Login Cognito (IdToken)",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/x-amz-json-1.1"
+                            },
+                            {
+                                "key": "X-Amz-Target",
+                                "value": "AWSCognitoIdentityProviderService.InitiateAuth"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"AuthFlow\": \"USER_PASSWORD_AUTH\",\n    \"ClientId\": \"{{cognitoClientId}}\",\n    \"AuthParameters\": {\n        \"USERNAME\": \"{{username}}\",\n        \"PASSWORD\": \"{{password}}\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "https://cognito-idp.{{cognitoRegion}}.amazonaws.com/",
+                            "protocol": "https",
+                            "host": ["cognito-idp", "{{cognitoRegion}}", "amazonaws", "com"],
+                            "path": [""]
+                        },
+                        "description": "Guarda `AuthenticationResult.IdToken` en la variable de colección `idToken`."
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Cognito devuelve un IdToken', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "    const body = pm.response.json();",
+                                    "    pm.expect(body.ChallengeName, 'El usuario tiene un reto pendiente (p. ej. NEW_PASSWORD_REQUIRED)').to.be.undefined;",
+                                    "    pm.expect(body.AuthenticationResult.IdToken).to.be.a('string');",
+                                    "    pm.collectionVariables.set('idToken', body.AuthenticationResult.IdToken);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "1. Flujo CRUD",
+            "description": "Ciclo de vida completo de un ANS. Ejecútalo en orden (Collection Runner): cada paso usa lo que guardó el anterior. El alta devuelve 201 **sin cuerpo**, así que el id se recupera buscando por el nombre único que genera el primer paso.",
+            "item": [
+                {
+                    "name": "Crear ANS",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans"]
+                        },
+                        "description": "Requiere el permiso `administrador/ans/AnsCreate`.\n\nReglas de validación:\n- `nombre`: solo letras (incluye tildes y ñ) y espacios, máx. 100, único.\n- `intermedio` < `vencido`, enteros. La terna `intermedio`/`vencido`/`medicion_ans_id` también es única.\n- `medicion_ans_id`: `Minutes`, `Hours` o `Days`.\n- Colores: solo los de la allowlist compartida, en mayúsculas: `#E76E50 #2563EB #2A9D90 #E8C468 #E78C50 #EB7AA0 #7342D7 #1FABC7 #66CC33 #2BA17A #3359CC #A17345 #BD4FD8`.\n- `status`: entero opcional (no admite `null`).\n\nEl servidor asigna `id`, `created_at` y `created_by`: si el cliente los envía se ignoran.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombre\": \"{{ansNombre}}\",\n    \"intermedio\": {{ansIntermedio}},\n    \"vencido\": {{ansVencido}},\n    \"color_ans_inicial\": \"#66CC33\",\n    \"color_ans_intermedio\": \"#E8C468\",\n    \"color_ans_final\": \"#E76E50\",\n    \"medicion_ans_id\": \"Days\",\n    \"status\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "// Nombre (solo letras) y umbrales aleatorios para no chocar con las restricciones de unicidad.",
+                                    "const letters = 'abcdefghijklmnopqrstuvwxyz';",
+                                    "const suffix = Array.from({ length: 8 }, () => letters[Math.floor(Math.random() * letters.length)]).join('');",
+                                    "const intermedio = 1 + Math.floor(Math.random() * 500);",
+                                    "pm.collectionVariables.set('ansNombre', `Ans Postman ${suffix}`);",
+                                    "pm.collectionVariables.set('ansIntermedio', intermedio);",
+                                    "pm.collectionVariables.set('ansVencido', intermedio + 1 + Math.floor(Math.random() * 500));",
+                                    "pm.collectionVariables.unset('ansId');"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 201 Created', () => {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Buscar ANS creado (guarda ansId)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/search",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "search"]
+                        },
+                        "description": "`ilike` sin comodines equivale a una igualdad que no distingue mayúsculas.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"filter\": [\n        {\n            \"field\": \"ans.nombre\",\n            \"operator\": \"ilike\",\n            \"value\": \"{{ansNombre}}\",\n            \"type\": \"AND\"\n        }\n    ],\n    \"relationship\": null,\n    \"limit\": 10,\n    \"offset\": 0,\n    \"order\": {\n        \"field\": \"created_at\",\n        \"direction\": \"desc\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Encuentra exactamente el ANS recién creado', () => {",
+                                    "    const items = pm.response.json().data.items;",
+                                    "    pm.expect(items).to.have.lengthOf(1);",
+                                    "    pm.expect(items[0].nombre).to.eql(pm.collectionVariables.get('ansNombre'));",
+                                    "    pm.collectionVariables.set('ansId', items[0].id);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Listar ANS (index)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans"]
+                        },
+                        "description": "Permiso `AnsRead`. Criterio fijo: 10 elementos, `created_at desc`, sin filtros. Para paginar o filtrar usa `POST /search`."
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Devuelve como máximo 10 elementos y el total', () => {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.expect(json.data.items).to.be.an('array').with.length.at.most(10);",
+                                    "    // KnexRepository.count() devuelve la fila cruda de COUNT(*): { count: \"N\" }.",
+                                    "    const total = Number(json.metadata.count.count !== undefined ? json.metadata.count.count : json.metadata.count);",
+                                    "    pm.expect(total).to.be.at.least(json.data.items.length);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Leer ANS por id",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{ansId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Devuelve el ANS creado con todos sus campos', () => {",
+                                    "    const data = pm.response.json().data;",
+                                    "    pm.expect(data.id).to.eql(pm.collectionVariables.get('ansId'));",
+                                    "    pm.expect(data.nombre).to.eql(pm.collectionVariables.get('ansNombre'));",
+                                    "    pm.expect(data.intermedio).to.eql(Number(pm.collectionVariables.get('ansIntermedio')));",
+                                    "    pm.expect(data.vencido).to.eql(Number(pm.collectionVariables.get('ansVencido')));",
+                                    "    pm.expect(data.medicion_ans_id).to.eql('Days');",
+                                    "    pm.expect(data).to.include.all.keys('color_ans_inicial', 'color_ans_intermedio', 'color_ans_final', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by');",
+                                    "    pm.expect(data.updated_at).to.be.null;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Actualizar ANS (parcial)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{ansId}}"
+                                }
+                            ]
+                        },
+                        "description": "Permiso `AnsUpdate`. Solo se envían los campos a cambiar. `updated_at`/`updated_by` los fija el servidor; mandar campos de auditoría (`created_by`, `id`, …) devuelve 400. Un id inexistente también devuelve 400, no 404.\n\nLa regla `intermedio` < `vencido` se comprueba contra el valor guardado del campo que no se envía.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombre\": \"{{ansNombreActualizado}}\",\n    \"vencido\": {{ansVencidoActualizado}}\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.collectionVariables.set('ansNombreActualizado', `${pm.collectionVariables.get('ansNombre')} Editado`);",
+                                    "pm.collectionVariables.set('ansVencidoActualizado', Number(pm.collectionVariables.get('ansVencido')) + 1);"
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Actualizar solo intermedio hasta alcanzar vencido (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{ansId}}"
+                                }
+                            ]
+                        },
+                        "description": "Envía solo `intermedio`, igual al `vencido` guardado: la regla se valida contra el valor almacenado. El paso siguiente confirma que no cambió nada.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"intermedio\": {{ansVencidoActualizado}}\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Rechaza un intermedio que alcanza el vencido guardado', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Leer ANS actualizado",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{ansId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Aplica solo los campos enviados y registra la auditoría de actualización', () => {",
+                                    "    const data = pm.response.json().data;",
+                                    "    pm.expect(data.nombre).to.eql(pm.collectionVariables.get('ansNombreActualizado'));",
+                                    "    pm.expect(data.vencido).to.eql(Number(pm.collectionVariables.get('ansVencidoActualizado')));",
+                                    "    pm.expect(data.intermedio).to.eql(Number(pm.collectionVariables.get('ansIntermedio')));",
+                                    "    pm.expect(data.updated_at).to.not.be.null;",
+                                    "    pm.expect(data.updated_by).to.not.be.null;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Eliminar ANS (soft delete)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id/delete",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id", "delete"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{ansId}}"
+                                }
+                            ]
+                        },
+                        "description": "Permiso `AnsDelete`. Es un `GET` porque Seguridad solo autoriza GET y POST. Marca `deleted_at`/`deleted_by`; la fila se conserva."
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Leer ANS eliminado (404)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{ansId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Un ANS eliminado ya no se puede leer', () => {",
+                                    "    pm.response.to.have.status(404);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "2. Búsqueda",
+            "description": "Permiso `AnsRead`. Sin el permiso de búsqueda avanzada `AnsSearchAdvanced`, solo se admiten estos filtros (política `ans.search`):\n\n| Campo | Operadores |\n|---|---|\n| `ans.id`, `ans.intermedio`, `ans.vencido`, `ans.created_by`, `ans.updated_by` | `eq` |\n| `ans.nombre`, `ans.color_ans_inicial`, `ans.color_ans_intermedio`, `ans.color_ans_final` | `ilike` |\n| `ans.status` | `eq`, `neq` |\n| `ans.created_at`, `ans.updated_at` | `between` (valor `\"desde,hasta\"`) |\n| `ans.deleted_at`, `deleted_at` | `null` |\n\nCualquier otro filtro (incluido `id` sin el prefijo `ans.`) devuelve **403**. `limit` y `offset` son obligatorios (admiten `null`). Los ANS eliminados nunca aparecen.",
+            "item": [
+                {
+                    "name": "Buscar por nombre parcial (ilike)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/search",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "search"]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"filter\": [\n        {\n            \"field\": \"ans.nombre\",\n            \"operator\": \"ilike\",\n            \"value\": \"%ans%\",\n            \"type\": \"AND\"\n        }\n    ],\n    \"relationship\": null,\n    \"limit\": 10,\n    \"offset\": 0,\n    \"order\": {\n        \"field\": \"created_at\",\n        \"direction\": \"desc\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Devuelve items y total', () => {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.expect(json.data.items).to.be.an('array');",
+                                    "    pm.expect(json.metadata).to.have.property('count');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Buscar por id",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/search",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "search"]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"filter\": [\n        {\n            \"field\": \"ans.id\",\n            \"operator\": \"eq\",\n            \"value\": \"{{ansId}}\",\n            \"type\": \"AND\"\n        }\n    ],\n    \"relationship\": null,\n    \"limit\": 10,\n    \"offset\": 0,\n    \"order\": {\n        \"field\": \"created_at\",\n        \"direction\": \"desc\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Devuelve items y total', () => {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.expect(json.data.items).to.be.an('array');",
+                                    "    pm.expect(json.metadata).to.have.property('count');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Buscar con filtros combinados (AND)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/search",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "search"]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"filter\": [\n        {\n            \"field\": \"ans.intermedio\",\n            \"operator\": \"eq\",\n            \"value\": 5,\n            \"type\": \"AND\"\n        },\n        {\n            \"field\": \"ans.vencido\",\n            \"operator\": \"eq\",\n            \"value\": 10,\n            \"type\": \"AND\"\n        }\n    ],\n    \"relationship\": null,\n    \"limit\": 10,\n    \"offset\": 0,\n    \"order\": {\n        \"field\": \"created_at\",\n        \"direction\": \"desc\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Devuelve items y total', () => {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.expect(json.data.items).to.be.an('array');",
+                                    "    pm.expect(json.metadata).to.have.property('count');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Buscar con grupo OR",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/search",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "search"]
+                        },
+                        "description": "Un grupo agrupa varios filtros con `groupType`; aquí: estado 1 **o** estado 2.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"filter\": [\n        {\n            \"groupType\": \"OR\",\n            \"filters\": [\n                {\n                    \"field\": \"ans.status\",\n                    \"operator\": \"eq\",\n                    \"value\": 1,\n                    \"type\": \"OR\"\n                },\n                {\n                    \"field\": \"ans.status\",\n                    \"operator\": \"eq\",\n                    \"value\": 2,\n                    \"type\": \"OR\"\n                }\n            ]\n        }\n    ],\n    \"relationship\": null,\n    \"limit\": 10,\n    \"offset\": 0,\n    \"order\": {\n        \"field\": \"created_at\",\n        \"direction\": \"desc\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Devuelve items y total', () => {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.expect(json.data.items).to.be.an('array');",
+                                    "    pm.expect(json.metadata).to.have.property('count');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Buscar por rango de creación (between)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/search",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "search"]
+                        },
+                        "description": "`between` recibe los dos extremos en un único string separado por coma.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"filter\": [\n        {\n            \"field\": \"ans.created_at\",\n            \"operator\": \"between\",\n            \"value\": \"2026-01-01T00:00:00.000Z,2026-12-31T23:59:59.999Z\",\n            \"type\": \"AND\"\n        }\n    ],\n    \"relationship\": null,\n    \"limit\": 10,\n    \"offset\": 0,\n    \"order\": {\n        \"field\": \"created_at\",\n        \"direction\": \"desc\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Devuelve items y total', () => {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.expect(json.data.items).to.be.an('array');",
+                                    "    pm.expect(json.metadata).to.have.property('count');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Paginar y ordenar",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/search",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "search"]
+                        },
+                        "description": "Segunda página de 5 elementos ordenada por nombre ascendente.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"filter\": null,\n    \"relationship\": null,\n    \"limit\": 5,\n    \"offset\": 5,\n    \"order\": {\n        \"field\": \"nombre\",\n        \"direction\": \"asc\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Devuelve items y total', () => {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.expect(json.data.items).to.be.an('array');",
+                                    "    pm.expect(json.metadata).to.have.property('count');",
+                                    "});",
+                                    "pm.test('Respeta el limit', () => {",
+                                    "    pm.expect(pm.response.json().data.items.length).to.be.at.most(5);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Búsqueda avanzada (advance-search)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/advance-search",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "advance-search"]
+                        },
+                        "description": "Ruta genérica de `BaseController`: deduce la tabla del path (`/ans/...` → `ans`) y consulta con `AdvancedSearch`.\n\n⚠️ Comprueba el permiso `administrador/users/UsersRead` (no `AnsRead`), no aplica la allowlist de `ans.search` y no excluye los registros eliminados: añade tú el filtro `deleted_at null`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"filter\": [\n        {\n            \"field\": \"deleted_at\",\n            \"operator\": \"null\",\n            \"value\": \"\",\n            \"type\": \"AND\"\n        }\n    ],\n    \"relationship\": null,\n    \"limit\": 10,\n    \"offset\": 0,\n    \"order\": {\n        \"field\": \"created_at\",\n        \"direction\": \"desc\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 200', () => {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "pm.test('Devuelve items y total', () => {",
+                                    "    const json = pm.response.json();",
+                                    "    pm.expect(json.data.items).to.be.an('array');",
+                                    "    pm.expect(json.metadata).to.have.property('count');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "3. Validaciones y errores",
+            "description": "Casos negativos con el código que devuelve hoy el servicio (contrastados con `test/AnsApiE2E.e2e.mjs`). Los errores llevan un mensaje genérico y `data.code`; el detalle de la validación solo queda en CloudWatch.",
+            "item": [
+                {
+                    "name": "Crear sin campos obligatorios (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans"]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Rechaza el payload vacío', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Crear con dígitos en el nombre (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans"]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombre\": \"Ans123\",\n    \"intermedio\": 5,\n    \"vencido\": 10,\n    \"color_ans_inicial\": \"#66CC33\",\n    \"color_ans_intermedio\": \"#E8C468\",\n    \"color_ans_final\": \"#E76E50\",\n    \"medicion_ans_id\": \"Days\",\n    \"status\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('El nombre solo admite letras y espacios', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Crear con color fuera de la allowlist (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans"]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombre\": \"Ans Color Invalido\",\n    \"intermedio\": 5,\n    \"vencido\": 10,\n    \"color_ans_inicial\": \"#66CC33\",\n    \"color_ans_intermedio\": \"#E8C468\",\n    \"color_ans_final\": \"#123456\",\n    \"medicion_ans_id\": \"Days\",\n    \"status\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Rechaza colores no aprobados', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Crear con intermedio >= vencido (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans"]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombre\": \"Ans Invertido\",\n    \"intermedio\": 20,\n    \"vencido\": 10,\n    \"color_ans_inicial\": \"#66CC33\",\n    \"color_ans_intermedio\": \"#E8C468\",\n    \"color_ans_final\": \"#E76E50\",\n    \"medicion_ans_id\": \"Days\",\n    \"status\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('intermedio debe ser menor que vencido', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Crear con medición inválida (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans"]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombre\": \"Ans Medicion Invalida\",\n    \"intermedio\": 5,\n    \"vencido\": 10,\n    \"color_ans_inicial\": \"#66CC33\",\n    \"color_ans_intermedio\": \"#E8C468\",\n    \"color_ans_final\": \"#E76E50\",\n    \"medicion_ans_id\": \"Weeks\",\n    \"status\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('medicion_ans_id solo admite Minutes, Hours o Days', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Leer con id que no es UUID (400)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "no-es-un-uuid"
+                                }
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Rechaza ids que no son UUID', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Leer id inexistente (404)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "00000000-0000-4000-8000-000000000000"
+                                }
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 404', () => {",
+                                    "    pm.response.to.have.status(404);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Actualizar con campos gestionados por el servidor (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "00000000-0000-4000-8000-000000000000"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombre\": \"Ans Forjado\",\n    \"created_by\": \"00000000-0000-4000-8000-000000000000\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('No permite forjar campos de auditoría', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Actualizar id inexistente (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "00000000-0000-4000-8000-000000000000"
+                                }
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombre\": \"Ans Fantasma\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Un id inexistente devuelve 400, no 404', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Eliminar id inexistente (400)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id/delete",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id", "delete"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "00000000-0000-4000-8000-000000000000"
+                                }
+                            ]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Un id inexistente devuelve 400, no 404', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Buscar con operador no soportado (400)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/search",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "search"]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"filter\": [\n        {\n            \"field\": \"ans.nombre\",\n            \"operator\": \"contains\",\n            \"value\": \"Oro\",\n            \"type\": \"AND\"\n        }\n    ],\n    \"relationship\": null,\n    \"limit\": 10,\n    \"offset\": 0,\n    \"order\": {\n        \"field\": \"created_at\",\n        \"direction\": \"desc\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Solo admite los operadores de COMPARISION_OPERATORS', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Buscar con filtro fuera de la allowlist (403)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/search",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "search"]
+                        },
+                        "description": "Devuelve 200 si el usuario tiene el permiso de búsqueda `AnsSearchAdvanced`.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"filter\": [\n        {\n            \"field\": \"id\",\n            \"operator\": \"eq\",\n            \"value\": \"{{ansId}}\",\n            \"type\": \"AND\"\n        }\n    ],\n    \"relationship\": null,\n    \"limit\": 10,\n    \"offset\": 0,\n    \"order\": {\n        \"field\": \"created_at\",\n        \"direction\": \"desc\"\n    }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Bloquea filtros fuera de la política ans.search', () => {",
+                                    "    pm.response.to.have.status(403);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Sin token (400/401)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans"]
+                        },
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "description": "Con el authorizer de Cognito activo (`enableAuth`) API Gateway responde 401 antes de llegar al Lambda; sin él, el Lambda responde **400** (no 401) porque `run()` envuelve los fallos de login en `badRequest`."
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Rechaza la petición sin credenciales', () => {",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Sin X-Tenant-Id (404)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans"]
+                        },
+                        "description": "`withTenantContext` falla antes del controlador. Como el mensaje contiene \"not found\", responde 404 con el código `TENANT_CONTEXT_ERROR`."
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Sin tenant no hay contexto', () => {",
+                                    "    pm.response.to.have.status(404);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "5. Rutas que no llegan a un controlador",
+            "description": "`ans-stack.ts` ya no monta `/types` ni `/calculate`, y `POST /{id}/history` está publicada (`KApiStack`) pero sin implementar. Los tests documentan la respuesta actual, no un comportamiento deseado.",
+            "item": [
+                {
+                    "name": "Tipos de medición (GET /types)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/types",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "types"]
+                        },
+                        "description": "Sin recurso propio, API Gateway la enruta a `GET /{id}` con `id = \"types\"`: una lectura con id inválido que responde 400. Los valores válidos de `medicion_ans_id` son `Minutes`, `Hours` y `Days`."
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Cae en la lectura y rechaza el id', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Calcular ANS (POST /calculate)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/calculate",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", "calculate"]
+                        },
+                        "description": "Sin recurso propio, API Gateway la enruta a `POST /{id}` con `id = \"calculate\"`: una actualización con id inválido que responde 400.",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Cae en la actualización y rechaza el id', () => {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});",
+                                    "pm.test('Devuelve el código público de error en data.code', () => {",
+                                    "    pm.expect(pm.response.json().data.code).to.be.a('string').and.not.empty;",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Historial (POST /:id/history)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Tenant-Id",
+                                "value": "{{tenantId}}",
+                                "description": "Tenant que resuelve withTenantContext (DynamoDB)."
+                            },
+                            {
+                                "key": "X-Client-Fingerprint",
+                                "value": "{{clientFingerprint}}",
+                                "description": "Solo lo exigen las cuentas Active Directory: debe coincidir con el fingerprint de la sesión."
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/ans/:id/history",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["ans", ":id", "history"],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{ansId}}"
+                                }
+                            ]
+                        },
+                        "description": "Cae en `BaseController.actionHistory()`, que responde 500 «Action \"history\" is not implemented yet».",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Responde 500', () => {",
+                                    "    pm.response.to.have.status(500);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

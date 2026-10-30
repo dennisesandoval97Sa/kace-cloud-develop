@@ -1,0 +1,97 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "kaceApiResponseCacheFlagsPanel",
+      "type": "panel",
+      "title": "Caché HTTP del apiService (flags opcionales)",
+      "collapsible": true,
+      "collapsed": true,
+      "components": [
+        {
+          "key": "kaceApiResponseCacheFlagsDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"small text-muted mb-2\"><strong>Ámbito:</strong> use estas propiedades en la <code>config</code> de Axios <strong>solo</strong> cuando el script evaluado recibe <code>apiService</code> (p. ej. <code>kaceEngine.getService('apiService')</code>): Schema y <strong>Aux Cases Schema</strong> (onMount / onChange / onSubmit), Custom Select / Multiselect / Custom Multiselect (carga y onChange; con &quot;Refetch al abrir&quot; el proxy puede forzar <code>__kaceForceRefresh</code>), DataTable en <strong>datos iniciales</strong> por JS si llama API, <strong>acciones masivas</strong>, <code>modalInitCode</code> y &quot;Mostrar cuando&quot; del modal, Custom Submit / Natura, <strong>antes de enviar subcaso</strong>, scripts Hidden (post-auth / on-mount), <strong>Custom On Change</strong> de campos Kace cuando el motor está disponible.</p><p class=\"small text-muted mb-2\"><strong>No aplica</strong> a: condición de ocultar adjuntos (solo <code>data</code> / <code>row</code>); script de filtros de <strong>literales auxiliares</strong> (<code>selected_group</code>, <code>setFilters</code>); columnas o acciones del DataTable por JS que solo exponen <code>setColumns</code> / <code>setActions</code>; <code>onClick</code> de fila (<code>row</code>, <code>rowIndex</code>).</p><p class=\"font-weight-bold mb-2\">En <code>apiService.get(url, config)</code> y <code>apiService.post(url, body, config)</code></p><p class=\"small text-muted mb-2\">Anexe en la <strong>raíz</strong> de <code>config</code>:</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Propiedad</th><th>Efecto</th></tr></thead><tbody><tr><td><code>__kaceForceRefresh: true</code></td><td>No usa la entrada de caché; va a red y, si la respuesta es 2xx, <strong>actualiza</strong> la caché (clave: tenant + método + URL + params/body serializado).</td></tr><tr><td><code>__kaceBypassCache: true</code></td><td>Esa petición no lee ni escribe caché.</td></tr><tr><td><code>__kaceCacheRead: true</code> <span class=\"text-muted\">(solo POST)</span></td><td>Permite caché en POST fuera de la lista blanca por URL (lecturas idempotentes). Los POST de búsqueda/listado habituales ya son elegibles por convención.</td></tr><tr><td><code>__singleFlight: false</code></td><td>Desactiva deduplicación de peticiones idénticas en curso.</td></tr></tbody></table><p class=\"small text-muted mb-2\"><strong>GET:</strong> caché activa salvo <code>__kaceBypassCache</code> / <code>__kaceForceRefresh</code>. <strong>POST:</strong> solo 2xx en URLs de lectura (o con <code>__kaceCacheRead: true</code>). No se cachean mutaciones (p. ej. <code>/cases/auxiliary</code>).</p><p class=\"small text-muted mb-0\"><strong>Invalidación:</strong> al guardar caso/subcaso el motor invalida entradas relacionadas; use <code>__kaceForceRefresh</code> si necesita datos recién escritos al instante.</p>"
+        }
+      ]
+    },
+    {
+      "key": "one_script_form_id",
+      "type": "textfield",
+      "label": "OneScript Form ID",
+      "placeholder": "6adb2852-af60-48b9-b590-593f33f4a6b4",
+      "description": "ID of the OneScript form to load the dynamic schema from",
+      "input": true
+    },
+    {
+      "key": "customCodeSection",
+      "type": "panel",
+      "title": "Documentación de bloques de código",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "customCodeDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Variables en <code>Evaluator.evaluate</code> (según bloque):</p><p class=\"font-weight-bold mb-1 mt-2\">Campos del formulario anidado</p><p class=\"small text-muted mb-2\">Disponibles en <strong>onMountCode</strong>, <strong>onChangeCode</strong> y <strong>onSubmitCode</strong>. Use la <code>key</code> del campo en Form.io.</p><table class=\"table table-bordered table-sm mb-3\"><thead><tr><th>Función</th><th>Descripción</th></tr></thead><tbody><tr><td><code>getComponent('miCampo')</code></td><td>Instancia Form.io del campo (acceso avanzado).</td></tr><tr><td><code>setFieldRequired('miCampo', true|false)</code></td><td>Obligatoriedad en UI, validación Kace y esquema Joi al guardar. Devuelve <code>true</code> si aplicó el cambio.</td></tr><tr><td><code>setFieldHidden('miCampo', true|false)</code></td><td>Oculta o muestra el campo (<code>component.hidden</code> de Form.io). <code>true</code> oculta; <code>false</code> muestra. Limpia errores de validación al ocultar.</td></tr><tr><td><code>setFieldDisabled('miCampo', true|false)</code></td><td>Desactiva o activa el campo (<code>component.disabled</code>). <code>true</code> solo lectura; <code>false</code> editable. El campo sigue visible.</td></tr><tr><td><code>setFieldProperties('miCampo', { required, hidden, disabled })</code></td><td>Varias propiedades en una llamada.</td></tr><tr><td><code>redrawComponent('miCampo')</code></td><td>Redibuja el campo tras cambiar propiedades (normalmente no hace falta; las funciones anteriores ya redibujan).</td></tr></tbody></table><p class=\"small text-muted mb-3\">Ejemplo en <code>onChangeCode</code>: <code>setFieldRequired('telefono', data.tipo === 'contacto'); setFieldHidden('detalle', data.mostrarDetalle !== true); setFieldDisabled('codigo', true);</code></p><p class=\"font-weight-bold mb-1 mt-2\">onMountCode</p><p class=\"small text-muted mb-2\">Se evalúa una vez cuando el formulario anidado está listo.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">data</span></td><td>Submission actual del Schema anidado.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">globalData</span></td><td>Datos del formulario raíz (globalRoot).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">kaceEngine</span></td><td>Motor Kace; <code>kaceEngine.getService('nombre')</code>.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">apiService</span></td><td>Servicio de API (Kace).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">url_api</span></td><td>URL base de la API.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">setData</span></td><td>Fusiona y actualiza datos del Schema anidado.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">handleChange</span></td><td>Manejador de cambios del Schema.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">emit</span></td><td>Emitir eventos al root global.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table><p class=\"font-weight-bold mb-1 mt-3\">onChangeCode</p><p class=\"small text-muted mb-2\">Se evalúa en cada cambio de un campo del formulario anidado.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">data</span></td><td>Payload del cambio (objeto con la estructura de submission recibida en el handler).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">globalData</span></td><td>Datos del formulario raíz.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">kaceEngine</span></td><td>Motor Kace.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">apiService</span></td><td>Servicio de API.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">url_api</span></td><td>URL base de la API.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">setData</span></td><td>Fusiona y actualiza datos del Schema anidado.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">handleChange</span></td><td>Manejador de cambios del Schema.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">emit</span></td><td>Emitir eventos al root global.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table><p class=\"font-weight-bold mb-1 mt-3\">onSubmitCode</p><p class=\"small text-muted mb-2\">Se evalúa justo antes del submit del formulario anidado (tras validación). <strong>No</strong> incluye <code>setData</code>.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Variable</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">data</span></td><td>Submission actual del Schema anidado.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">globalData</span></td><td>Datos del formulario raíz.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">kaceEngine</span></td><td>Motor Kace.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">apiService</span></td><td>Servicio de API.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">url_api</span></td><td>URL base de la API.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">handleChange</span></td><td>Manejador de cambios del Schema.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">emit</span></td><td>Emitir eventos al root global.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">params</span></td><td>Parámetros del handshake de Auth (<code>refresh_token</code>, <code>case_id</code>, <code>user_id</code>, <code>url_api</code>, etc.). <code>null</code> hasta completar la autenticación.</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">authCognitoResponse</span></td><td>Respuesta de <code>/auth-cognito</code> del handshake de Auth (usuario, grupos, permisos). <code>null</code> hasta completar la autenticación.</td></tr></tbody></table>"
+        }
+      ]
+    },
+    {
+      "key": "onMountCode",
+      "type": "textarea",
+      "label": "Código personalizado al montar",
+      "description": "Este bloque de código se evalúa una sola vez al montar el formulario (on mount). Úselo para lógica de inicialización.",
+      "input": true,
+      "editor": "ace",
+      "as": "javascript",
+      "rows": 8,
+      "validate": {
+        "javascript": true
+      }
+    },
+    {
+      "key": "onChangeCode",
+      "type": "textarea",
+      "label": "Código personalizado al cambiar",
+      "description": "Este bloque de código se evalúa cada vez que cambia cualquier campo del formulario (on change). Úselo para lógica reactiva o validaciones dinámicas.",
+      "input": true,
+      "editor": "ace",
+      "as": "javascript",
+      "rows": 8,
+      "validate": {
+        "javascript": true
+      }
+    },
+    {
+      "key": "onSubmitCode",
+      "type": "textarea",
+      "label": "Código personalizado al enviar",
+      "description": "Este bloque de código se evalúa justo antes de enviar el formulario (on submit). Úselo para lógica final de validación o transformación de datos.",
+      "input": true,
+      "editor": "ace",
+      "as": "javascript",
+      "rows": 8,
+      "validate": {
+        "javascript": true
+      }
+    },
+    {
+      "key": "ignoreSchemaKeys",
+      "type": "editgrid",
+      "label": "Campos a ignorar en validación",
+      "description": "Propiedades generadas por componentes que no están en el schema (ej. kaceSubcases). Estas claves se excluyen de la validación y del payload al guardar para evitar errores.",
+      "addAnother": "Agregar campo a ignorar",
+      "components": [
+        {
+          "key": "key",
+          "type": "textfield",
+          "label": "Nombre del campo",
+          "input": true
+        }
+      ]
+    }
+  ]
+}

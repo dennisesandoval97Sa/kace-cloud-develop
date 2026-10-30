@@ -1,0 +1,156 @@
+cases_bulk_assign:
+    post:
+        tags:
+            - Cases Bulk
+        summary: Bulk assign cases to a group and assignee
+        description: |
+            Requires permission UserCasesAssigmentCreate (administrator role, user-cases-assigment resource).
+
+            For each field, use IDs of existing records:
+            - case_ids -> case IDs (Cases), between 1 and 500 items
+            - group_id -> group ID (Groups)
+            - responsible_id -> user ID (Users) who belongs to the group, or omit or null for no assignee
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/BulkCasesAssignRequest'
+        responses:
+            '200':
+                description: Assignment applied successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '403':
+                description: Forbidden to assign users to cases
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+cases_bulk_close:
+    post:
+        tags:
+            - Cases Bulk
+        summary: Bulk close cases
+        description: |
+            Requires permission CaseClose (administrator role, cases resource).
+
+            For each field, use IDs of existing records:
+            - case_ids -> case IDs (Cases), between 1 and 500 items
+            - close_reason -> close reason (non-empty text)
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/BulkCasesCloseRequest'
+        responses:
+            '200':
+                description: Cases closed successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '403':
+                description: Forbidden to close cases
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+cases_bulk_transition:
+    post:
+        tags:
+            - Cases Bulk
+        summary: Bulk transition cases to another state
+        description: |
+            Requires permission CasesUpdate (agent role, cases resource).
+
+            For each field, use IDs of existing records:
+            - case_ids -> case IDs (Cases), between 1 and 500 items
+            - transition_id -> transition ID (Transitions)
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/BulkCasesTransitionRequest'
+        responses:
+            '200':
+                description: Transitions applied successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '403':
+                description: Forbidden to update cases
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+    schemas:
+        BulkCasesAssignRequest:
+            type: object
+            required:
+                - case_ids
+                - group_id
+            properties:
+                case_ids:
+                    type: array
+                    minItems: 1
+                    maxItems: 500
+                    items:
+                        type: string
+                        format: uuid
+                group_id:
+                    type: string
+                    format: uuid
+                responsible_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+
+        BulkCasesCloseRequest:
+            type: object
+            required:
+                - case_ids
+                - close_reason
+            properties:
+                case_ids:
+                    type: array
+                    minItems: 1
+                    maxItems: 500
+                    items:
+                        type: string
+                        format: uuid
+                close_reason:
+                    type: string
+                    minLength: 1
+
+        BulkCasesTransitionRequest:
+            type: object
+            required:
+                - case_ids
+                - transition_id
+            properties:
+                case_ids:
+                    type: array
+                    minItems: 1
+                    maxItems: 500
+                    items:
+                        type: string
+                        format: uuid
+                transition_id:
+                    type: string
+                    format: uuid

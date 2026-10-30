@@ -1,0 +1,396 @@
+
+clients:
+  get:
+    tags:
+      - Clients
+    summary: Get all clients instances
+    responses:
+      '200':  
+        description: Returns a list of clients
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Clients
+    summary: Create a client instance
+    description: | 
+      Nota: Si vas a crear mas de un cliente procura cambiarle su cedula y claro, su id.
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateClient"
+    responses:
+      '201':
+        description: Client instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+clients_id:
+  get:
+    tags:
+      - Clients
+    summary: Fetch client instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Client instance fetched succesfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: "#/components/schemas/message"
+                data:
+                  $ref: "#/components/schemas/Client"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post:
+    tags:
+      - Clients
+    summary: Update a client instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateClient"
+    responses:
+      '200':
+        description: Client instance updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+clients_delete:
+  get:
+    tags:
+      - Clients
+    summary: Delete a client instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Client instance deleted succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+clients_search:
+  post:
+    tags:
+      - Clients
+    summary: Search a client by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':  
+        description: Returns a list of clients
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    message:
+      type: string
+      example: Success
+    tipo_cliente:
+      type: string
+      enum: ["Natural","Comercial"]
+    tipo_documento:
+      type: string
+      example: Cedula
+    documento:
+      type: string
+      example: 1121231231
+    nombres:
+      type: string
+      example: Daniel
+    apellido1:
+      type: string
+      example: Gonzales
+    apellido2:
+      type: string
+      example: Gonzales
+    nombre_empresa:
+      type: string
+      example: Google
+    sexo:
+      type: string
+      example: Masculino
+    estado_civil:
+      type: string
+      example: Soltero
+    fecha_nacimiento:
+      type: string
+      format: date
+    email:
+      type: string
+      example: example@example.com
+    email_alterno:
+      type: string
+      example: example2@example.com
+    telefono:
+      type: string
+      example: 323777333
+    telefono_alterno:
+      type: string
+      example: 222666737
+    campos_extra1:
+      type: string
+    campos_extra2:
+      type: string
+    campos_extra3:
+      type: string
+    status:
+      type: number
+      example: 1
+    padre_id:
+      type: string
+      format: uuid
+      example: null
+    habeas_data:
+      type: string
+      example: si
+    contactos:
+      type: array
+    created_by:
+      type: string
+      format: uuid
+    updated_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    ClientsBase:
+      type: object
+      properties:
+        tipo_cliente:
+          $ref: "#/components/schemas/tipo_cliente"
+        tipo_documento:
+          $ref: "#/components/schemas/tipo_documento"
+        documento:
+          $ref: "#/components/schemas/documento"
+        nombres:
+          $ref: "#/components/schemas/nombres"
+        apellido1:
+          $ref: "#/components/schemas/apellido1"
+        apellido2:
+          $ref: "#/components/schemas/apellido2"
+        nombre_empresa:
+          $ref: "#/components/schemas/nombre_empresa"
+        sexo:
+          $ref: "#/components/schemas/sexo"
+        estado_civil:
+          $ref: "#/components/schemas/estado_civil"
+        fecha_nacimiento:
+          $ref: "#/components/schemas/fecha_nacimiento"
+        email:
+          $ref: "#/components/schemas/email"
+        email_alterno:
+          $ref: "#/components/schemas/email_alterno"
+        telefono:
+          $ref: "#/components/schemas/telefono"
+        telefono_alterno:
+          $ref: "#/components/schemas/telefono_alterno"
+        campos_extra1:
+          $ref: "#/components/schemas/campos_extra1"
+        campos_extra2:
+          $ref: "#/components/schemas/campos_extra2"
+        campos_extra3:
+          $ref: "#/components/schemas/campos_extra3"
+        status:
+          $ref: "#/components/schemas/status"
+        padre_id:
+          $ref: "#/components/schemas/padre_id"
+        habeas_data:
+          $ref: "#/components/schemas/habeas_data"
+        contactos:
+          $ref: "#/components/schemas/contactos"
+    Client:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/ClientsBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    ClientsCollection:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Client"
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"
+    CreateClient:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/ClientsBase"
+        - type: object
+          properties:
+            created_at:
+              $ref: "../common/fields.yaml#/schemas/created_at"
+            created_by:
+              $ref: "#/components/schemas/created_by"
+    UpdateClient:
+      type: object
+      properties:
+        tipo_cliente:
+          $ref: "#/components/schemas/tipo_cliente"
+        tipo_documento:
+          $ref: "#/components/schemas/tipo_documento"
+        documento:
+          $ref: "#/components/schemas/documento"
+        nombres:
+          $ref: "#/components/schemas/nombres"
+        apellido1:
+          $ref: "#/components/schemas/apellido1"
+        apellido2:
+          $ref: "#/components/schemas/apellido2"
+        sexo:
+          $ref: "#/components/schemas/sexo"
+        estado_civil:
+          $ref: "#/components/schemas/estado_civil"
+        fecha_nacimiento:
+          $ref: "#/components/schemas/fecha_nacimiento"
+        email:
+          $ref: "#/components/schemas/email"
+        email_alterno:
+          $ref: "#/components/schemas/email_alterno"
+        telefono:
+          $ref: "#/components/schemas/telefono"
+        telefono_alterno:
+          $ref: "#/components/schemas/telefono_alterno"
+        campos_extra1:
+          $ref: "#/components/schemas/campos_extra1"
+        campos_extra2:
+          $ref: "#/components/schemas/campos_extra2"
+        campos_extra3:
+          $ref: "#/components/schemas/campos_extra3"
+        status:
+          $ref: "#/components/schemas/status"
+        padre_id:
+          $ref: "#/components/schemas/padre_id"
+        habeas_data:
+          $ref: "#/components/schemas/habeas_data"
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "#/components/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: nombres
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: example name
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

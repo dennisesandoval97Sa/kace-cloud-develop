@@ -1,0 +1,272 @@
+allowed-connections:
+  get:
+    tags:
+      - Allowed connections
+    summary: Get all allowed connections instances
+    responses:
+      '200':
+        description: A list of allowed connections
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AllowedConnectionsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post: 
+    tags: 
+      - Allowed connections
+    summary: Create a new allowed connection instance
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateAllowedConnection"
+    responses:
+      '201':
+        description: Allowed connection created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+allowed-connections_id:
+  get:
+    tags:
+      - Allowed connections
+    summary: Fetch an allowed connection instace by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Allowed connection instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: "#/components/schemas/message"
+                data:
+                  $ref: "#/components/schemas/AllowedConnections"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post: 
+    tags: 
+      - Allowed connections
+    summary: Update allowed connection instance 
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateAllowedConnection"
+    responses:
+      '200':
+        description: Allowed connection deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+
+allowed-connections_delete:
+  get:
+    tags:
+      - Allowed connections
+    summary: Delete allowed connection instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Allowed connection deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+allowed-connections_search:
+  post:
+    tags:
+      - Allowed connections
+    summary: Search allowed connections instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Allowed instances fetched successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AllowedConnectionsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'                
+      
+components:
+  schemas:
+    description:
+      type: string
+      example: this is a description
+    connection:
+      type: string
+      example: this is a connection
+    certificate:
+      type: string
+      example: this is a certificate
+    has_ssl:
+      type: number
+      example: 1
+    is_active:
+      oneOf:
+        - type: integer
+          enmu: [0,1]
+        - type: boolean
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    message:
+      type: string
+      example: Success
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: description
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: description example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+    AllowedConnectionsBase:
+      type: object
+      properties:
+        description:
+          $ref: "#/components/schemas/description"
+        connection:
+          $ref: "#/components/schemas/connection"
+        certificate:
+          $ref: "#/components/schemas/certificate"
+        has_ssl:
+          $ref: "#/components/schemas/has_ssl"
+        is_active:
+          $ref: "#/components/schemas/is_active"
+    AllowedConnections:
+      allOf:
+        - type: object
+          properties:
+            id:  
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AllowedConnectionsBase"
+        - type: object
+          properties:
+            created_at:
+              type: string
+              format: date-time
+            created_by:
+              type: string
+              format: uuid
+            updated_at:
+              type: string
+              format: date-time
+            updated_by:
+              type: string
+              format: uuid
+    AllowedConnectionsCollection:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/AllowedConnections"
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"
+    CreateAllowedConnection:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AllowedConnectionsBase"
+    UpdateAllowedConnection:
+      allOf:
+        - $ref: "#/components/schemas/AllowedConnectionsBase"

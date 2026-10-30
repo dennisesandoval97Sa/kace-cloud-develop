@@ -1,0 +1,42 @@
+{
+    "service": "aux-definitions",
+    "postmanFolder": "aux_definitions",
+    "endpoints": [
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/aux-definitions/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/aux-definitions/search",
+            "requiresId": false,
+            "body": {
+                "filter": [
+                    {
+                        "field": "name",
+                        "operator": "ilike",
+                        "type": "AND",
+                        "value": "gestion"
+                    },
+                    {
+                        "field": "aux_definitions.deleted_at",
+                        "operator": "null",
+                        "value": "null",
+                        "type": "AND"
+                    }
+                ],
+                "limit": 10,
+                "offset": 0
+            }
+        },
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/aux-definitions",
+            "requiresId": false
+        }
+    ]
+}

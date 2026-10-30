@@ -1,0 +1,125 @@
+interactions-batch:
+    post:
+        tags:
+            - Interactions batch
+        summary: Create a batch of interactions
+        description: |
+            Crea varias interactions en una sola petición (todo-o-nada: si algún item
+            falla, no se persiste ninguno). El servidor genera el id y los campos de
+            auditoría de cada interaction.
+
+            Máximo 500 items por petición.
+
+            La respuesta garantiza que `data.ids` conserva el orden del array enviado:
+            el item con índice N corresponde a `data.ids[N]`.
+
+            Permiso requerido: `administrador.interactions.InteractionsCreate`.
+
+            Restricción de unicidad: un `email_id` sólo puede estar ligado a una
+            interaction. Si algún item referencia un `email_id` ya ligado (o repetido
+            dentro del mismo lote), la petición completa falla con 409.
+
+            Códigos de error públicos:
+            - 400 `relationship_required`, `malformed_relationship_id`,
+              `malformed_request_body_id`, `legacy_id_collision`, o error de validación
+              del schema (array vacío, más de 500 items, item inválido).
+            - 403 `relationship_unauthorized` (el email/workspace existe pero no es
+              accesible para el actor) o falta de permiso `InteractionsCreate`.
+            - 404 `relationship_unauthorized` (el email/workspace no existe).
+            - 409 `INTERACTION_EMAIL_ALREADY_LINKED`.
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        type: array
+                        items:
+                            $ref: '#/components/schemas/CreateInteractionBatchItem'
+        responses:
+            '201':
+                description: Batch of interactions created succesfully
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                message:
+                                    $ref: '../common/fields.yaml#/schemas/message_ok'
+                                data:
+                                    type: object
+                                    properties:
+                                        ids:
+                                            type: array
+                                            items:
+                                                type: string
+                                                format: uuid
+                                metadata:
+                                    type: object
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '403':
+                $ref: '../common/fields.yaml#/schemas/forbidden_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '409':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+    schemas:
+        CreateInteractionBatchItem:
+            type: object
+            required:
+                - channel_id
+                - client_identifier
+                - external_identifier
+                - priority
+                - workspace_id
+                - conversation_id
+            properties:
+                channel_id:
+                    type: string
+                client_identifier:
+                    type: string
+                external_identifier:
+                    type: string
+                description:
+                    type: string
+                    nullable: true
+                priority:
+                    type: string
+                workspace_id:
+                    type: string
+                email_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                conversation_id:
+                    type: string
+                receipt_at:
+                    type: string
+                    format: date-time
+                closed_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                closed_by:
+                    type: string
+                    nullable: true
+                is_closed:
+                    type: boolean
+                    nullable: true
+                is_migrated:
+                    type: boolean
+                    nullable: true
+                start_review_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                start_review_by:
+                    type: string
+                    format: uuid
+                    nullable: true
+                in_review:
+                    type: boolean
+                    nullable: true

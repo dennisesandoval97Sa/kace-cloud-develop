@@ -1,0 +1,280 @@
+aux-casesByFunctions:
+    post:
+      summary: Create an auxiliary case with autocalculated functions
+      description: >
+        Crea un nuevo caso auxiliar asociado a un caso principal.  
+        - Se aceptan **fechas** en formato UTC, timestamp o YYYY-MM-DD.  
+        - Todos los valores de fecha se almacenan en formato UTC en la base de datos.  
+        - Los campos pueden ser autocalculados usando funciones como:
+        - Math:  sum, sub,mul, div, round, min, max.
+        - Strings: concat, upper, lower, trim, slice.
+        - Utils: ref, coalesce, if, len.
+        - Comparators: eq, ne, gt, gte, lt, lte, and, or, not.
+        - `data` contiene claves dinámicas EJM `form_{UUID}` que representan schemas configurados.
+      tags:
+        - Aux cases
+        - Autocalculated Functions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - aux_cases
+                - case
+              properties:
+                aux_cases:
+                  type: object
+                  properties:
+                    caso_id:
+                      type: string
+                      format: uuid
+                      example: 55007637-5bfe-4053-a382-8b9006a207c2
+                    id:
+                      type: string
+                      format: uuid
+                      example: 50b6910c-cfaf-4f3f-b2b6-b1f169219bc5
+                    data:
+                      type: object
+                      additionalProperties:
+                        type: object
+                        properties:
+                          fecha_emision:
+                            oneOf:
+                              - type: string
+                                format: date
+                                example: "2025-09-30"
+                              - type: string
+                                format: date-time
+                                example: "2025-09-30T00:00:00Z"
+                              - type: integer
+                                example: 1761329400000
+                          fecha_vencimiento:
+                            oneOf:
+                              - type: string
+                                format: date
+                                example: "2025-10-31"
+                              - type: string
+                                format: date-time
+                                example: "2025-10-31T00:00:00Z"
+                              - type: integer
+                                example: 1761329400000
+                          subtotal:
+                            type: number
+                            example: 1000
+                          impuestos:
+                            type: number
+                            example: 160
+                          descuento:
+                            type: number
+                            example: 100
+                          precio:
+                            type: number
+                            example: 19.955
+                          a:
+                            type: number
+                            example: 7
+                          b:
+                            type: number
+                            example: 3
+                          nombre:
+                            type: string
+                            example: "Ana"
+                          apellido:
+                            type: string
+                            example: "López"
+                          rfc:
+                            type: string
+                            example: "ABC1234567890"
+                          pais:
+                            type: string
+                            example: "MX"
+                          ciudad:
+                            type: string
+                            example: "CDMX"
+                          mensaje:
+                            type: string
+                            example: "Hola Mundo"
+                          codigo:
+                            type: string
+                            example: "ABCDEF"
+                case:
+                  type: object
+                  properties:
+                    clasificacion_id:
+                      type: string
+                      format: uuid
+                      example: d4d79cc9-22f4-43f8-9528-5408f40104a0
+                    cliente_id:
+                      type: string
+                      format: uuid
+                      example: 91a453b8-f78a-458c-9614-631dd55c82f0
+                    descripcion_caso_id:
+                      type: string
+                      format: uuid
+                      example: df8843cd-e83d-4707-b406-63bfe7d04ba9
+                    grupo_id:
+                      type: string
+                      format: uuid
+                      example: 428c8e45-c2a7-4f3c-9b67-5a83d7aee7c5
+                    id:
+                      type: string
+                      format: uuid
+                      example: 55007637-5bfe-4053-a382-8b9006a207c2
+                    parent_id:
+                      type: string
+                      format: uuid
+                      nullable: true
+                      example: null
+                    responsable_id:
+                      type: string
+                      format: uuid
+                      example: 796c2cf4-ca19-4f6f-b79a-579bffea336a
+                    transicion_id:
+                      type: string
+                      format: uuid
+                      example: a1391ce0-72e8-47a6-bb7d-dd3571bee3ac
+            example:
+              aux_cases:
+                caso_id: "55007637-5bfe-4053-a382-8b9006a207c2"
+                id: "50b6910c-cfaf-4f3f-b2b6-b1f169219bc5"
+                data:
+                  form_4521ba88-eff1-4cb4-a704-a4fb0183b188:
+                    fecha_emision: "2025-09-30"
+                    fecha_vencimiento: "2025-10-31"
+                    subtotal: 1000
+                    impuestos: 160
+                    descuento: 100
+                    precio: 19.955
+                    a: 7
+                    b: 3
+                    nombre: "Ana"
+                    apellido: "López"
+                    rfc: "ABC1234567890"
+                    pais: "MX"
+                    ciudad: "CDMX"
+                    mensaje: "Hola Mundo"
+                    codigo: "ABCDEF"
+              case:
+                clasificacion_id: "d4d79cc9-22f4-43f8-9528-5408f40104a0"
+                cliente_id: "91a453b8-f78a-458c-9614-631dd55c82f0"
+                descripcion_caso_id: "df8843cd-e83d-4707-b406-63bfe7d04ba9"
+                grupo_id: "428c8e45-c2a7-4f3c-9b67-5a83d7aee7c5"
+                id: "55007637-5bfe-4053-a382-8b9006a207c2"
+                parent_id: null
+                responsable_id: "796c2cf4-ca19-4f6f-b79a-579bffea336a"
+                transicion_id: "a1391ce0-72e8-47a6-bb7d-dd3571bee3ac"
+      responses:
+        "201":
+          description: Caso auxiliar creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Resource(s) created"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        example: "55007637-5bfe-4053-a382-8b9006a207c9"
+                      cliente_id:
+                        type: string
+                        format: uuid
+                        example: "91a453b8-f78a-458c-9614-631dd55c82f0"
+                      transicion_id:
+                        type: string
+                        format: uuid
+                        example: "a1391ce0-72e8-47a6-bb7d-dd3571bee3ac"
+                      responsable_id:
+                        type: string
+                        format: uuid
+                        example: "796c2cf4-ca19-4f6f-b79a-579bffea336a"
+                      clasificacion_id:
+                        type: string
+                        format: uuid
+                        example: "d4d79cc9-22f4-43f8-9528-5408f40104a0"
+                      descripcion_caso_id:
+                        type: string
+                        format: uuid
+                        example: "df8843cd-e83d-4707-b406-63bfe7d04ba9"
+                      grupo_id:
+                        type: string
+                        format: uuid
+                        example: "428c8e45-c2a7-4f3c-9b67-5a83d7aee7c5"
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: "2025-10-24T18:29:23.233Z"
+                      created_by:
+                        type: string
+                        format: uuid
+                        example: "6b3a8483-99c2-4fa8-9563-b12d2edf4e9a"
+        "400":
+          description: Validaciones fallidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Validations fail"
+                  data:
+                    type: object
+                    example: {}
+                  metadata:
+                    type: object
+                    properties:
+                      version:
+                        type: string
+                        example: "1.4.1"
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          example: "form_4521ba88-eff1-4cb4-a704-a4fb0183b188"
+                        message:
+                          type: string
+                          example: "\"form_4521ba88-eff1-4cb4-a704-a4fb0183b188.precio\" must be a number"
+              examples:
+                string_en_numero:
+                  summary: Error de precio enviado como string
+                  value:
+                    message: "Validations fail"
+                    data: {}
+                    metadata:
+                      version: "1.4.1"
+                    errors:
+                      - field: "form_4521ba88-eff1-4cb4-a704-a4fb0183b188"
+                        message: "\"form_4521ba88-eff1-4cb4-a704-a4fb0183b188.precio\" must be a number"
+                numero_en_string:
+                  summary: Error de nombre enviado como número
+                  value:
+                    message: "Validations fail"
+                    data: {}
+                    metadata:
+                      version: "1.4.1"
+                    errors:
+                      - field: "form_4521ba88-eff1-4cb4-a704-a4fb0183b188"
+                        message: "\"form_4521ba88-eff1-4cb4-a704-a4fb0183b188.nombre\" must be a string"
+                fecha_invalida:
+                  summary: Error de fecha inválida
+                  value:
+                    message: "Validations fail"
+                    data: {}
+                    metadata:
+                      version: "1.4.1"
+                    errors:
+                      - field: "form_4521ba88-eff1-4cb4-a704-a4fb0183b188"
+                        message: "\"form_4521ba88-eff1-4cb4-a704-a4fb0183b188.fecha_emision\" must be a valid date"
+        "500":
+          description: Error interno del servidor

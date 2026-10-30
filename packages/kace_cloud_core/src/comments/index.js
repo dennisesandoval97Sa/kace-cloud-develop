@@ -1,0 +1,11 @@
+export { Comment } from './domain/Comment';
+export { CommentResponse } from './application/CommentResponse';
+export { CommentsCollectionResponse } from './application/CommentsCollectionResponse.js';
+export { CommentFinder } from './application/find/CommentFinder';
+export { CommentUpdater } from './application/update/CommentUpdater';
+export { CommentCreator } from './application/create/CommentCreator';
+export { CommentBatchCreator } from './application/create/CommentBatchCreator';
+export { CommentsSearcher } from './application/search/CommentsSearcher';
+export { CommentCounter } from './application/count/CommentCounter';
+export { KnexCommentsRepository } from './infrastructure/persistence/KnexCommentsRepository.js';
+export { CommentFinder as DomainCommentFinder } from './domain/CommentFinder.js';

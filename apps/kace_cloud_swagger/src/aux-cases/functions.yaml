@@ -1,0 +1,171 @@
+autocalculated-functions:
+  get:
+    summary: Dummy path for automatically calculated function reference.
+    description: |
+      ### 📘 Funciones Autocalculadas
+
+      Las **funciones autocalculadas** permiten realizar operaciones dinámicas dentro de los registros o formularios del sistema.  
+      Estas fórmulas pueden referenciar valores de otros campos mediante `ref("campo")` o utilizar valores literales,  
+      y se ejecutan automáticamente al crear o actualizar los registros.
+
+      ---
+
+      ### 🔧 Categorías disponibles
+
+      **Fechas (Dates)**  
+      - `addDays(fecha, n)`: Suma *n* días a una fecha.  
+        🧩 *Ejemplo:* `addDays(ref("fecha_emision"), 30)`  
+        ✅ *Respuesta:* `"2025-11-26T00:00:00Z"`
+
+      - `addMonths(fecha, n)`: Suma *n* meses a una fecha.  
+        🧩 *Ejemplo:* `addMonths(ref("fecha_emision"), 2)`  
+        ✅ *Respuesta:* `"2025-12-27T00:00:00Z"`
+
+      - `startOfMonth(fecha)`: Devuelve el primer día del mes de la fecha indicada.  
+        🧩 *Ejemplo:* `startOfMonth(ref("fecha_emision"))`  
+        ✅ *Respuesta:* `"2025-10-01T00:00:00Z"`
+
+      - `endOfMonth(fecha)`: Devuelve el último día del mes de la fecha indicada.  
+        🧩 *Ejemplo:* `endOfMonth(ref("fecha_emision"))`  
+        ✅ *Respuesta:* `"2025-10-31T00:00:00Z"`
+
+      - `diffDays(f1, f2)`: Calcula la diferencia en días entre dos fechas.  
+        🧩 *Ejemplo:* `diffDays(ref("fecha_vencimiento"), ref("fecha_emision"))`  
+        ✅ *Respuesta:* `30`
+
+      > **Nota:** Las fórmulas de fecha soportan los formatos `UTC`, `timestamp` y `"YYYY-MM-DD"`.  
+      > **Importante:** Las fechas se almacenan en la base de datos en formato **UTC**.
+
+      ---
+
+      **Matemáticas (Math)**  
+      - `sum(a, b)`: Suma dos o más valores.  
+        🧩 *Ejemplo:* `sum(ref("subtotal"), ref("impuestos"))`  
+        ✅ *Respuesta:* `1160`
+
+      - `sub(a, b)`: Resta el segundo valor del primero.  
+        🧩 *Ejemplo:* `sub(ref("a"), ref("b"))`  
+        ✅ *Respuesta:* `4`
+
+      - `mul(a, b)`: Multiplica dos valores.  
+        🧩 *Ejemplo:* `mul(ref("a"), ref("b"))`  
+        ✅ *Respuesta:* `21`
+
+      - `div(a, b)`: Divide el primer valor entre el segundo.  
+        🧩 *Ejemplo:* `div(ref("a"), ref("b"))`  
+        ✅ *Respuesta:* `2.3333333333`
+
+      - `round(valor, decimales)`: Redondea un número a la cantidad de decimales indicada.  
+        🧩 *Ejemplo:* `round(ref("precio"), 2)`  
+        ✅ *Respuesta:* `19.96`
+
+      - `min(a, b)`: Devuelve el menor valor entre dos números.  
+        🧩 *Ejemplo:* `min(ref("a"), ref("b"))`  
+        ✅ *Respuesta:* `3`
+
+      - `max(a, b)`: Devuelve el mayor valor entre dos números.  
+        🧩 *Ejemplo:* `max(ref("a"), ref("b"))`  
+        ✅ *Respuesta:* `7`
+
+      ---
+
+      **Cadenas de texto (Strings)**  
+      - `concat(a, b, ...)`: Concatena varios textos.  
+        🧩 *Ejemplo:* `concat(trim(ref("nombre")), " ", ref("apellido"))`  
+        ✅ *Respuesta:* `"Ana López"`
+
+      - `upper(texto)`: Convierte el texto a mayúsculas.  
+        🧩 *Ejemplo:* `upper(ref("mensaje"))`  
+        ✅ *Respuesta:* `"HOLA MUNDO"`
+
+      - `lower(texto)`: Convierte el texto a minúsculas.  
+        🧩 *Ejemplo:* `lower(ref("mensaje"))`  
+        ✅ *Respuesta:* `"hola mundo"`
+
+      - `trim(texto)`: Elimina los espacios al inicio y final del texto.  
+        🧩 *Ejemplo:* `trim(ref("nombre"))`  
+        ✅ *Respuesta:* `"Ana"`
+
+      - `slice(texto, i, f)`: Extrae una subcadena del texto.  
+        🧩 *Ejemplo:* `slice(ref("codigo"), 0, 3)`  
+        ✅ *Respuesta:* `"ABC"`
+
+      ---
+
+      **Utilidades (Utils)**  
+      - `ref("campo")`: Obtiene el valor de otro campo dentro del registro.  
+        🧩 *Ejemplo:* `ref("rfc")`  
+        ✅ *Respuesta:* `"ABC1234567890"`
+
+      - `coalesce(a, b)`: Devuelve el primer valor no nulo o definido.  
+        🧩 *Ejemplo:* `coalesce(ref("alias"), "N/A")`  
+        ✅ *Respuesta:* `"N/A"`
+
+      - `if(cond, v1, v2)`: Evalúa una condición y devuelve un valor dependiendo del resultado.  
+        🧩 *Ejemplo:* `if(gt(ref("subtotal"), 500), "ALTO", "OK")`  
+        ✅ *Respuesta:* `"ALTO"`
+
+      - `len(valor)`: Devuelve la longitud de un texto o array.  
+        🧩 *Ejemplo:* `len(ref("mensaje"))`  
+        ✅ *Respuesta:* `10`
+
+      ---
+
+      **Comparadores (Comparators)**  
+      - `eq(a, b)`: Evalúa si dos valores son iguales.  
+        🧩 *Ejemplo:* `eq(ref("pais"), "MX")`  
+        ✅ *Respuesta:* `true`
+
+      - `ne(a, b)`: Evalúa si dos valores son diferentes.  
+        🧩 *Ejemplo:* `ne(ref("pais"), "US")`  
+        ✅ *Respuesta:* `true`
+
+      - `gt(a, b)`: Verifica si el primer valor es mayor que el segundo.  
+        🧩 *Ejemplo:* `gt(ref("a"), ref("b"))`  
+        ✅ *Respuesta:* `true`
+
+      - `gte(a, b)`: Verifica si el primer valor es mayor o igual al segundo.  
+        🧩 *Ejemplo:* `gte(ref("a"), 7)`  
+        ✅ *Respuesta:* `true`
+
+      - `lt(a, b)`: Verifica si el primer valor es menor que el segundo.  
+        🧩 *Ejemplo:* `lt(ref("b"), 5)`  
+        ✅ *Respuesta:* `true`
+
+      - `lte(a, b)`: Verifica si el primer valor es menor o igual al segundo.  
+        🧩 *Ejemplo:* `lte(ref("b"), 3)`  
+        ✅ *Respuesta:* `true`
+
+      - `and(c1, c2)`: Devuelve `true` si ambas condiciones son verdaderas.  
+        🧩 *Ejemplo:* `and(eq(ref("pais"), "MX"), gt(ref("a"), ref("b")))`  
+        ✅ *Respuesta:* `true`
+
+      - `or(c1, c2)`: Devuelve `true` si alguna de las condiciones es verdadera.  
+        🧩 *Ejemplo:* `or(eq(ref("pais"), "US"), gt(ref("a"), ref("b")))`  
+        ✅ *Respuesta:* `true`
+
+      - `not(cond)`: Invierte el valor booleano de la condición.  
+        🧩 *Ejemplo:* `not(eq(ref("pais"), "US"))`  
+        ✅ *Respuesta:* `true`
+
+      ---
+
+      ### 💡 Ejemplo completo
+      ```json
+      {
+        "fecha_emision": "2025-10-27T00:00:00Z",
+        "fecha_vencimiento": "2025-10-01T00:00:00Z",
+        "subtotal": 1000,
+        "nombre": " Ana ",
+        ...
+      }
+      ```
+
+      ### ✅ Buenas prácticas
+      - Usa `ref("campo")` para obtener valores de otros campos o Valores literales.  
+      - Usa formato UTC para fechas: `"YYYY-MM-DDTHH:mm:ssZ"`, `timestamp` o `"YYYY-MM-DD"`.  
+      - Valida la existencia de los campos antes de usarlos.
+    tags:
+      - Autocalculated Functions
+      - Aux cases
+

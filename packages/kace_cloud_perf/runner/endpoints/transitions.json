@@ -1,0 +1,48 @@
+{
+    "service": "transitions",
+    "postmanFolder": "Transitions",
+    "endpoints": [
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/transitions",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/transitions/{id}",
+            "requiresId": true
+        },
+        {
+            "id": "search",
+            "method": "POST",
+            "path": "/transitions/search",
+            "requiresId": false,
+            "body": {
+                "filter": [
+                    {
+                        "field": "transiciones.status",
+                        "operator": "eq",
+                        "value": 1,
+                        "type": "AND"
+                    },
+                    {
+                        "field": "transiciones.flujo_id",
+                        "operator": "eq",
+                        "value": "004342ee-80e0-4206-9bed-8cf3a0d35d7f",
+                        "type": "AND"
+                    },
+                    {
+                        "field": "transiciones.estado_actual_id",
+                        "operator": "null",
+                        "value": "null",
+                        "type": "AND"
+                    }
+                ],
+                "limit": 50,
+                "offset": 0
+            }
+        }
+    ]
+}

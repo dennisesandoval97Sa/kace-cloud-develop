@@ -1,0 +1,396 @@
+Appointments:
+  get:
+    tags:
+      - Appointments
+    summary: Get all appointments instances
+    responses:
+      "200":
+        description: A list of appointments
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentsCollection"
+      "404":
+        $ref: "../common/fields.yaml#/schemas/not_found_response"
+      "500":
+        $ref: "../common/fields.yaml#/schemas/custom_error_response"
+
+  post:
+    tags:
+      - Appointments
+    summary: Create a new appointments instance
+    description: |
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+
+      - case_id -> ID de un caso (Casos)
+      - agenda_id -> ID de una agenda (Agenda)
+
+      Nota: Para completar los campos start_time y end_time, debes de hacer lo siguiente:
+      1. crear un grupo (Groups)
+      2. crear una agenda (Agenda)
+      2. vincular esa agenda con ese grupo (Agendas groups)
+      2. Crear un registro de appointments time slot y en el agenda_id colocar la agenda creada anteriormente (Appointments time slots)
+      2. en start_time colocar una fecha apartir de mañana con la hora que colocaste en el start time de appointments time slot
+
+      Ejemplo: 
+        - start_time: 2025-02-18T14:00:00.000Z 
+        - end_time: 2025-02-18T15:00:00.000Z
+
+      En este caso:
+        - las 14:00 y las 15:00 son las horas colocadas en el registro de appointments time slot
+
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AppointmentsCreate"
+    responses:
+      "201":
+        description: Appointments created successfully
+        content:
+          application/json:
+            schema:
+              $ref: "../common/fields.yaml#/schemas/created_response"
+      "400":
+        $ref: "../common/fields.yaml#/schemas/bad_status_response"
+      "404":
+        $ref: "../common/fields.yaml#/schemas/not_found_response"
+      "500":
+        $ref: "../common/fields.yaml#/schemas/custom_error_response"
+
+Appointments_id:
+  get:
+    tags:
+      - Appointments
+    summary: Fetch an appointments instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Appointments instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/Appointments"
+      "400":
+        $ref: "../common/fields.yaml#/schemas/bad_status_response"
+      "404":
+        $ref: "../common/fields.yaml#/schemas/not_found_response"
+      "500":
+        $ref: "../common/fields.yaml#/schemas/custom_error_response"
+
+  post:
+    tags:
+      - Appointments
+    summary: Update appointments instance
+    description: |
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+
+      - case_id -> ID de un caso (Casos)
+      - agenda_id -> ID de una agenda (Agenda)
+
+      Nota: Para completar los campos start_time y end_time, debes de hacer lo siguiente:
+      1. crear un grupo (Groups)
+      2. crear una agenda (Agenda)
+      2. vincular esa agenda con ese grupo (Agendas groups)
+      2. Crear un registro de appointments time slot y en el agenda_id colocar la agenda creada anteriormente (Appointments time slots)
+      2. en start_time colocar una fecha apartir de mañana con la hora que colocaste en el start time de appointments time slot
+
+      Ejemplo: 
+        - start_time: 2025-02-18T14:00:00.000Z 
+        - end_time: 2025-02-18T15:00:00.000Z
+
+      En este caso:
+        - las 14:00 y las 15:00 son las horas colocadas en el registro de appointments time slot
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AppointmentsUpdate"
+    responses:
+      "200":
+        description: Appointments updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: "../common/fields.yaml#/schemas/success_response"
+      "400":
+        $ref: "../common/fields.yaml#/schemas/bad_status_response"
+      "404":
+        $ref: "../common/fields.yaml#/schemas/not_found_response"
+      "500":
+        $ref: "../common/fields.yaml#/schemas/custom_error_response"
+
+Appointments_delete:
+  get:
+    tags:
+      - Appointments
+    summary: Delete appointments instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Appointments deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: "../common/fields.yaml#/schemas/success_response"
+      "404":
+        $ref: "../common/fields.yaml#/schemas/not_found_response"
+      "500":
+        $ref: "../common/fields.yaml#/schemas/custom_error_response"
+
+Appointments_search:
+  post:
+    tags:
+      - Appointments
+    summary: Search appointments instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      "200":
+        description: Appointments instances fetched successfully
+        content:
+          application/json:
+            schema:
+              data:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointments"
+      "400":
+        $ref: "../common/fields.yaml#/schemas/bad_status_response"
+      "404":
+        $ref: "../common/fields.yaml#/schemas/not_found_response"
+      "500":
+        $ref: "../common/fields.yaml#/schemas/custom_error_response"
+
+Appointments_re_scheduler:
+  post:
+    tags:
+      - Appointments
+    summary: Re-schedule appointments instance
+    description: |
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+
+      - id -> ID de un appointment (Appointments)
+
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+
+      - case_id -> ID de un caso (Casos)
+      - agenda_id -> ID de una agenda (Agenda)
+
+      Nota: Para completar los campos start_time y end_time, debes de hacer lo siguiente:
+
+      1. crear un grupo (Groups)
+      2. crear una agenda (Agenda)
+      2. vincular esa agenda con ese grupo (Agendas groups)
+      2. Crear un registro de appointments time slot y en el agenda_id colocar la agenda creada anteriormente (Appointments time slots)
+      2. en start_time colocar una fecha apartir de mañana con la hora que colocaste en el start time de appointments time slot
+
+      Ejemplo: 
+        - start_time: 2025-02-18T14:00:00.000Z 
+        - end_time: 2025-02-18T15:00:00.000Z
+
+      En este caso:
+        - las 14:00 y las 15:00 son las horas colocadas en el registro de appointments time slot
+
+      IMPORTANTE: el id que se pasa en el body debe ser diferente al que se manda por parametro.
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AppointmentsUpdate"
+    responses:
+      "200":
+        description: Appointments updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: "../common/fields.yaml#/schemas/success_response"
+      "400":
+        $ref: "../common/fields.yaml#/schemas/bad_status_response"
+      "404":
+        $ref: "../common/fields.yaml#/schemas/not_found_response"
+      "500":
+        $ref: "../common/fields.yaml#/schemas/custom_error_response"
+
+Appointments_by_case_count:
+  get:
+    tags:
+      - Appointments
+    summary: Count appointments by case id
+    description: |
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema:
+      - id -> ID de un caso (Casos)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      "200":
+        description: Appointments counted successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/AppointmentsCounter"
+      "400":
+        $ref: "../common/fields.yaml#/schemas/bad_status_response"
+      "404":
+        $ref: "../common/fields.yaml#/schemas/not_found_response"
+      "500":
+        $ref: "../common/fields.yaml#/schemas/custom_error_response"
+
+components:
+  schemas:
+    AppointmentsBase:
+      type: object
+      properties:
+        case_id:
+          type: string
+          format: uuid
+        agenda_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        last_appointment_id:
+          type: string
+          format: uuid
+          example: null
+        is_completed:
+          type: boolean
+          example: false
+        is_canceled:
+          type: boolean
+          example: false
+        custom_fields:
+          type: object
+          example: null
+        assigned_to:
+          type: string
+          format: uuid
+          example: null
+    Appointments:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AppointmentsBase"
+        - type: object
+          properties:
+            created_at:
+              type: string
+              format: date-time
+            created_by:
+              type: string
+              format: uuid
+            updated_at:
+              type: string
+              format: date-time
+            updated_by:
+              type: string
+              format: uuid
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: appointments.case_id
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                format: uuid
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+    AppointmentsCollection:
+      type: object
+      properties:
+        message:
+          $ref: "../common/fields.yaml#/schemas/message_ok"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Appointments"
+        metadata:
+          type: object
+    AppointmentsCounter:
+      type: object
+      properties:
+        message:
+          $ref: "../common/fields.yaml#/schemas/message_ok"
+        data:
+          type: object
+          properties:
+            count:
+              type: string
+              example: "1"
+    AppointmentsCreate:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AppointmentsBase"
+    AppointmentsUpdate:
+      allOf:
+        - $ref: "#/components/schemas/AppointmentsBase"

@@ -1,0 +1,98 @@
+{
+    "phase": "F2-R",
+    "subCatalogId": "users-config",
+    "description": "Servicios de identidad y configuración del tenant",
+    "notes": [
+        "users-view-by-id-delete eliminado: GET /users/{id}/delete invoca actionDelete -> UserDeleter (soft-delete real).",
+        "schemas-view-by-id-delete eliminado: GET /schemas/{id}/delete invoca actionDelete -> SchemaDeleter.",
+        "aux-definitions-view-by-id-delete eliminado: GET /aux-definitions/{id}/delete invoca actionDelete -> AuxDefinitionDeleter (soft-delete real).",
+        "Rutas /schemas/* y /aux-definitions/* corregidas respecto a la colección Postman, que tenía /schema/* (copy-paste) y devolvía 403 en el authorizer.",
+        "global-configurations-search removed: search body had placeholder filter unlikely to return useful data.",
+        "users-search body adjusted from `{limit:0,offset:0}` to `{filter:[],limit:10,offset:0}` for consistency with other search endpoints — original summary was deleted, must be re-run to get clean data."
+    ],
+    "scenarios": [
+        {
+            "id": "users-view-list",
+            "service": "users",
+            "endpointId": "view-list",
+            "endpoint": "GET /users",
+            "script": "scenarios/users/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "users-view-by-id",
+            "service": "users",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /users/{id}",
+            "script": "scenarios/users/view-by-id.js",
+            "mutating": false,
+            "idTable": "usuarios"
+        },
+        {
+            "id": "users-search",
+            "service": "users",
+            "endpointId": "search",
+            "endpoint": "POST /users/search",
+            "script": "scenarios/users/search.js",
+            "mutating": false
+        },
+        {
+            "id": "schemas-view-list",
+            "service": "schemas",
+            "endpointId": "view-list",
+            "endpoint": "GET /schemas",
+            "script": "scenarios/schemas/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "schemas-view-by-id",
+            "service": "schemas",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /schemas/{id}",
+            "script": "scenarios/schemas/view-by-id.js",
+            "mutating": false,
+            "idTable": "schemas"
+        },
+        {
+            "id": "schemas-search",
+            "service": "schemas",
+            "endpointId": "search",
+            "endpoint": "POST /schemas/search",
+            "script": "scenarios/schemas/search.js",
+            "mutating": false
+        },
+        {
+            "id": "global-configurations-view-list",
+            "service": "global-configurations",
+            "endpointId": "view-list",
+            "endpoint": "GET /global-configuration",
+            "script": "scenarios/global-configurations/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "aux-definitions-view-list",
+            "service": "aux-definitions",
+            "endpointId": "view-list",
+            "endpoint": "GET /aux-definitions",
+            "script": "scenarios/aux-definitions/view-list.js",
+            "mutating": false
+        },
+        {
+            "id": "aux-definitions-view-by-id",
+            "service": "aux-definitions",
+            "endpointId": "view-by-id",
+            "endpoint": "GET /aux-definitions/{id}",
+            "script": "scenarios/aux-definitions/view-by-id.js",
+            "mutating": false,
+            "idTable": "aux_definitions"
+        },
+        {
+            "id": "aux-definitions-search",
+            "service": "aux-definitions",
+            "endpointId": "search",
+            "endpoint": "POST /aux-definitions/search",
+            "script": "scenarios/aux-definitions/search.js",
+            "mutating": false
+        }
+    ]
+}

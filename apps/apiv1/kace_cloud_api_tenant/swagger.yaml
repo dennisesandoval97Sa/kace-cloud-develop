@@ -1,0 +1,922 @@
+openapi: 3.0.3
+info:
+  title: KACE Cloud - Tenant API
+  description: |
+    Lambda microservice for managing Tenant resources using AWS DynamoDB.
+
+    This API provides endpoints to create, update, delete, and retrieve tenant configurations
+    including application settings, database credentials, AWS resources, and security policies.
+
+    **IMPORTANT:** This API uses `subdomain` as the primary key. All path parameters marked as `{id}`
+    actually expect the tenant's subdomain value (e.g., "acme", "demo"), NOT a UUID.
+  version: 1.0.0
+  contact:
+    name: KACE Cloud Support
+    email: support@kace.cloud
+
+servers:
+  - url: https://api.{environment}.kace.cloud/tenant
+    description: Production/Staging environment
+    variables:
+      environment:
+        default: prod
+        enum:
+          - prod
+          - staging
+          - dev
+  - url: http://localhost:3000/tenant
+    description: Local development server
+
+tags:
+  - name: Tenants
+    description: Tenant management operations
+
+paths:
+  /:
+    get:
+      tags:
+        - Tenants
+      summary: List all tenants
+      description: Retrieve a paginated list of all tenants
+      operationId: listTenants
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of items to return (max 100)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: lastEvaluatedKey
+          in: query
+          description: Base64-encoded pagination token from previous response
+          required: false
+          schema:
+            type: string
+            format: base64
+      responses:
+        '200':
+          description: Successful response with tenant list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tenant'
+                  pagination:
+                    type: object
+                    properties:
+                      nextToken:
+                        type: string
+                        description: Base64-encoded token for next page
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Tenants
+      summary: Create a new tenant
+      description: Create a new tenant with configuration settings
+      operationId: createTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantCreateRequest'
+      responses:
+        '201':
+          description: Tenant created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tenant'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /{subdomain}:
+    get:
+      tags:
+        - Tenants
+      summary: Find tenant by subdomain
+      description: |
+        Retrieve a tenant by its subdomain. The subdomain is the primary key in DynamoDB.
+
+        **Example:** `/tenant/acme` to find the tenant with subdomain "acme"
+      operationId: findTenantBySubdomain
+      parameters:
+        - name: subdomain
+          in: path
+          description: Tenant subdomain (primary key)
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]+$'
+            example: acme
+      responses:
+        '200':
+          description: Tenant found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tenant'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Tenants
+      summary: Update a tenant
+      description: |
+        Update an existing tenant's configuration.
+
+        **IMPORTANT:** Use the tenant's subdomain in the path, NOT the UUID.
+
+        **Example:** `POST /tenant/acme` to update the tenant with subdomain "acme"
+      operationId: updateTenant
+      parameters:
+        - name: subdomain
+          in: path
+          description: Tenant subdomain (primary key)
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]+$'
+            example: acme
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantUpdateRequest'
+      responses:
+        '200':
+          description: Tenant updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Tenant'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /{subdomain}/delete:
+    get:
+      tags:
+        - Tenants
+      summary: Delete a tenant (soft delete)
+      description: |
+        Soft delete a tenant by setting the deleted_at timestamp. The tenant record remains
+        in the database but is marked as deleted.
+
+        **IMPORTANT:** Use the tenant's subdomain in the path, NOT the UUID.
+
+        **Example:** `GET /tenant/acme/delete` to soft-delete the tenant with subdomain "acme"
+      operationId: deleteTenant
+      parameters:
+        - name: subdomain
+          in: path
+          description: Tenant subdomain (primary key)
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]+$'
+            example: acme
+      responses:
+        '200':
+          description: Tenant deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Tenant deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Tenant:
+      type: object
+      description: Complete tenant entity with all configuration settings
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique tenant identifier (UUID)
+        subdomain:
+          type: string
+          maxLength: 255
+          pattern: '^[a-z0-9-]+$'
+          description: |
+            Tenant subdomain - **PRIMARY KEY in DynamoDB**
+
+            This is the partition key used to identify tenants. Must be unique and lowercase.
+
+            Examples: "acme", "demo", "client-test"
+          example: acme
+        # Application Configuration
+        apps_environment:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Application environment (prod, staging, dev)
+        apps_service_name:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Service name identifier
+        apps_debug:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Debug mode flag
+        apps_domain:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Primary domain name
+        apps_api_subdomain:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: API subdomain
+        apps_admin_subdomain:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Admin panel subdomain
+        apps_allowed_origins:
+          type: string
+          nullable: true
+          description: Comma-separated allowed CORS origins
+        # Content Security Policy (CSP) Settings
+        apps_content_security_policy_domains:
+          type: string
+          nullable: true
+          description: Legacy CSP domains configuration
+        apps_csp_domains:
+          type: string
+          nullable: true
+          description: CSP allowed domains
+        apps_csp_default_src:
+          type: string
+          nullable: true
+          description: CSP default-src directive
+        apps_csp_media_src:
+          type: string
+          nullable: true
+          description: CSP media-src directive
+        apps_csp_img_src:
+          type: string
+          nullable: true
+          description: CSP img-src directive
+        apps_csp_script_src:
+          type: string
+          nullable: true
+          description: CSP script-src directive
+        apps_csp_font_src:
+          type: string
+          nullable: true
+          description: CSP font-src directive
+        apps_csp_object_src:
+          type: string
+          nullable: true
+          description: CSP object-src directive
+        apps_csp_style_src:
+          type: string
+          nullable: true
+          description: CSP style-src directive
+        apps_csp_connect_src:
+          type: string
+          nullable: true
+          description: CSP connect-src directive
+        apps_csp_frame_ancestors:
+          type: string
+          nullable: true
+          description: CSP frame-ancestors directive
+        apps_csp_frame_src:
+          type: string
+          nullable: true
+          description: CSP frame-src directive
+        apps_frame_origins:
+          type: string
+          nullable: true
+          description: Allowed frame origins
+        # AWS Configuration
+        apps_certificate_domain_arn:
+          type: string
+          nullable: true
+          description: AWS Certificate Manager ARN
+        apps_hosted_zone_id:
+          type: string
+          nullable: true
+          description: Route53 hosted zone ID
+        apps_execute_rest_hook_service_url:
+          type: string
+          nullable: true
+          description: REST hook execution service URL
+        apps_timeout_rest_flows_value_ms:
+          type: string
+          nullable: true
+          description: REST flow timeout in milliseconds
+        apps_actions_queue_executor_timeout_ms:
+          type: string
+          nullable: true
+          description: Action queue executor timeout
+        apps_actions_queue_execution_timeout_ms:
+          type: string
+          nullable: true
+          description: Action queue execution timeout
+        # Database Configuration
+        db_host:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Database host
+        db_database:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Database name
+        db_user:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Database user
+        db_password:
+          type: string
+          nullable: true
+          description: Database password (encrypted)
+        db_auxiliar_user:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Auxiliary database user
+        db_auxiliar_password:
+          type: string
+          nullable: true
+          description: Auxiliary database password (encrypted)
+        db_name:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Database name (alternative field)
+        db_port:
+          type: string
+          maxLength: 10
+          nullable: true
+          description: Database port
+        db_schema:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Database schema
+        # Security/Encryption
+        secret_key:
+          type: string
+          nullable: true
+          description: Encryption secret key
+        secret_iv:
+          type: string
+          nullable: true
+          description: Encryption initialization vector
+        encryption_method:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Encryption algorithm (e.g., AES-256-CBC)
+        timezone:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Tenant timezone
+        # AWS Resources
+        aws_dynamodb_multitenant_table_arn:
+          type: string
+          nullable: true
+          description: DynamoDB multitenant table ARN
+        aws_s3_bucket:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: S3 bucket name
+        aws_s3_access_key_id:
+          type: string
+          nullable: true
+          description: S3 access key ID
+        aws_s3_secret_access_key:
+          type: string
+          nullable: true
+          description: S3 secret access key
+        aws_s3_region:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: S3 bucket region
+        # CloudSearch/CSS
+        aws_css_enable:
+          type: string
+          maxLength: 10
+          nullable: true
+          description: Enable CloudSearch flag
+        aws_css_url:
+          type: string
+          nullable: true
+          description: CloudSearch service URL
+        aws_css_username:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: CloudSearch username
+        aws_css_password:
+          type: string
+          nullable: true
+          description: CloudSearch password
+        # Audit Fields
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Creation timestamp
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+          description: User ID who created the tenant
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Last update timestamp
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+          description: User ID who last updated the tenant
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Soft delete timestamp
+        deleted_by:
+          type: string
+          format: uuid
+          nullable: true
+          description: User ID who deleted the tenant
+
+    TenantCreateRequest:
+      type: object
+      required:
+        - id
+        - subdomain
+        - apps_environment
+        - apps_service_name
+        - apps_domain
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique tenant identifier (UUID v4)
+          example: 550e8400-e29b-41d4-a716-446655440000
+        subdomain:
+          type: string
+          maxLength: 255
+          pattern: '^[a-z0-9-]+$'
+          description: |
+            Tenant subdomain - **REQUIRED** and must be unique
+
+            This is the primary key in DynamoDB. Use lowercase alphanumeric characters and hyphens only.
+          example: acme
+        apps_environment:
+          type: string
+          maxLength: 255
+          description: Application environment (required)
+        apps_service_name:
+          type: string
+          maxLength: 255
+          description: Service name (required)
+        apps_domain:
+          type: string
+          maxLength: 255
+          description: Primary domain (required)
+        apps_debug:
+          type: string
+          maxLength: 255
+          nullable: true
+        apps_api_subdomain:
+          type: string
+          maxLength: 255
+          nullable: true
+        apps_admin_subdomain:
+          type: string
+          maxLength: 255
+          nullable: true
+        apps_allowed_origins:
+          type: string
+          nullable: true
+        apps_content_security_policy_domains:
+          type: string
+          nullable: true
+        apps_csp_domains:
+          type: string
+          nullable: true
+        apps_csp_default_src:
+          type: string
+          nullable: true
+        apps_csp_media_src:
+          type: string
+          nullable: true
+        apps_csp_img_src:
+          type: string
+          nullable: true
+        apps_csp_script_src:
+          type: string
+          nullable: true
+        apps_csp_font_src:
+          type: string
+          nullable: true
+        apps_csp_object_src:
+          type: string
+          nullable: true
+        apps_csp_style_src:
+          type: string
+          nullable: true
+        apps_csp_connect_src:
+          type: string
+          nullable: true
+        apps_csp_frame_ancestors:
+          type: string
+          nullable: true
+        apps_csp_frame_src:
+          type: string
+          nullable: true
+        apps_frame_origins:
+          type: string
+          nullable: true
+        apps_certificate_domain_arn:
+          type: string
+          nullable: true
+        apps_hosted_zone_id:
+          type: string
+          nullable: true
+        apps_execute_rest_hook_service_url:
+          type: string
+          nullable: true
+        apps_timeout_rest_flows_value_ms:
+          type: string
+          nullable: true
+        apps_actions_queue_executor_timeout_ms:
+          type: string
+          nullable: true
+        apps_actions_queue_execution_timeout_ms:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_host:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_database:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_user:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_password:
+          type: string
+          nullable: true
+        db_auxiliar_user:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_auxiliar_password:
+          type: string
+          nullable: true
+        db_name:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_port:
+          type: string
+          maxLength: 10
+          nullable: true
+        db_schema:
+          type: string
+          maxLength: 255
+          nullable: true
+        secret_key:
+          type: string
+          nullable: true
+        secret_iv:
+          type: string
+          nullable: true
+        encryption_method:
+          type: string
+          maxLength: 255
+          nullable: true
+        aws_dynamodb_multitenant_table_arn:
+          type: string
+          nullable: true
+        aws_s3_bucket:
+          type: string
+          maxLength: 255
+          nullable: true
+        aws_s3_access_key_id:
+          type: string
+          nullable: true
+        aws_s3_secret_access_key:
+          type: string
+          nullable: true
+        aws_s3_region:
+          type: string
+          maxLength: 255
+          nullable: true
+        aws_css_enable:
+          type: string
+          maxLength: 10
+          nullable: true
+        aws_css_url:
+          type: string
+          nullable: true
+        aws_css_username:
+          type: string
+          maxLength: 255
+          nullable: true
+        aws_css_password:
+          type: string
+          nullable: true
+
+    TenantUpdateRequest:
+      type: object
+      description: |
+        All fields are optional for updates.
+
+        **Note:** The subdomain cannot be changed after creation as it's the primary key.
+        To change a subdomain, you must create a new tenant and migrate data.
+      properties:
+        subdomain:
+          type: string
+          maxLength: 255
+          nullable: true
+          readOnly: true
+          description: Subdomain cannot be updated (read-only)
+        apps_environment:
+          type: string
+          maxLength: 255
+          nullable: true
+        apps_service_name:
+          type: string
+          maxLength: 255
+          nullable: true
+        apps_debug:
+          type: string
+          maxLength: 255
+          nullable: true
+        apps_domain:
+          type: string
+          maxLength: 255
+          nullable: true
+        apps_api_subdomain:
+          type: string
+          maxLength: 255
+          nullable: true
+        apps_admin_subdomain:
+          type: string
+          maxLength: 255
+          nullable: true
+        apps_allowed_origins:
+          type: string
+          nullable: true
+        apps_content_security_policy_domains:
+          type: string
+          nullable: true
+        apps_csp_domains:
+          type: string
+          nullable: true
+        apps_csp_default_src:
+          type: string
+          nullable: true
+        apps_csp_media_src:
+          type: string
+          nullable: true
+        apps_csp_img_src:
+          type: string
+          nullable: true
+        apps_csp_script_src:
+          type: string
+          nullable: true
+        apps_csp_font_src:
+          type: string
+          nullable: true
+        apps_csp_object_src:
+          type: string
+          nullable: true
+        apps_csp_style_src:
+          type: string
+          nullable: true
+        apps_csp_connect_src:
+          type: string
+          nullable: true
+        apps_csp_frame_ancestors:
+          type: string
+          nullable: true
+        apps_csp_frame_src:
+          type: string
+          nullable: true
+        apps_frame_origins:
+          type: string
+          nullable: true
+        apps_certificate_domain_arn:
+          type: string
+          nullable: true
+        apps_hosted_zone_id:
+          type: string
+          nullable: true
+        apps_execute_rest_hook_service_url:
+          type: string
+          nullable: true
+        apps_timeout_rest_flows_value_ms:
+          type: string
+          nullable: true
+        apps_actions_queue_executor_timeout_ms:
+          type: string
+          nullable: true
+        apps_actions_queue_execution_timeout_ms:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_host:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_database:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_user:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_password:
+          type: string
+          nullable: true
+        db_auxiliar_user:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_auxiliar_password:
+          type: string
+          nullable: true
+        db_name:
+          type: string
+          maxLength: 255
+          nullable: true
+        db_port:
+          type: string
+          maxLength: 10
+          nullable: true
+        db_schema:
+          type: string
+          maxLength: 255
+          nullable: true
+        secret_key:
+          type: string
+          nullable: true
+        secret_iv:
+          type: string
+          nullable: true
+        encryption_method:
+          type: string
+          maxLength: 255
+          nullable: true
+        aws_dynamodb_multitenant_table_arn:
+          type: string
+          nullable: true
+        aws_s3_bucket:
+          type: string
+          maxLength: 255
+          nullable: true
+        aws_s3_access_key_id:
+          type: string
+          nullable: true
+        aws_s3_secret_access_key:
+          type: string
+          nullable: true
+        aws_s3_region:
+          type: string
+          maxLength: 255
+          nullable: true
+        aws_css_enable:
+          type: string
+          maxLength: 10
+          nullable: true
+        aws_css_url:
+          type: string
+          nullable: true
+        aws_css_username:
+          type: string
+          maxLength: 255
+          nullable: true
+        aws_css_password:
+          type: string
+          nullable: true
+
+    ValidationError:
+      type: object
+      properties:
+        errors:
+          type: object
+          description: Field-level validation errors
+          additionalProperties:
+            type: string
+        message:
+          type: string
+          example: Validation failed
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+        errors:
+          type: object
+          description: Detailed error information
+
+  responses:
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+          example:
+            errors:
+              id: '"id" is required'
+              apps_environment: '"apps_environment" is required'
+            message: Validation failed
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Tenant not found
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            message: Internal server error
+            errors: {}
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: AWS Cognito JWT token
+
+security:
+  - BearerAuth: []

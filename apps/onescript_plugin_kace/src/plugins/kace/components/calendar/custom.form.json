@@ -1,0 +1,13 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "disableBeforeToday",
+      "type": "checkbox",
+      "label": "Deshabilitar fechas anteriores al día de hoy",
+      "tooltip": "Bloquea la selección de fechas pasadas en el picker. Los valores históricos ya cargados seguirán mostrándose correctamente.",
+      "defaultValue": true
+    }
+  ]
+}

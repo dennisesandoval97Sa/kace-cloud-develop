@@ -1,0 +1,74 @@
+/action-update-model
+/actions
+/agenda-groups
+/agendas
+/allowed-connections
+/ans
+/ans-calculate {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/ans-types
+/appointment-time-slots
+/appointments
+/assignment-users-list
+/auth-cognito {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/aux-cases/69bd46f0-e895-4918-8348-81c6ac594fe1
+/aux-clients/69bd46f0-e895-4918-8348-81c6ac594fe1
+/banners
+/case-attachments
+/case-available-states/69bd46f0-e895-4918-8348-81c6ac594fe1
+/case-calculate-ans/69bd46f0-e895-4918-8348-81c6ac594fe1
+/case-clone/69bd46f0-e895-4918-8348-81c6ac594fe1 {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/case-close/69bd46f0-e895-4918-8348-81c6ac594fe1 {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/case-descriptions
+/case-re-open/69bd46f0-e895-4918-8348-81c6ac594fe1 {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/case-reclassification/69bd46f0-e895-4918-8348-81c6ac594fe1 {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/case-transitions/69bd46f0-e895-4918-8348-81c6ac594fe1
+/cases
+/cases-count
+/cases-count-by-group/69bd46f0-e895-4918-8348-81c6ac594fe1
+/cases-count-by-responsable/69bd46f0-e895-4918-8348-81c6ac594fe1
+/classification-template-relations
+/classifications
+/classifications-groups-relationships
+/classifications-groups-relationships-batch {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/classifications-groups-relationships-batch-delete {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/classifications-levels/69bd46f0-e895-4918-8348-81c6ac594fe1
+/client-notifications
+/clients
+/clients_contacts/69bd46f0-e895-4918-8348-81c6ac594fe1
+/clients_doc_types
+/comments
+/download-s3-files {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/flows
+/generate-csv
+/geolocation
+/global-configuration
+/global-configuration-get/69bd46f0-e895-4918-8348-81c6ac594fe1
+/global-configuration-set/69bd46f0-e895-4918-8348-81c6ac594fe1 {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/group-lists
+/groups
+/helps
+/helps_attachments/
+/literals
+/mail-accounts
+/mail-accounts-types
+/one_script
+/permissions
+/roles
+/s3-files
+/schema-fields/casos
+/secrets-vaults
+/shift-management
+/states
+/states-distinct
+/template-attachments
+/templates
+/tempcases/69bd46f0-e895-4918-8348-81c6ac594fe1
+/tempclients/69bd46f0-e895-4918-8348-81c6ac594fe1
+/transitions/69bd46f0-e895-4918-8348-81c6ac594fe1
+/upload-s3-files {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/user-cases-assignment {"id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "grupo_id":"69bd46f0-e895-4918-8348-81c6ac594fe1", "responsable_id":"69bd46f0-e895-4918-8348-81c6ac594fe1"}
+/user-group-relationships
+/users
+/users-notifications
+/ws-rest-endpoints
+/ws-rest-flows

@@ -1,0 +1,1 @@
+export const GENERAL_INTERNAL_ERROR = '0x010001';

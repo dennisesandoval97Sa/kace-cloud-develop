@@ -1,0 +1,339 @@
+flow:
+  get:
+    tags:
+      - Flows
+    summary: Get all flows
+    responses:
+      '200':
+        description: Returns a list of flows
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlowsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Flows
+    summary: Create a flow instance
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateFlow"
+    responses:
+      '201':
+        description: Flow instance created succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+flow_id:
+  get:
+    tags:
+      - Flows
+    summary:  Fetch a flow by ID
+    parameters: 
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        descripcion: Return a flow instance
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: "#/components/schemas/Flow"
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Flows
+    summary: Update a flow instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateFlow"
+    responses:
+      '200':
+        description: flow updated succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+flow_delete:
+  get:
+    tags:
+      - Flows
+    summary: Delete a flow instance
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: flow instance deleted succesfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+flow_search:
+  post:
+    tags:
+      - Flows
+    summary: Search flow instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of flows which match with the search
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/FlowsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+  schemas:
+    nombre:
+      type: string
+    edge:
+      type: object
+      properties:
+        id:
+          type: string
+          example: reactflow__edge-0-8c27ee3a-bdc5-4f53-be2f-fe9f23e1ee93
+        source:
+          type: string
+          example: source example
+        target:
+          type: string
+          format: uuid
+        sourceHandle:
+          oneOf:
+            - type: "null"
+            - type: string
+        targetHandle:
+          oneOf:
+              - type: "null"
+              - type: string
+    node:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        data: 
+          type: object
+          properties:
+            label:
+              type: string
+        type:
+          type: string
+        width:
+          type: number
+          example: 200
+        height:
+          type: number
+          example: 200
+        dragging:
+          type: boolean
+          example: false
+        position:
+          type: object
+          properties:
+            x:
+              type: number
+              example: 20
+            y:
+              type: number
+              example: 30
+        selected:
+          type: boolean
+          example: true
+        positionAbsolute:
+          type: object
+          properties:
+            x:
+              type: number
+              example: 20
+            y:
+              type: number
+              example: 30
+    json_flujo:
+      type: object
+      properties:
+        edges:
+          type: array
+          items:
+            $ref: "#/components/schemas/edge"
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/node"
+    status:
+      type: number
+      example: 1
+    updated_by:
+      type: string
+      format: uuid
+    created_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    Deleted:
+      type: object
+      properties:
+        deleted_at:
+          $ref: "../common/fields.yaml#/schemas/deleted_at"
+        deleted_by:
+          $ref: "../common/fields.yaml#/schemas/deleted_by"
+    
+    FlowBase:
+      type: object
+      properties:
+        nombre:
+          $ref: "#/components/schemas/nombre"
+        json_flujo:
+          $ref: "#/components/schemas/json_flujo"
+        status:
+          $ref: "#/components/schemas/status"
+    Flow:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/FlowBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+        - $ref: "#/components/schemas/Deleted"
+    FlowsCollection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Flow"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: '198'
+    CreateFlow:
+        allOf:
+          - type: object  
+            properties:
+              id:
+                $ref: "../common/fields.yaml#/schemas/id"
+          - $ref: "#/components/schemas/FlowBase"
+          - type: object
+            properties:
+              created_at:
+                $ref: "../common/fields.yaml#/schemas/created_at"
+              created_by:
+                $ref: "#/components/schemas/created_by"
+    UpdateFlow:
+        allOf:
+        - $ref: "#/components/schemas/FlowBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              $ref: "#/components/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: nombre
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: example name
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

@@ -1,0 +1,52 @@
+Generate-csv:
+   get:
+    tags:
+      - Generate csv
+    summary: Generate csv
+    responses:
+      '200':
+        description: Generate csv successfully
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/GenerateCsvResponse"
+components:
+  schemas:
+    GenerateCsvResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Archivo CSV generado y subido correctamente a S3."
+        data:
+          type: object
+          properties:
+            fileLocations:
+              type: object
+              properties:
+                vw_agendamiento_ut:
+                  type: string
+                  example: "/tmp/vw_agendamiento_ut.csv"
+                vw_bandejas_ut:
+                    type: string
+                    example: "/tmp/vw_bandejas_ut.csv"
+                vw_traza_ut:
+                  type: string
+                  example:  "/tmp/vw_traza_ut.csv"
+                vw_ventas_ut:
+                  type: string
+                  example: "/tmp/vw_ventas_ut.csv"
+                20250218_093907_vw_agendamiento_ut:
+                  type: string
+                  example: "s3://s3pruebaskace/ut_pruebas/20250218_093907_vw_agendamiento_ut.csv"
+                20250218_093907_vw_bandejas_ut:
+                  type: string
+                  example: "s3://s3pruebaskace/ut_pruebas/20250218_093907_vw_bandejas_ut.csv"
+                20250218_093907_vw_traza_ut:
+                  type: string
+                  example: "s3://s3pruebaskace/ut_pruebas/20250218_093907_vw_traza_ut.csv"
+                20250218_093907_vw_ventas_ut:
+                  type: string
+                  example: "s3://s3pruebaskace/ut_pruebas/20250218_093907_vw_ventas_ut.csv"
+        metadata:
+          type: object

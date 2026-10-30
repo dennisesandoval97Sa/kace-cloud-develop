@@ -1,0 +1,5 @@
+export const BAD_REQUEST_ERROR = '0x050001';
+export const NOT_FOUND_ERROR = '0x050004';
+export const METHOD_NOT_ALLOWED_ERROR = '0x050005';
+export const REQUEST_TIMEOUT_ERROR = '0x050008';
+export const CONFLICT_ERROR = '0x050009';

@@ -1,0 +1,269 @@
+actions:
+  get:
+    tags:
+      - Actions
+    summary: Get all action instances
+    responses:
+      '200':
+        description: A list of actions
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActionsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post: 
+    tags: 
+      - Actions
+    summary: Create a new action instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - responsible_id -> ID de un usuario (Users)
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ActionCreated"
+    responses:
+      '201':
+        description: Action created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+actions_id:
+  get:
+    tags:
+      - Actions
+    summary: Fetch an action instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Action instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "#/components/schemas/Action"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post: 
+    tags: 
+      - Actions
+    summary: Update action instance 
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - responsible_id -> ID de un usuario (Users)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ActionUpdated"
+    responses:
+      '200':
+        description: Action updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+actions_delete:
+  get:
+    tags:
+      - Actions
+    summary: Delete action instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Action deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+actions_search:
+  post:
+    tags:
+      - Actions
+    summary: Search action instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Action instances fetched successfully
+        content:
+          application/json:
+            schema:
+              data:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Action"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'                
+
+components:
+  schemas:
+    ActionBase:
+      type: object
+      properties:
+        action_type:
+          type: string
+          maxLength: 100
+          example: asignar_asesor_en_curso
+        description:
+          type: string
+          maxLength: 255
+          example: "This is a description of the action"
+        conditions:
+          type: object
+          example: { "conditionKey": "conditionValue" }
+        triggers:
+          type: object
+          nullable: true
+          example: null
+        permissions:
+          type: object
+          nullable: true
+          example: null
+        responsible_id:
+          type: string
+          format: uuid
+          example: "8a09ba2c-0231-4cc3-b02d-5b90054d6f90"
+          nullable: true
+          description: hola
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 100
+          nullable: true
+          example: 50
+        is_active:
+          type: boolean
+          nullable: true
+          example: true
+    Action:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/ActionBase"
+        - type: object
+          properties:
+            created_at:
+              type: string
+              format: date-time
+            created_by:
+              type: string
+              format: uuid
+            updated_at:
+              type: string
+              format: date-time
+            updated_by:
+              type: string
+              format: uuid
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: description
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: description example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0
+    ActionsCollection:
+      type: object
+      properties:
+        message:
+          $ref: "../common/fields.yaml#/schemas/message_ok"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Action"
+        metadata:
+          type: object
+    ActionCreated:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/ActionBase"
+
+    ActionUpdated:
+      allOf:
+        - $ref: "#/components/schemas/ActionBase"

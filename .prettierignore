@@ -1,0 +1,12 @@
+# Ignore artifacts:
+build
+coverage
+test/example_old_rules.json
+test/example_configuraciones.json
+*.md
+apps/apiv1/kace_cloud_api_interactions/bin/interactions.js
+
+# Lockfile generado por pnpm: lo reescribe `pnpm install` en su propio formato,
+# asi que formatearlo solo genera churn. Sin esta linea, CUALQUIER PR que toque
+# dependencias rompe el job `lint` por un motivo ajeno al cambio.
+pnpm-lock.yaml

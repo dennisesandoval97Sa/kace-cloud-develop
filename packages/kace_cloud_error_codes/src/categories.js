@@ -1,0 +1,17 @@
+export const CATEGORY_PREFIXES = Object.freeze({
+    GENERAL: '01',
+    CONFIGURATION: '02',
+    VALIDATION: '03',
+    DATABASE: '04',
+    HTTP: '05',
+    INTEGRATIONS: '06',
+    AUTH: '07',
+    AUTHORIZATION: '08',
+    CRYPTO: '09',
+    CACHE: '10',
+    QUEUES: '11',
+    FILES: '12',
+    OBSERVABILITY: '13',
+    FEATURE_FLAGS: '14',
+    TENANT: '15',
+});

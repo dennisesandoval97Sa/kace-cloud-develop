@@ -1,0 +1,306 @@
+wsRestEndpoints:
+  get:
+    tags:
+      - WS rest endpoints
+    summary: Get all WSRestEndpoint instances
+    responses:
+      '200':
+        description: A list of WSRestEndpoints
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WSRestEndpointsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post: 
+    tags: 
+      - WS rest endpoints
+    summary: Create a new WSRestEndpoint instance
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Created"
+    responses:
+      '201':
+        description: WSRestEndpoint created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+wsRestEndpoint_id:
+  get:
+    tags:
+      - WS rest endpoints
+    summary: Fetch a WSRestEndpoint instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: WSRestEndpoint instance fetched successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WSRestEndpointsResponse"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post: 
+    tags: 
+      - WS rest endpoints
+    summary: Update WSRestEndpoint instance 
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Updated"
+    responses:
+      '200':
+        description: WSRestEndpoint instance updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+wsRestEndpoint_delete:
+  get:
+    tags:
+      - WS rest endpoints
+    summary: Delete WSRestEndpoint instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: WSRestEndpoint deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+wsRestEndpoints_search:
+  post:
+    tags:
+      - WS rest endpoints
+    summary: Search WSRestEndpoints by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: WSRestEndpoint instances fetched successfully
+        content:
+          application/json:
+            schema:
+                  $ref: "#/components/schemas/WSRestEndpointsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    WSRestEndpointBase:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [consumption, authorization]
+          example: "authorization"
+        description:
+          type: string
+          example: "Description of the WSRestEndpoint"
+        url:
+          type: string
+          example: "https://api.example.com/endpoint"
+        authorization_id:
+          type: string
+          example: "68acf4dc-37b0-4095-8379-d7cf35ba30bd"
+        context_position:
+          type: string
+          example: "context.prueba"
+        method:
+          type: string
+          enum: [GET, POST, PUT, DELETE]
+          example: "POST"
+        headers:
+          type: object
+          properties:
+            headers:
+              type: object
+              example: { "Authorization": "Bearer token" }
+        body:
+          type: object
+          properties:
+            body:
+              type: object
+              example: { "key": "value" }
+        filter_input:
+          type: object
+          properties:
+            filter_input:
+              type: array
+              items:
+                type: string
+        on_success:
+          type: object
+          properties:
+            on_success:
+              type: object
+              example: { "200": "flujo_exitoso" }
+        on_error:
+          type: object
+          properties:
+            on_error:
+              type: object
+              example: { "400": "flujo_error" }
+        is_dynamic_body:
+          type: boolean
+          example: false
+        is_dynamic_header:
+          type: boolean
+          example: false
+        is_active:
+          type: boolean
+          example: true
+        attempts: 
+          type: integer
+          example: 1
+
+    WSRestEndpoint:
+      allOf:
+        - type: object
+          properties:
+            id:  
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/WSRestEndpointBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    
+    WSRestEndpointsCollection:
+      type: object
+      properties:
+        message:
+            $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+           type: object
+           properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/WSRestEndpoint"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: '198'
+
+    WSRestEndpointsResponse:
+      type: object
+      properties:
+        message:
+            $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+              $ref: "#/components/schemas/WSRestEndpoint"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: '198'
+
+    Created:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/WSRestEndpointBase"
+        - type: object
+          properties:
+            created_at:
+              $ref: "../common/fields.yaml#/schemas/created_at"
+            created_by:
+              $ref: "../common/fields.yaml#/schemas/created_by"
+    
+    Updated:
+      allOf:
+        - $ref: "#/components/schemas/WSRestEndpointBase"
+        - type: object
+          properties:
+            updated_at:
+              $ref: "../common/fields.yaml#/schemas/updated_at"
+            updated_by:
+              $ref: "../common/fields.yaml#/schemas/updated_by"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: description
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: description example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

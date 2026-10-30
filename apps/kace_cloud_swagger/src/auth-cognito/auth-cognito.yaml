@@ -1,0 +1,86 @@
+auth-cognito:
+ post:
+    tags:
+      - Cognito Authorization
+    summary: Create an Cognito Authorization instance
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateCognitoAuthorization'
+    responses:
+      '201':
+        description: Ans instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+auth-cognito_logout:
+ post:
+    tags:
+      - Cognito Authorization
+    summary: Logout a user from Cognito
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthCognitoLogoutRequest'
+    responses:
+      '200':
+        description: Logout successful
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+  schemas:
+    id_token :
+      type: string
+      example: "eyJraWQiOiJ1UTdOdllzZUNKS3Nia09odHY2V...."
+    user_id :
+      type: string
+      example: "eyJraWQiOiJ1UTdOdllzZUNKS3Nia09odHY2V...."
+    access_token :
+      type: string
+      example: "eyJraWQiOiJwY0FONmd1M1JlUGhidTRFWHZBcEtJbW...."
+    refresh_token :
+      type: string
+      example: "eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwi...."
+    expires_in:
+      type: number
+      example: 3600
+    token_type :
+      type: string
+      example: "Bearer"
+    CreateCognitoAuthorization:
+      type: object
+      properties:
+        id_token:
+          $ref: "#/components/schemas/id_token"
+        access_token:
+          $ref: "#/components/schemas/access_token"
+        refresh_token:
+          $ref: "#/components/schemas/refresh_token"
+        expires_in:
+          $ref: "#/components/schemas/expires_in"
+        token_type:
+          $ref: "#/components/schemas/token_type"
+    AuthCognitoLogoutRequest:
+      type: object
+      properties:
+        user_id:
+          $ref: "#/components/schemas/user_id"

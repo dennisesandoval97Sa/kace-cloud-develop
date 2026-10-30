@@ -1,0 +1,45 @@
+actions_queue_executions:
+  post:
+    tags:
+      - Actions Queue Executions
+    summary: Execute queued actions based on triggers
+    description: |
+      Ejecuta las acciones en cola basadas en triggers configurados.
+      Este endpoint también se ejecuta automáticamente mediante AWS EventBridge como un cron job cada minuto.
+    operationId: executeQueuedActions
+    responses:
+      '200':
+        description: Actions queue execution result
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    processed:
+                      type: integer
+                      description: Total number of actions processed
+                      example: 5
+                    successful:
+                      type: integer
+                      description: Number of actions successfully executed
+                      example: 4
+                    failed:
+                      type: integer
+                      description: Number of actions that failed execution
+                      example: 1
+                metadata:
+                  type: object
+                  properties:
+                    timestamp:
+                      type: string
+                      format: date-time
+                      description: Time when the execution was completed
+                    status:
+                      type: string
+                      enum: ['completed', 'skipped']
+                      description: Status of the execution process
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'

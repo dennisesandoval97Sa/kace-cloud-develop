@@ -1,0 +1,21 @@
+.tomato {
+  color: tomato;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.text-l {
+  font-size: large;
+}
+
+.subcases-attachments__dropzone {
+  border-style: dashed;
+  cursor: pointer;
+}
+
+.subcases-attachments__scroll {
+  height: 500px;
+  overflow: auto;
+}

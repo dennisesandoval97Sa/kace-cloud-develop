@@ -1,0 +1,396 @@
+group:
+    get:
+        tags:
+            - Groups
+        summary: Get all groups
+        responses:
+            '200':
+                description: Returns a list of Groups
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GroupsCollection'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+    post:
+        tags:
+            - Groups
+        summary: Create a Group instance
+        description: |
+            Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+            - horario_id -> ID de un horario (shift management)
+            - rol_id -> ID de un rol (Roles)
+
+            Un `horario_id` eliminado responde 400 con `GROUP_SCHEDULE_UNAVAILABLE` (`0x030071`).
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/CreateGroup'
+        responses:
+            '201':
+                description: Group instance created succesfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/created_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '409':
+                $ref: '../common/fields.yaml#/schemas/schedule_lock_conflict_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+group_id:
+    get:
+        tags:
+            - Groups
+        summary: Fetch a Group by ID
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        responses:
+            '200':
+                descripcion: Return a Group instance
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                message:
+                                    $ref: '#/components/schemas/message'
+                                data:
+                                    type: object
+                                    properties:
+                                        data:
+                                            $ref: '#/components/schemas/GroupDetail'
+                                        horario_description:
+                                            type: string
+                                            deprecated: true
+                                            description: Previous location of `data.horario_description`; read that one instead.
+                                metadata:
+                                    type: object
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+    post:
+        tags:
+            - Groups
+        summary: Update a Group instance
+        description: |
+            Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+            - horario_id -> ID de un horario (shift management)
+            - rol_id -> ID de un rol (Roles)
+
+            Un `horario_id` inexistente, eliminado o `null` responde 400 con `GROUP_SCHEDULE_UNAVAILABLE` (`0x030071`).
+            Si el horario guardado del grupo fue eliminado, `GET /groups/{id}` lo devuelve como `null`: el grupo
+            solo se puede actualizar enviando un horario vigente (u omitiendo `horario_id`).
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/UpdateGroup'
+        responses:
+            '200':
+                description: Group instance updated succesfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '409':
+                $ref: '../common/fields.yaml#/schemas/schedule_lock_conflict_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+group_delete:
+    get:
+        tags:
+            - Groups
+        summary: Delete a Group instance
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        responses:
+            '200':
+                description: Group instance deleted succesfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+group_shiftmanagement:
+    get:
+        tags:
+            - Groups
+        summary: fetch a group's schedule
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        responses:
+            '200':
+                description: Group schedule fetched succesfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+group_search:
+    post:
+        tags:
+            - Groups
+        summary: Search Group instances by a specific field and value
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/SearchCollection'
+        responses:
+            '200':
+                description: Returns a list of Groups which match with the search
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GroupsCollection'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+    schemas:
+        message:
+            type: string
+            example: Success
+        nombre:
+            type: string
+            example: the group
+        horario_id:
+            type: string
+            format: uuid
+            example: 75a06b9b-ff17-4b79-84ad-24e402d84c85
+        descripcion:
+            type: string
+            example: this is a description
+        codigo_externo:
+            type: string
+            example: '123456'
+        codigos_externos:
+            type: object
+        permisos:
+            type: object
+        layouts:
+            type: object
+        comportamientos:
+            type: object
+        filter_order:
+            type: string
+        status:
+            type: number
+            example: 1
+        rol_id:
+            type: string
+            format: uuid
+            example: 798d0061-42d4-4366-8f64-a9df67e5773e
+        updated_by:
+            type: string
+            format: uuid
+        created_by:
+            type: string
+            format: uuid
+        Created:
+            type: object
+            properties:
+                created_at:
+                    $ref: '../common/fields.yaml#/schemas/created_at'
+                created_by:
+                    $ref: '../common/fields.yaml#/schemas/created_by'
+        Updated:
+            type: object
+            properties:
+                updated_at:
+                    $ref: '../common/fields.yaml#/schemas/updated_at'
+                updated_by:
+                    $ref: '../common/fields.yaml#/schemas/updated_by'
+        Deleted:
+            type: object
+            properties:
+                deleted_at:
+                    $ref: '../common/fields.yaml#/schemas/deleted_at'
+                deleted_by:
+                    $ref: '../common/fields.yaml#/schemas/deleted_by'
+        GroupBase:
+            type: object
+            properties:
+                nombre:
+                    $ref: '#/components/schemas/nombre'
+                descripcion:
+                    $ref: '#/components/schemas/descripcion'
+                codigo_externo:
+                    $ref: '#/components/schemas/codigo_externo'
+                codigos_externos:
+                    $ref: '#/components/schemas/codigos_externos'
+                permisos:
+                    $ref: '#/components/schemas/permisos'
+                layouts:
+                    $ref: '#/components/schemas/layouts'
+                comportamientos:
+                    $ref: '#/components/schemas/comportamientos'
+                filter_order:
+                    $ref: '#/components/schemas/filter_order'
+                status:
+                    $ref: '#/components/schemas/status'
+                rol_id:
+                    $ref: '#/components/schemas/rol_id'
+        Group:
+            allOf:
+                - type: object
+                  properties:
+                      id:
+                          $ref: '../common/fields.yaml#/schemas/id'
+                      horario_id:
+                          allOf:
+                              - $ref: '#/components/schemas/horario_id'
+                          description: >-
+                              Stored schedule id. Lists and searches return it as stored, even when the schedule
+                              was deleted; only `GET /groups/{id}` returns `null` for a deleted schedule.
+                - $ref: '#/components/schemas/GroupBase'
+                - $ref: '#/components/schemas/Created'
+                - $ref: '#/components/schemas/Updated'
+                - $ref: '#/components/schemas/Deleted'
+        GroupDetail:
+            allOf:
+                - type: object
+                  properties:
+                      id:
+                          $ref: '../common/fields.yaml#/schemas/id'
+                      horario_id:
+                          type:
+                              - string
+                              - 'null'
+                          format: uuid
+                          example: 75a06b9b-ff17-4b79-84ad-24e402d84c85
+                          description: '`null` when the saved schedule no longer exists or was deleted.'
+                      horario_description:
+                          type: string
+                          description: Description of the schedule; empty when `horario_id` is `null`.
+                - $ref: '#/components/schemas/GroupBase'
+                - $ref: '#/components/schemas/Created'
+                - $ref: '#/components/schemas/Updated'
+                - $ref: '#/components/schemas/Deleted'
+        GroupsCollection:
+            type: object
+            properties:
+                message:
+                    $ref: '#/components/schemas/message'
+                data:
+                    type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/Group'
+                metadata:
+                    type: object
+                    properties:
+                        count:
+                            type: object
+                            properties:
+                                count:
+                                    type: string
+                                    example: '1'
+        CreateGroup:
+            allOf:
+                - type: object
+                  properties:
+                      id:
+                          $ref: '../common/fields.yaml#/schemas/id'
+                      horario_id:
+                          $ref: '#/components/schemas/horario_id'
+                - $ref: '#/components/schemas/GroupBase'
+                - type: object
+                  properties:
+                      created_at:
+                          $ref: '../common/fields.yaml#/schemas/created_at'
+                      created_by:
+                          $ref: '#/components/schemas/created_by'
+        UpdateGroup:
+            allOf:
+                - $ref: '#/components/schemas/GroupBase'
+                - type: object
+                  properties:
+                      horario_id:
+                          type:
+                              - string
+                              - 'null'
+                          format: uuid
+                          example: 75a06b9b-ff17-4b79-84ad-24e402d84c85
+                          description: >-
+                              Accepts the `null` that `GET /groups/{id}` returns for a deleted schedule, but answers
+                              it with 400 `GROUP_SCHEDULE_UNAVAILABLE`: pick an available schedule.
+                      updated_at:
+                          $ref: '../common/fields.yaml#/schemas/updated_at'
+                      updated_by:
+                          $ref: '#/components/schemas/updated_by'
+        SearchCollection:
+            type: object
+            properties:
+                filter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            field:
+                                type: string
+                                example: nombre
+                            operator:
+                                type: string
+                                example: like
+                            value:
+                                type: string
+                                example: example name
+                            type:
+                                type: string
+                                example: AND
+                relationship:
+                    type: array
+                    items:
+                limit:
+                    type: integer
+                    example: 10
+                offset:
+                    type: integer
+                    example: 0

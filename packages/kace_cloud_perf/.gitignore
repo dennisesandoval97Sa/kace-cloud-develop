@@ -1,0 +1,8 @@
+node_modules/
+.env.perf
+*.log
+tmp/
+dump/
+auth/tokens.local.json
+auth/test-users.local.json
+data/data-pool/*.local.json

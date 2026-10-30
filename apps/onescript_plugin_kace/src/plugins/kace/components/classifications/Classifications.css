@@ -1,0 +1,154 @@
+.tomato {
+  color: tomato;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.text-l {
+  font-size: large;
+}
+
+.classifications-levels {
+  height: 500px;
+}
+
+/* Select con búsqueda (ClassificationsOptions) */
+.classifications-dropdown-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.classifications-dropdown-control {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  text-align: left;
+  min-height: calc(1.5em + 0.75rem + 2px);
+}
+
+.classifications-dropdown-control--disabled {
+  cursor: not-allowed;
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.classifications-dropdown-control-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 0.5rem;
+}
+
+.classifications-dropdown-arrow {
+  flex-shrink: 0;
+  opacity: 0.65;
+}
+
+.classifications-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 2px;
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+  z-index: 10050;
+  overflow: hidden;
+}
+
+.classifications-dropdown-search {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.classifications-dropdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.classifications-dropdown-item {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.classifications-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.classifications-dropdown-item:hover,
+.classifications-dropdown-item.is-active {
+  background-color: #e7f1ff;
+}
+
+.classifications-dropdown-item--placeholder {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.classifications-dropdown-item--loading {
+  cursor: default;
+  user-select: none;
+}
+
+/* Confirmación previa a reclasificar (ReclassificationConfirmDialog) */
+.kace-reclassify-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10060;
+}
+
+.kace-reclassify-modal {
+  background: #fff;
+  border-radius: 0.3rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.25);
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+
+.kace-reclassify-modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.kace-reclassify-modal-body {
+  padding: 1rem;
+}
+
+.kace-reclassify-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Reclasificación: rótulo y motivo, separados del área de niveles */
+.classifications-reclassification {
+  border-top: 1px solid #e9ecef;
+  padding-top: 1rem;
+}
+
+.classifications-dropdown-empty {
+  padding: 0.75rem;
+  text-align: center;
+  color: #868e96;
+  font-size: 0.875rem;
+}

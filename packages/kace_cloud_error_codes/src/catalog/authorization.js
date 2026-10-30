@@ -1,0 +1,1 @@
+export const AUTHORIZATION_ERROR = '0x080001';

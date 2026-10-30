@@ -1,0 +1,179 @@
+import { describe, expect, it } from '@jest/globals';
+import { CATEGORY_PREFIXES } from '../src/categories.js';
+import {
+    assembleCatalog,
+    PUBLIC_ERROR_CODES,
+    PUBLIC_ERROR_CODE_ENTRIES,
+    PUBLIC_ERROR_CODE_NAMES_BY_CODE,
+} from '../src/catalog.js';
+import * as namedExports from '../index.js';
+
+const PUBLIC_ERROR_CODE_PATTERN = /^0x\d{6}$/;
+
+const EXPECTED_PUBLIC_ERROR_CODES = {
+    GENERAL_INTERNAL_ERROR: '0x010001',
+    VALIDATION_ERROR: '0x030001',
+    CASE_BULK_TRANSITION_MIXED_CURRENT_TRANSITION: '0x030002',
+    CASE_TRANSITION_NOT_ALLOWED: '0x030003',
+    CASE_TRANSITION_CONDITIONS_NOT_MET: '0x030004',
+    CASE_RESPONSIBLE_ASSIGNMENT_UNAVAILABLE: '0x030005',
+    BOARD_REQUIRES_ACTIVE_GROUP: '0x030006',
+    BOARD_EXPORT_NO_RECORDS: '0x030007',
+    AUXILIARY_RECORD_HAS_MAIN_ENTITY_DEPENDENCY: '0x030008',
+    CLASSIFICATION_GROUP_RELATION_NOT_FOUND: '0x030009',
+    BROKER_ADAPTER_VHOST_REQUIRED: '0x030010',
+    BROKER_MAPPER_QUEUE_REQUIRED: '0x030011',
+    USER_CREATE_GROUPS_REQUIRED: '0x030012',
+    USER_CREATE_ACTIVE_GROUP_NOT_IN_MEMBERSHIPS: '0x030013',
+    USER_CREATE_GROUPS_NOT_FOUND: '0x030014',
+    MAIL_ACCOUNT_HOST_NOT_ALLOWED: '0x030015',
+    CSV_EXPORT_VIEW_NOT_FOUND: '0x030016',
+    APPOINTMENT_TIME_SLOT_ALREADY_EXISTS: '0x030017',
+    APPOINTMENT_TIME_SLOT_OVERLAPS_EXISTING_SLOT: '0x030018',
+    LITERAL_ENTITY_NOT_FOUND: '0x030019',
+    APPOINTMENT_TIME_SLOT_ALREADY_DELETED: '0x030020',
+    AUX_EXPORT_NO_RECORDS: '0x030021',
+    GROUP_CREATE_USERS_NOT_FOUND: '0x030022',
+    CLASSIFICATION_CREATE_TEMPLATES_NOT_FOUND: '0x030023',
+    SQL_BLACKLIST_WORD_DETECTED: '0x030024',
+    TEMPLATE_INVALID_TYPE: '0x030025',
+    TEMPLATE_ATTACHMENT_EXTENSION_NOT_ALLOWED: '0x030026',
+    GROUP_HAS_ACTIVE_USERS: '0x030027',
+    BROKER_MAPPER_VALIDATION_FAILED: '0x030028',
+    BOARD_BULK_ACTIONS_INCOMPATIBLE: '0x030029',
+    RESOURCE_ALREADY_EXISTS: '0x030030',
+    INTERACTION_EMAIL_ALREADY_LINKED: '0x030031',
+    CASE_DESCRIPTION_EDIT_LOCKED: '0x030032',
+    CHANNEL_HUB_REGISTRATION_FLOW_INVALID: '0x030033',
+    WORKSPACE_CHANNEL_HUB_ACCOUNT_REQUIRED: '0x030034',
+    LITERAL_NAME_ALREADY_EXISTS: '0x030035',
+    LITERAL_TYPE_NOT_FOUND: '0x030036',
+    APPOINTMENT_TIME_SLOT_INVALID_TIME_RANGE: '0x030037',
+    APPOINTMENT_TIME_SLOT_EXCEEDS_AGENDA_DAILY_LIMIT: '0x030038',
+    APPOINTMENT_TIME_SLOT_AGENDA_NOT_FOUND: '0x030039',
+    APPOINTMENT_TIME_SLOT_NOT_FOUND: '0x030040',
+    CASE_TRANSITION_STALE: '0x030041',
+    CASE_RESPONSIBLE_STALE: '0x030042',
+    CASE_BULK_ASSIGNMENT_PARTIAL: '0x030043',
+    CHANNEL_HUB_MAIL_RULE_LIST_FLOW_INVALID: '0x030044',
+    CHANNEL_HUB_MAIL_RULE_PRIORITY_UPDATE_FLOW_INVALID: '0x030045',
+    WORKSPACE_CHANNEL_HUB_TAG_DELETION_FLOW_REQUIRED: '0x030046',
+    CASE_REOPEN_WINDOW_EXCEEDED: '0x030047',
+    CASE_REOPEN_CONFIG_UNAVAILABLE: '0x030048',
+    CASE_REOPEN_CASE_NOT_CLOSED: '0x030049',
+    CASE_REOPEN_CASE_NOT_FOUND: '0x030050',
+    CASE_REOPEN_NO_ACTIVE_GROUP: '0x030051',
+    CASE_REOPEN_USER_GROUP_NOT_FOUND: '0x030052',
+    CASE_CLIENT_STALE: '0x030053',
+    CASE_CLASSIFICATION_STALE: '0x030054',
+    CASE_GROUP_STALE: '0x030055',
+    CASE_RECLASSIFY_CASE_CLOSED: '0x030056',
+    CASE_RECLASSIFY_CLASSIFICATION_INACTIVE: '0x030057',
+    CASE_RECLASSIFY_CLASSIFICATION_NOT_IN_GROUP: '0x030058',
+    CASE_RECLASSIFY_SUBCASE_NOT_ALLOWED: '0x030059',
+    CASE_RECLASSIFY_TRANSITION_OUT_OF_FLOW: '0x030060',
+    CASE_RECLASSIFY_CLASSIFICATION_WITHOUT_FORM: '0x030061',
+    CASE_RECLASSIFY_CLASSIFICATION_STALE: '0x030062',
+    CASE_RECLASSIFY_PARENT_UNVERIFIABLE: '0x030063',
+    CASE_RECLASSIFY_DISABLED: '0x030064',
+    CASE_RECLASSIFY_REASON_REQUIRED: '0x030065',
+    CASE_RECLASSIFY_TRANSITION_REQUIRED: '0x030066',
+    CASE_AUXILIARY_DATA_INVALID: '0x030067',
+    CASE_ASSIGNMENT_GROUP_UNAVAILABLE: '0x030068',
+    CASE_ASSIGNMENT_USER_UNAVAILABLE: '0x030069',
+    CASE_ASSIGNMENT_USER_GROUP_UNAVAILABLE: '0x030070',
+    GROUP_SCHEDULE_UNAVAILABLE: '0x030071',
+    SHIFT_MANAGEMENT_IN_USE_BY_GROUPS: '0x030072',
+    CASE_BULK_CASES_ALREADY_CLOSED: '0x030073',
+    CASE_BULK_CASES_NOT_FOUND: '0x030074',
+    CASE_BULK_TRANSITION_NOT_FOUND: '0x030075',
+
+    DATABASE_ERROR: '0x040001',
+    BAD_REQUEST_ERROR: '0x050001',
+    NOT_FOUND_ERROR: '0x050004',
+    METHOD_NOT_ALLOWED_ERROR: '0x050005',
+    REQUEST_TIMEOUT_ERROR: '0x050008',
+    CONFLICT_ERROR: '0x050009',
+    CHANNEL_HUB_CONNECTION_UNAVAILABLE: '0x060001',
+    CHANNEL_HUB_WORKSPACE_PRIORITIES_UNAVAILABLE: '0x060002',
+    WORKSPACE_CHANNEL_HUB_TAG_DEACTIVATION_FAILED: '0x060003',
+    CHANNEL_HUB_SEND_REJECTED: '0x060004',
+    CHANNEL_HUB_REPLY_REJECTED: '0x060005',
+    AUTH_FINGERPRINT_MISMATCH: '0x070001',
+    AUTH_GET_TOKEN_CLAIMS: '0x070002',
+    AUTH_USER_NOT_FOUND: '0x070003',
+    AUTH_USER_INACTIVE: '0x070004',
+    AUTH_SESSION_KEY_MISMATCH: '0x070005',
+    AUTH_NOT_USER_AUTHENTICATED: '0x070006',
+    AUTH_SESSION_ACTIVE_ON_ANOTHER_DEVICE: '0x070007',
+    AUTH_SESSION_COOKIE_STALE: '0x070008',
+    AUTHORIZATION_ERROR: '0x080001',
+    CHANNEL_HUB_WORKSPACE_PRIORITY_REORDER_FAILED: '0x110001',
+    HELP_ATTACHMENT_FILENAME_REJECTED: '0x120001',
+    TENANT_CONTEXT_ERROR: '0x150001',
+};
+
+describe('public error code catalog', () => {
+    it('exports the remapped catalog', () => {
+        expect(PUBLIC_ERROR_CODES).toEqual(EXPECTED_PUBLIC_ERROR_CODES);
+    });
+
+    it('uses unique 0x + 6 decimal digit identifiers', () => {
+        const codes = PUBLIC_ERROR_CODE_ENTRIES.map(({ code }) => code);
+        expect(codes.every((code) => PUBLIC_ERROR_CODE_PATTERN.test(code))).toBe(true);
+        expect(new Set(codes).size).toBe(codes.length);
+        expect(new Set(Object.keys(PUBLIC_ERROR_CODES)).size).toBe(Object.keys(PUBLIC_ERROR_CODES).length);
+    });
+
+    it('assigns consecutive suffixes per category prefix', () => {
+        const groups = {};
+        for (const [name, code] of Object.entries(PUBLIC_ERROR_CODES)) {
+            const prefix = code.slice(2, 4);
+            const seq = Number(code.slice(4));
+            groups[prefix] ??= [];
+            groups[prefix].push({ name, seq });
+        }
+
+        const usedPrefixes = Object.values(CATEGORY_PREFIXES);
+        for (const [prefix, items] of Object.entries(groups)) {
+            expect(usedPrefixes).toContain(prefix);
+            const sequences = items.map(({ seq }) => seq).sort((a, b) => a - b);
+            if (prefix === '05') {
+                expect(sequences).toEqual([1, 4, 5, 8, 9]);
+                continue;
+            }
+            expect(sequences).toEqual(sequences.map((_, index) => index + 1));
+        }
+    });
+
+    it('indexes names by code without reusing published values', () => {
+        expect(PUBLIC_ERROR_CODE_NAMES_BY_CODE['0x030010']).toBe('BROKER_ADAPTER_VHOST_REQUIRED');
+        expect(PUBLIC_ERROR_CODE_NAMES_BY_CODE['0x030029']).toBe('BOARD_BULK_ACTIONS_INCOMPATIBLE');
+        expect(PUBLIC_ERROR_CODE_NAMES_BY_CODE['0x050004']).toBe('NOT_FOUND_ERROR');
+        expect(PUBLIC_ERROR_CODE_NAMES_BY_CODE['0x050008']).toBe('REQUEST_TIMEOUT_ERROR');
+        expect(PUBLIC_ERROR_CODE_NAMES_BY_CODE['0x120001']).toBe('HELP_ATTACHMENT_FILENAME_REJECTED');
+        expect(PUBLIC_ERROR_CODE_NAMES_BY_CODE['0x150001']).toBe('TENANT_CONTEXT_ERROR');
+    });
+
+    it('re-exports every catalog name from the barrel', () => {
+        for (const name of Object.keys(EXPECTED_PUBLIC_ERROR_CODES)) {
+            expect(namedExports[name]).toBe(EXPECTED_PUBLIC_ERROR_CODES[name]);
+        }
+    });
+
+    it('does not export internal assembly helpers from the barrel', () => {
+        expect(namedExports.assembleCatalog).toBeUndefined();
+        expect(namedExports.CATEGORY_PREFIXES).toBeUndefined();
+        expect(Object.keys(namedExports)).not.toContain('assembleCatalog');
+        expect(Object.keys(namedExports)).not.toContain('CATEGORY_PREFIXES');
+    });
+
+    it('throws when assembling duplicate names or codes', () => {
+        expect(() => assembleCatalog([{ FOO: '0x030001' }, { FOO: '0x030002' }])).toThrow(
+            'Duplicate public error code name: FOO'
+        );
+        expect(() => assembleCatalog([{ FOO: '0x030001' }, { BAR: '0x030001' }])).toThrow(
+            'Duplicate public error code value: 0x030001'
+        );
+    });
+});

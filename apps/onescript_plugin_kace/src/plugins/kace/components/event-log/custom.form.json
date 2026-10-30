@@ -1,0 +1,14 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "type": "textfield",
+      "key": "fieldPath",
+      "label": "Ruta del campo (opcional)",
+      "input": true,
+      "placeholder": "ej. nombre o data.telefono",
+      "description": "Notación con puntos respecto al JSON de new_attributes y original_attributes. Si se define, solo se muestra el cambio de ese campo; la clave debe existir en ambos objetos para poder comparar. Para edit grid puedes usar [] o {rowIndex} como marcador de fila (ej. subcasos[].nombre)."
+    }
+  ]
+}

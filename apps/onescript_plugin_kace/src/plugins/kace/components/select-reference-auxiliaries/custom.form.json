@@ -1,0 +1,63 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "selectRefAuxDocPanel",
+      "type": "panel",
+      "title": "Comportamiento y valor precargado",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "selectRefAuxDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"font-weight-bold mb-2\">Referencia rápida:</p><p class=\"small text-muted mb-2\">Selects en cascada por entidades relacionadas. Cada nivel carga opciones según la entidad y, a partir del segundo nivel, el valor del nivel padre. El valor del formulario es un objeto <code>{ [entity]: string }</code> con un valor por cada nivel.</p><p class=\"small text-muted mb-2\">Si un valor viene precargado y aún no está en la lista devuelta por la API, se añade una opción temporal en ese nivel para que el <code>&lt;select&gt;</code> muestre el valor correctamente.</p><table class=\"table table-bordered table-sm\"><thead><tr><th>Campo</th><th>Descripción</th></tr></thead><tbody><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">entity</span></td><td>Entidad del primer nivel (tabla auxiliar).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">field</span></td><td>Campo de la entidad para listar valores (ruta JSON si aplica).</td></tr><tr><td><span style=\"font-family: monospace; color: #212529; font-weight: bold;\">relation_entity</span></td><td>JSON con <code>items</code>: cada ítem define <code>entity</code> y <code>path</code> para filtrar el siguiente nivel por el valor del padre.</td></tr></tbody></table>"
+        }
+      ]
+    },
+    {
+      "key": "entity",
+      "type": "textfield",
+      "label": "Entity",
+      "placeholder": "paises",
+      "description": "The auxiliary entity table name (e.g., 'paises', 'estados_departamentos')",
+      "input": true,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "key": "field",
+      "type": "textfield",
+      "label": "Field",
+      "placeholder": "nombre",
+      "description": "The field path to extract from JSON data (supports dot notation, e.g., 'nombre', 'contactos.0.nombre')",
+      "input": true,
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "key": "relation_entity",
+      "type": "textarea",
+      "label": "Relation Entity (JSON)",
+      "placeholder": "{\n  \"items\": [\n    { \"entity\": \"estados_departamentos\", \"path\": \"relation\" },\n    { \"entity\": \"ciudades\", \"path\": \"departamento\" }\n  ]\n}",
+      "description": "JSON configuration for cascading relationships. Each item defines the entity and the path to filter by.",
+      "input": true,
+      "editor": "ace",
+      "as": "json",
+      "rows": 8,
+      "validate": {
+        "json": true
+      }
+    },
+    {
+      "key": "refetchOnEveryOpen",
+      "type": "checkbox",
+      "label": "Volver a cargar opciones en cada apertura",
+      "input": true,
+      "defaultValue": false
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+mail-accounts_types:
+  get:
+    tags:
+      - Mail Accounts Types
+    summary: Get all types 
+    responses:
+      '200':
+        description: Returns a list of types
+        content:  
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Types"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    Types:
+      type: object
+      properties:
+        message: 
+          type: string
+          example: Success
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    example: MS_GRAPH
+                  value:
+                    type: string
+                    example: ms_graph

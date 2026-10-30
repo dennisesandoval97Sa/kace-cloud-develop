@@ -1,0 +1,32 @@
+{
+  "key": "custom",
+  "label": "Custom",
+  "components": [
+    {
+      "key": "classificationsInitPanel",
+      "type": "panel",
+      "title": "Al cargar",
+      "collapsible": true,
+      "components": [
+        {
+          "key": "classificationsInitDoc",
+          "type": "content",
+          "input": false,
+          "html": "<p class=\"small text-muted mb-2\">Opcional. Al cargar las opciones (y en <code>kaceAuthData</code> / <code>redraw</code>) podés fijar valores iniciales con <code>setDefaultSelections({ nivel1: 'valor', nivel2: 'valor' })</code>. Los niveles del prefijo quedan bloqueados. Los valores se guardan como texto en <code>nivel1</code>…<code>nivel5</code> del formulario.</p>"
+        },
+        {
+          "key": "classificationsInitCode",
+          "type": "textarea",
+          "label": "JavaScript",
+          "input": true,
+          "editor": "ace",
+          "as": "javascript",
+          "rows": 12,
+          "validate": {
+            "javascript": true
+          }
+        }
+      ]
+    }
+  ]
+}

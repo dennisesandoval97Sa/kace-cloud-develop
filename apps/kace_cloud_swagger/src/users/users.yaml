@@ -1,0 +1,424 @@
+users:
+  get:
+    tags:
+      - Users
+    summary: Get users collection
+    description: Get all users of database users schema
+    operationId: getUsers
+    responses:
+      '200':
+        description: A list of Users
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsersCollection'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post:
+    tags:
+      - Users
+    summary: Create an users instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - rol_id -> ID de un rol (Roles)
+    operationId: postUser
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createBodyReq'
+    responses:
+      '201':
+        description: User instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+users_id:
+  get:
+    tags:
+      - Users
+    summary: Fetch an user instance by ID
+    description: Get all users of database users schema
+    operationId: getUsers_id
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing user id
+    responses:
+      '200':
+        description: users instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: '#/components/schemas/User'
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+  post:
+    tags:
+      - Users
+    summary: Update an users instance by ID
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - rol_id -> ID de un rol (Roles)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing user id
+    requestBody:
+      description: In this JSON body use only the properties that will be modified
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/updateBodyReq'
+    responses:
+      '200':
+        description: users instance updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+users_delete:
+  get:
+    tags:
+      - Users
+    summary: Delete an users instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing user id
+    responses:
+      '200':
+        description: users instance deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+users_search:
+  post:
+    tags:
+      - Users
+    summary: Get users whit advanced filters
+    operationId: searchUser
+    requestBody:
+      description: In this JSON body use only the properties that you need search
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: A list of Users
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsersCollection'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+users_session:
+  post:
+    tags:
+      - Users
+    summary: Register user session
+    requestBody:
+      description: In this JSON body use only the properties that you need search
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/sessionLogin"
+    responses:
+      '200':
+        description: Session updated for user :id
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+# usersLogin:
+#   post:
+#     tags:
+#       - Users
+#     summary: verify an user login credentials
+#     requestBody:
+#       required: true
+#       content:
+#         application/json:
+#           schema:
+#             $ref: '#/components/schemas/userLogin'
+#     responses:
+#       '200':
+#         description: A list of Users
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/UsersCollection'
+#       '400':
+#         $ref: '../common/fields.yaml#/schemas/bad_status_response'
+#       '404':
+#         $ref: '../common/fields.yaml#/schemas/not_found_response'
+#       '500':
+#         $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+# userByGroupId:
+#   get:
+#     tags:
+#       - Users
+#     summary: Search an user by group
+#     description: Get one aleatory user by group id
+#     operationId: getUsers_group
+#     parameters:
+#       - name: id
+#         in: path
+#         required: true
+#         description: an existing group id
+#     responses:
+#       '200':
+#         description: A list of Users
+#         content:
+#           application/json:
+#             schema:
+#               $ref: '#/components/schemas/User'
+#       '400':
+#         $ref: '../common/fields.yaml#/schemas/bad_status_response'
+#       '404':
+#         $ref: '../common/fields.yaml#/schemas/not_found_response'
+#       '500':
+#         $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    login:
+      type: string
+      example: test.login
+    nombres:
+      type: string
+      example: jon
+    apellido1:
+      type: string
+      example: Doe
+    apellido2:
+      type: string
+      example: Lorem
+    email:
+      type: string
+      example: mail@mail.com
+    token:
+      type: string
+      example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+    telefono:
+      type: string
+      example: 6085103698
+    movil:
+      type: string
+      example: 3782563149
+    password:
+      type: string
+      example: aB12345.12345678
+    is_active:
+      type: number
+      example: 1
+
+    User:
+      type: object
+      properties:
+        id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        login:
+          $ref: '#/components/schemas/login'
+        nombres:
+          $ref: '#/components/schemas/nombres'
+        apellido1:
+          $ref: '#/components/schemas/apellido1'
+        apellido2:
+          $ref: '#/components/schemas/apellido2'
+        email:
+          $ref: '#/components/schemas/email'
+        token:
+          $ref: '#/components/schemas/token'
+        telefono:
+          $ref: '#/components/schemas/telefono'
+        movil:
+          $ref: '#/components/schemas/movil'
+        is_active:
+          $ref: '#/components/schemas/password'
+        created_at:
+          $ref: '../common/fields.yaml#/schemas/created_at'
+        created_by:
+          $ref: '../common/fields.yaml#/schemas/created_by'
+        updated_at:
+          $ref: '../common/fields.yaml#/schemas/updated_at'
+        updated_by:
+          $ref: '../common/fields.yaml#/schemas/updated_by'
+        deleted_at:
+          $ref: '../common/fields.yaml#/schemas/deleted_at'
+        deleted_by:
+          $ref: '../common/fields.yaml#/schemas/deleted_by'
+   
+    UsersCollection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"
+    createBodyReq:
+      type: object
+      properties:
+        id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        login:
+          $ref: '#/components/schemas/login'
+        nombres:
+          $ref: '#/components/schemas/nombres'
+        apellido1:
+          $ref: '#/components/schemas/apellido1'
+        apellido2:
+          $ref: '#/components/schemas/apellido2'
+        email:
+          $ref: '#/components/schemas/email'
+        telefono:
+          $ref: '#/components/schemas/telefono'
+        movil:
+          $ref: '#/components/schemas/movil'
+        password:
+          $ref: '#/components/schemas/password'
+        is_active:
+          $ref: '#/components/schemas/is_active'
+        rol_id:
+          type: string
+          format: uuid
+    updateBodyReq:
+      type: object
+      properties:
+        login:
+          $ref: '#/components/schemas/login'
+        nombres:
+          $ref: '#/components/schemas/nombres'
+        apellido1:
+          $ref: '#/components/schemas/apellido1'
+        apellido2:
+          $ref: '#/components/schemas/apellido2'
+        email:
+          $ref: '#/components/schemas/email'
+        telefono:
+          $ref: '#/components/schemas/telefono'
+        movil:
+          $ref: '#/components/schemas/movil'
+        password:
+          $ref: '#/components/schemas/password'
+        is_active:
+          $ref: '#/components/schemas/is_active'
+        rol_id:
+          type: string
+          format: uuid
+
+    userLogin: 
+      type: object
+      properties:
+        login:
+          $ref: '#/components/schemas/login'
+        password:
+          $ref: '#/components/schemas/password'
+    sessionLogin: 
+      type: object
+      properties:
+        user_id:
+          type: string
+          description: "Identificador único del usuario"
+          example: "c7b496d6-ffcb-4214-a17b-abd2766025fa"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: nombres
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: example name
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

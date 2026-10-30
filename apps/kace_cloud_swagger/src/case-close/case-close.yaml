@@ -1,0 +1,71 @@
+case_close:
+  post:
+    tags: 
+      - Cases Close
+    summary: Close a case instance
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - id -> ID de un caso (Cases)
+
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - caso_id -> ID de un caso (Cases)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CloseCase"
+    responses:
+      '200':
+        description: Returns a list of closed cases
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    CloseCase:
+      type: object
+      properties:
+        comment:
+          type: object
+          properties:
+            id:
+              type: string
+              description: "Identificador único del comentario"
+              example: "c7b496d6-ffcb-4214-a17b-abd2766025fa"
+            caso_id:
+              type: string
+              description: "Identificador único del caso relacionado con el comentario"
+              example: "c7b496d6-ffcb-4214-a17b-abd2766025fa"
+            descripcion:
+              type: string
+              description: "Descripción del comentario"
+              example: "prueba"
+            calificacion:
+              type: integer
+              description: "Calificación del comentario"
+              example: 1
+        motivo_baja:
+          type: string
+          description: "Motivo de la baja o eliminación"
+          example: "Prueba"
+        closed_at:
+          type: integer
+          format: int64
+          example: 1712345678
+        closed_by:
+          type: string
+          format: uuid

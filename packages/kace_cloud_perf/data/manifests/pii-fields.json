@@ -1,0 +1,39 @@
+{
+    "$schema": "Anonymization rules per column. Each entry: { table, column, transformer, args? }",
+    "version": 1,
+    "approvedBy": {
+        "dba": null,
+        "legal": null,
+        "approvedAt": null
+    },
+    "rules": [
+        { "table": "clients", "column": "email", "transformer": "fakeEmail" },
+        { "table": "clients", "column": "phone", "transformer": "fakePhone" },
+        { "table": "clients", "column": "document_number", "transformer": "fakeDocumentNumber" },
+        { "table": "clients", "column": "first_name", "transformer": "fakeFirstName" },
+        { "table": "clients", "column": "last_name", "transformer": "fakeLastName" },
+        { "table": "usuarios", "column": "email", "transformer": "fakeEmail" },
+        { "table": "usuarios", "column": "phone", "transformer": "fakePhone" },
+        { "table": "usuarios", "column": "first_name", "transformer": "fakeFirstName" },
+        { "table": "usuarios", "column": "last_name", "transformer": "fakeLastName" },
+        { "table": "cases", "column": "description", "transformer": "loremIpsum" },
+        { "table": "cases", "column": "title", "transformer": "loremShort" }
+    ],
+    "preserveColumns": [
+        "id",
+        "tenant_id",
+        "created_at",
+        "updated_at",
+        "deleted_at",
+        "client_id",
+        "user_id",
+        "group_id",
+        "classification_id",
+        "state_id"
+    ],
+    "pendingReview": [
+        "Confirmar columnas PII en `grupos` (description podría tener nombres internos).",
+        "Confirmar si `clasificaciones.name` contiene PII en algún tenant.",
+        "Validar con DBA si hay columnas JSONB con PII anidada (ej. cases.metadata)."
+    ]
+}

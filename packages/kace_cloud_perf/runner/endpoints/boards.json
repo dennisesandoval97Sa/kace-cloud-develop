@@ -1,0 +1,30 @@
+{
+    "service": "boards",
+    "postmanFolder": "boards",
+    "endpoints": [
+        {
+            "id": "view-list-available",
+            "method": "GET",
+            "path": "/boards/available",
+            "requiresId": false
+        },
+        {
+            "id": "view-list-relations",
+            "method": "GET",
+            "path": "/boards/relations",
+            "requiresId": false
+        },
+        {
+            "id": "view-list",
+            "method": "GET",
+            "path": "/boards",
+            "requiresId": false
+        },
+        {
+            "id": "view-by-id",
+            "method": "GET",
+            "path": "/boards/{id}",
+            "requiresId": true
+        }
+    ]
+}

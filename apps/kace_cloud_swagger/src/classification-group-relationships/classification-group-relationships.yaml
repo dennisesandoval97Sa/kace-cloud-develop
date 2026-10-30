@@ -1,0 +1,220 @@
+classification-group-relationships:
+  get:
+    tags:
+      - Classification group relationships
+    summary: Get all classification group relationships instances
+    responses:
+      '200':
+        description: Returns a list of classification-group-relationships
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassificationGroupRelationshipsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Classification group relationships
+    summary: Create an Classification group relationship instance
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - classification_id -> ID de una clasificacion (Classifications)
+      - group_id -> ID de un grupo (Groups)
+      - form -> ID de un one script (One Script)
+    operationId: postClassificationgrouprelationship
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createBodyRequest'
+    responses:
+      '201':
+        description: Classification group relationship instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+classification-group-relationships_id:
+  get:
+    tags:
+      - Classification group relationships
+    summary: Fetch an Classification group relationship instance by classificationID and groupId
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - classificationId -> ID de una clasificacion (Classifications)
+      - groupId -> ID de una clasificacion (Groups)
+
+    operationId: getClassificationgrouprelationship_id
+    parameters:
+      - name: classificationId
+        in: path
+        required: true
+      - name: groupId
+        in: path
+        required: true
+    responses:
+      '200':
+        description: Classification group relationship instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: '#/components/schemas/ClassificationGroupRelationships'
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+        
+classification-group-relationships_delete:
+  get:
+    tags:
+      - Classification group relationships
+    summary: Delete an Classification group relationship instance by classificationID and groupId
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - classificationId -> ID de una clasificacion (Classifications)
+      - groupId -> ID de una clasificacion (Groups)
+    parameters:
+      - name: classificationId
+        in: path
+        required: true
+      - name: groupId
+        in: path
+        required: true
+    responses:
+      '200':
+        description: Classification group relationship instance deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+classification-group-relationships_search:
+  post:
+    tags:
+      - Classification group relationships
+    summary: Search classification-group-relationships by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of classification-group-relationships which match with the search
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassificationGroupRelationshipsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    classification_id:
+      type: string
+      format: uuid
+    group_id:
+      type: string
+      format: uuid
+    form:
+      type: string
+      format: uuid
+    ClassificationGroupRelationships:
+      type: object
+      properties:
+        classification_id:
+          $ref: "#/components/schemas/classification_id"
+        group_id:
+          $ref: "#/components/schemas/group_id"
+        form:
+          $ref: "#/components/schemas/form"
+    ClassificationGroupRelationshipsCollection:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/ClassificationGroupRelationships"  
+        metadata:
+          type: object
+          properties:
+            count:
+              type: string
+              example: '198' 
+    CreateClassificationGroupRelationships:
+      allOf:
+        - $ref: "#/components/schemas/ClassificationGroupRelationships"
+    createBodyRequest:
+      type: object
+      properties:
+        classification_id:
+          $ref: '#/components/schemas/classification_id'
+        group_id:
+          $ref: '#/components/schemas/group_id'
+        form:
+          $ref: '#/components/schemas/form' 
+    updateBodyRequest:
+      type: object
+      properties:
+        group_id:
+          $ref: '#/components/schemas/group_id'
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: group_id
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                format: uuid
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

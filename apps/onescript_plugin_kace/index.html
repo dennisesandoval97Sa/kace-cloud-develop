@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Demo OS Plugin Development</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.form.io/formiojs/formio.full.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/default.min.css"
+    />
+    <script type="module" src="/src/index.js"></script>
+    <script type="module">
+      // libs
+      import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/es/highlight.min.js';
+      import json from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/es/languages/json.min.js';
+      import { Formio } from 'formiojs';
+      import { components } from './kace_base_form.js';
+
+      let builder;
+
+      // DIY JQuery
+      const on = (element) => Element.prototype.addEventListener.bind(element);
+      const $ = (selector = '', parentNode = document) => {
+        const el = parentNode.querySelector(selector);
+        el && (el.on = on(el));
+        return el;
+      };
+
+      // Resaltado de sintaxis json
+      const highlightJson = (json) =>
+        hljs.highlight(JSON.stringify(json, null, 2), {
+          language: 'json',
+        }).value;
+
+      const getSchemaComponents = (schema) => {
+        if (Array.isArray(schema)) return schema;
+        if (Array.isArray(schema?.components)) return schema.components;
+        if (Array.isArray(schema?.schema?.components)) {
+          return schema.schema.components;
+        }
+        return [];
+      };
+      const getCurrentSchema = () => {
+        if (!builder) return null;
+        const fullSchema = $('[name="fullSchemaChbx"]')?.checked;
+        const fullFormSchema =
+          builder?.webform?._form ?? builder?._form ?? null;
+        const compactSchema =
+          builder?.schema ?? builder?.webform?.schema ?? fullFormSchema;
+        return fullSchema ? fullFormSchema : compactSchema;
+      };
+      const copyWithExecCommand = (textToCopy = '') => {
+        const textarea = globalThis.document.createElement('textarea');
+        textarea.value = textToCopy;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        globalThis.document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        textarea.setSelectionRange(0, textToCopy.length);
+        const copySucceeded = globalThis.document.execCommand('copy');
+        globalThis.document.body.removeChild(textarea);
+        return copySucceeded;
+      };
+      const copyTextToClipboard = async (textToCopy = '') => {
+        if (globalThis.navigator?.clipboard?.writeText) {
+          await globalThis.navigator.clipboard.writeText(textToCopy);
+          return true;
+        }
+        return copyWithExecCommand(textToCopy);
+      };
+
+      const updatePreviewUI = () => {
+        const selectedSchema = getCurrentSchema();
+        if (!selectedSchema) return;
+        $('#builderJson > code').innerHTML = highlightJson(
+          getSchemaComponents(selectedSchema)
+        );
+        globalThis.Formio?.createForm($('#preview'), selectedSchema);
+      };
+
+      const showLoadFromSchema = () =>
+        $('#loadFormFromSchema')?.classList.toggle('d-none');
+
+      const onLoadJsonFromTextarea = () => {
+        const text = $('#loadFormFromSchema > textarea')?.value;
+        if (!text) return;
+        createFormBuilder(JSON.parse(text));
+        showLoadFromSchema();
+      };
+
+      const onSaveJsonToLocalStorage = () => {
+        globalThis.localStorage.setItem(
+          'form_schema',
+          JSON.stringify(builder?.webform._form, null, 2)
+        );
+      };
+
+      const onLoadJsonFromLocalStorage = () => {
+        let newSchema = globalThis.localStorage.getItem('form_schema');
+        if (!newSchema) return;
+        createFormBuilder(JSON.parse(newSchema));
+      };
+
+      const onCopyComponentsToClipboard = async () => {
+        try {
+          const currentSchema = getCurrentSchema();
+          if (!currentSchema) return;
+          const componentsArray = getSchemaComponents(currentSchema);
+          const textToCopy = JSON.stringify(componentsArray, null, 2);
+          const copied = await copyTextToClipboard(textToCopy);
+          if (!copied) throw new Error('Clipboard API no disponible');
+        } catch (error) {
+          console.warn('No se pudo copiar el array components:', error);
+        }
+      };
+
+      const createFormBuilder = (
+        data = {
+          components,
+        }
+      ) =>
+        Formio.builder($('#builder'), data)
+          .then((formBuilder) => {
+            const { webform } = formBuilder;
+            builder = formBuilder; // actualizar el builder
+            updatePreviewUI(); // actualizar UI
+            // actualizar UI cada vez que se produzca un cambio
+            formBuilder.events.onAny(() => updatePreviewUI());
+          })
+          .catch(console.warn);
+
+      // resaltado de código
+      hljs.registerLanguage('json', json);
+      hljs.configure({ ignoreUnescapedHTML: true });
+      hljs.highlightElement($('pre > code'));
+
+      // events
+      $('header > button:first-child')?.on('click', onSaveJsonToLocalStorage);
+      $('header > button:nth-child(2)')?.on(
+        'click',
+        onLoadJsonFromLocalStorage
+      );
+      $('header > button:nth-child(3)')?.on('click', showLoadFromSchema);
+      $('#loadFormFromSchema > button')?.on('click', onLoadJsonFromTextarea);
+      $('#copyComponentsArrayBtn')?.on('click', onCopyComponentsToClipboard);
+      globalThis.onload = function () {
+        createFormBuilder();
+      };
+      $('[name="fullSchemaChbx"]')?.on('input', (ev) => {
+        if (!builder) return;
+        updatePreviewUI();
+      });
+    </script>
+  </head>
+
+  <body>
+    <header class="m-2">
+      <button class="btn btn-success">Guardar en Local Storage</button>
+      <button class="btn btn-primary">Cargar de Local Storage</button>
+      <button class="btn btn-secondary">Cargar formulario de esquema</button>
+      <div class="d-none" id="loadFormFromSchema">
+        <textarea class="w-100 m-2" rows="3"></textarea>
+        <button class="btn btn-dark">Cargar</button>
+      </div>
+    </header>
+
+    <main>
+      <div id="builder"></div>
+
+      <section class="m-1 mt-3 p-2 border border-secondary-subtle">
+        <h2>Previsualización</h2>
+        <div id="preview"></div>
+      </section>
+
+      <section class="m-1 mt-3 p-2 border border-secondary-subtle bg-light">
+        <h2>Esquema JSON</h2>
+        <label>
+          <input type="checkbox" name="fullSchemaChbx" />
+          <small>Full Schema</small>
+        </label>
+        <button
+          id="copyComponentsArrayBtn"
+          class="btn btn-outline-secondary btn-sm ml-2"
+        >
+          Copiar components[]
+        </button>
+
+        <pre id="builderJson">
+					<code></code>
+				</pre>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,194 @@
+cases_reclassify:
+    post:
+        tags:
+            - Cases Reclassify
+        summary: Reclassify a specific case
+        description: |
+            Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+            - id -> ID de un caso (Cases)
+
+            Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+            - clasificacion_id -> ID de una clasificacion (Classifications)
+            - transicion_id -> ID de una transicion (Transitions)
+            - grupo_id -> ID de un grupo (Group)
+            - responsable_id -> ID de un usuario (Users) (este usuario debe pertenecer al grupo referenciado anteriormente)
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+        requestBody:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ReclassifyCase'
+        responses:
+            '200':
+                description: Case instance reclasified successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+cases_reclassify_precheck:
+    get:
+        tags:
+            - Cases Reclassify
+        summary: Check whether a case can be moved to a target classification
+        description: |
+            Responde si el caso puede reclasificarse a `clasificacion_id` y, cuando puede, con qué
+            estados y reglas de transición se encontraría en el flujo destino.
+
+            Un bloqueo de negocio NO es un error: se responde `200` con `eligible: false` y el
+            código público del motivo. El `404` queda para cuando la pregunta no se puede formular
+            (el caso o la clasificación no existen).
+
+            Aplica las mismas reglas que `POST /case-reclassification/{id}`, pero NO es una promesa
+            de que ese POST vaya a aceptarlas: este servicio lee de la réplica y el POST valida
+            contra el primary, y además el POST comprueba el snapshot de concurrencia.
+
+            Requiere el permiso `CaseReclassify`.
+
+            Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema:
+            - id -> ID de un caso (Cases)
+            - clasificacion_id -> ID de una clasificacion (Classifications)
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+            - name: clasificacion_id
+              in: query
+              required: true
+              description: 'Clasificación destino que se quiere evaluar'
+              schema:
+                  type: string
+                  format: uuid
+        responses:
+            '200':
+                description: Eligibility verdict for the target classification
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ReclassifyPrecheckResponse'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '403':
+                $ref: '../common/fields.yaml#/schemas/forbidden_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+    schemas:
+        ReclassifyPrecheckResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                data:
+                    type: object
+                    required:
+                        - eligible
+                        - states
+                        - transition_rules
+                    properties:
+                        eligible:
+                            type: boolean
+                            description: 'true cuando el caso puede moverse a la clasificación destino'
+                        blocker:
+                            type: object
+                            nullable: true
+                            description: 'Motivo del bloqueo. `null` cuando `eligible` es true.'
+                            properties:
+                                code:
+                                    type: string
+                                    nullable: true
+                                    description: 'Código público del motivo (formato `0x` + 6 dígitos)'
+                                    example: '0x030062'
+                                message:
+                                    type: string
+                        states:
+                            type: array
+                            description: 'Estados alcanzables en el flujo destino. Vacío cuando hay bloqueo.'
+                            items:
+                                type: object
+                        transition_rules:
+                            type: array
+                            description: >-
+                                Reglas que condicionan las transiciones del flujo destino, indexadas por
+                                `transicion_id`. Vacío cuando hay bloqueo.
+                            items:
+                                type: object
+                                properties:
+                                    transicion_id:
+                                        type: string
+                                        format: uuid
+                                    rule_id:
+                                        type: string
+                                        format: uuid
+                                    nombre:
+                                        type: string
+                                        description: >-
+                                            Nombre de la regla, para avisar al asesor de que la transición está
+                                            condicionada. El árbol de condiciones NO se publica: es configuración
+                                            del administrador del tenant y el cliente no la necesita.
+        ReclassifyCase:
+            type: object
+            required:
+                - clasificacion_id
+                - transicion_id
+                - comment
+            properties:
+                clasificacion_id:
+                    type: string
+                    format: uuid
+                transicion_id:
+                    type: string
+                    format: uuid
+                current_clasificacion_id:
+                    type: string
+                    format: uuid
+                    nullable: true
+                    description: >-
+                        Snapshot de concurrencia: la clasificación que el cliente tenía cargada cuando abrió
+                        el formulario. Si no coincide con la persistida, la reclasificación se rechaza con
+                        `0x030062` en vez de pisar el cambio de otro usuario. Omitirlo (o enviar `null`)
+                        desactiva esa comprobación para este cliente.
+                comment:
+                    type: object
+                    description: >-
+                        Motivo de la reclasificación. Se guarda como comentario del caso y el caso queda
+                        apuntándolo con `cambio_estado_comentario_id`. El identificador, la fecha y el autor
+                        los asigna el servidor.
+                    required:
+                        - descripcion
+                    properties:
+                        descripcion:
+                            type: string
+                            minLength: 3
+                            maxLength: 5000
+                            description: 'Motivo de la reclasificación'
+                            example: 'El cliente confirmó la compra'
+                grupo_id:
+                    type: string
+                    format: uuid
+                responsable_id:
+                    type: string
+                    format: uuid
+                updated_at:
+                    type: string
+                    format: date-time
+                updated_by:
+                    type: string
+                    format: uuid

@@ -1,0 +1,10 @@
+[
+  {
+    "entity": "cases",
+    "type": "having",
+    "field": "id",
+    "value": 5,
+    "function": "count",
+    "operator": "eq"
+  }
+]

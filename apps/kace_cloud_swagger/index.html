@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <meta content="SwaggerUI" name="description" />
+        <title>SwaggerUI</title>
+        <link href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div id="swagger-ui"></div>
+        <script crossorigin src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
+        <script>
+            window.onload = () => {
+                window.ui = SwaggerUIBundle({
+                    url: 'dist/api.yaml',
+                    dom_id: '#swagger-ui',
+                    oauth2RedirectUrl: 'http://localhost:5174/oauth2-redirect.html',
+                    requestInterceptor: (req) => {
+                        if (req.headers.Authorization) {
+                            try {
+                                const oauth = window.ui.getState().toJS().auth.authorized.OAuth2;
+                                if (oauth && oauth.token && oauth.token.id_token) {
+                                    req.headers.Authorization = oauth.token.id_token;
+                                    return req;
+                                }
+                            } catch (e) {
+                                /* fallback below */
+                            }
+                            req.headers.Authorization = req.headers.Authorization.replace(/^Bearer\s+/, '');
+                        }
+                        return req;
+                    },
+                });
+                window.ui.initOAuth({
+                    clientId: '761l8390vd1uq3en0n0gt8u2qa',
+                    scopes: 'openid email profile',
+                    usePkceWithAuthorizationCodeGrant: true,
+                });
+            };
+        </script>
+    </body>
+</html>

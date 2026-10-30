@@ -1,0 +1,46 @@
+group_cases_assignment_id:
+  post:
+    tags:
+      - Groups Cases Assignment
+    summary: Update a Group instance
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - id -> ID de un grupo (Groups)
+
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - cases -> conjunto de IDs de casos (Casos)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Cases"
+    responses:
+      '200':
+        description: Cases assigned successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    Cases:
+      type: object
+      properties:
+        cases:
+          type: array
+          items:
+            type: string
+            format: uuid

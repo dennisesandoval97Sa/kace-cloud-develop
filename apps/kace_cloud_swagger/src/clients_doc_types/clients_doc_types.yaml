@@ -1,0 +1,36 @@
+clients_doc_types:
+  get:
+    tags:
+      - Clients Docs Types
+    summary: Get all literals 
+    responses:
+      '200':
+        description: Returns a list of literals
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocTypes"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    DocTypes:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Success
+        data:
+          type: object
+          properties:
+            literal_example:
+              type: array
+              items:
+                type: string
+              example:
+                - literal_item_1
+                - literal_item_2
+                - literal_item_3

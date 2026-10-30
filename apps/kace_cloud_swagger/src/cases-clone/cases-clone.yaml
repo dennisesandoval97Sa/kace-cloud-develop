@@ -1,0 +1,69 @@
+case_clone:
+  post:
+    tags:
+      - Cases Clone
+    summary: Clone a specific case
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - id -> ID de un caso (Cases)
+
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - transicion_id -> ID de una transicion (Transitions)
+      - grupo_id -> ID de un grupo (Groups)
+      - responsable_id -> ID de un usuario (Users) (este usuario debe pertenecer al grupo referenciado anteriormente)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CloneCaseBody"
+    responses:
+      '200':
+        description: Case cloned successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    CloneCaseBody:
+      type: object
+      properties:
+        id:
+          $ref: "../common/fields.yaml#/schemas/id"
+        comment:
+          type: object
+          properties:
+            id:
+              type: string
+              description: "Identificador único del comentario"
+              example: "c7b496d6-ffcb-4214-a17b-abd2766025fa"
+            descripcion:
+              type: string
+              description: "Descripción del comentario"
+              example: "prueba"
+            calificacion:
+              type: integer
+              description: "Calificación del comentario"
+              example: 5
+        transicion_id:
+          type: string
+          format: uuid
+        grupo_id:
+          type: string
+          format: uuid
+        responsable_id:
+          type: string
+          format: uuid

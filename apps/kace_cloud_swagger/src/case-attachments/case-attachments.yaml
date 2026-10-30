@@ -1,0 +1,282 @@
+case_attachments:
+  get:
+    tags:
+      - Case attachments
+    summary: Get all case attachments
+    responses:
+      "200":
+        description: Returns a list of cases attachments
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CasesAttachmentsCollection"
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Case attachments
+    summary: Create a case attachments instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - caso_id  -> ID de un caso (Casos)
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateCaseAttachment"
+    responses:
+      '201':
+        description: Case attachment instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+case_attachments-id:
+  get:
+    tags:
+      - Case attachments
+    summary: Get a case attachment instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Returns a case attachment instance
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: "#/components/schemas/message"
+                data:
+                  $ref: "#/components/schemas/CasesAttachments"
+                metadata:
+                  type: object
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Case attachments
+    summary: Upadate a case attachment instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - caso_id  -> ID de un caso (Casos)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateCaseAttachment"
+    responses:
+      '200':
+        description: Case attachment updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+case_attachments-delete:
+  get:
+    tags:
+      - Case attachments
+    summary: Delete a case attachment by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Case attachment deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+case_attachments-search:
+  post:
+    tags:
+      - Case attachments
+    summary: Search cases attachments instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of cases attachments which match with the search
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CasesAttachmentsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    message:
+      type: string
+      example: Success
+    case_id:
+      type: string
+      format: uuid
+    description:
+      type: string
+      example: this is a description
+    size:
+      type: number
+      example: 213
+    path:
+      type: string
+      example: https://example.com
+    type:
+      type: number
+    is_active:
+      oneOf:
+        - type: boolean
+        - type: number
+          enum: [ 1, 0 ]
+    created_by:
+      type: string
+      format: uuid
+    updated_by:
+      type: string
+      format: uuid
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+    CasesAttachmentsBase:
+      type: object
+      properties:
+        case_id:
+          $ref: "#/components/schemas/case_id"
+        description:
+          $ref: "#/components/schemas/description"
+        size:
+          $ref: "#/components/schemas/size"
+        path:
+          $ref: "#/components/schemas/path"
+        type:
+          $ref: "#/components/schemas/type"
+        is_active:
+          $ref: "#/components/schemas/is_active"
+    CasesAttachments:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/CasesAttachmentsBase"
+        - type: object
+          properties:
+            created_at:
+              type: string
+              format: date-time
+            created_by:
+              type: string
+              format: uuid
+            updated_at:
+              type: string
+              format: date-time
+            updated_by:
+              type: string
+              format: uuid
+    CasesAttachmentsCollection:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/CasesAttachments"
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"
+    CreateCaseAttachment:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/CasesAttachmentsBase"
+    UpdateCaseAttachment:
+      allOf:
+        - $ref: "#/components/schemas/CasesAttachmentsBase"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: description
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: description example
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

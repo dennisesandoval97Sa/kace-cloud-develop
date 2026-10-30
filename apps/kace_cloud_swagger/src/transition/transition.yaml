@@ -1,0 +1,238 @@
+transitions:
+  get:
+    tags:
+      - Transitions
+    summary: Get transitions collection
+    description: Get all transitions of database
+    operationId: gettransitions
+    responses:
+      '200':
+        description: A list of transitions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Transitions
+    summary: Create an transitions instance
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - estado_actual_id -> ID de un estado (States)
+      - siguiente_estado_id -> ID de un estado (States)
+      - flujo_id -> ID de un flujo (Flows)
+    operationId: posttransitions
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/createBodyRequest'
+    responses:
+      '201':
+        description: transitions instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+transitions_id:
+  get:
+    tags:
+      - Transitions
+    summary: Fetch an transitions instance by ID
+    description: Get detail of one single user-notification of database
+    operationId: gettransitions_id
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing transitions id
+    responses:
+      '200':
+        description: transitions instance fetched successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                  $ref: '#/components/schemas/collection-item'
+                metadata:
+                  type: object
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Transitions
+    summary: Update an transitions instance by ID
+    description: | 
+      Para llenar estos campos, usa los IDs correspondientes a registros existentes en el sistema: 
+      - flujo_id -> ID de un flujo (Flows)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: an existing transitions id
+    requestBody:
+      description: In this JSON body use only the properties that will be modified
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/updateBodyRequest'
+    responses:
+      '200':
+        description: transitions instance updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+transitions_search:
+  post:
+    tags:
+      - Transitions
+    summary: Get transitions whit advanced filters
+    operationId: searchTransitions
+    requestBody:
+      description: In this JSON body use only the properties that you need search
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: A list of transitions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+  schemas:
+    collection-item:
+      type: object
+      properties:
+        id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        estado_actual_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        siguiente_estado_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        flujo_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        status:
+          $ref: '../common/fields.yaml#/schemas/status'
+        created_at:
+          $ref: '../common/fields.yaml#/schemas/created_at'
+        created_by:
+          $ref: '../common/fields.yaml#/schemas/created_by'
+        updated_at:
+          $ref: '../common/fields.yaml#/schemas/updated_at'
+        updated_by:
+          $ref: '../common/fields.yaml#/schemas/updated_by'
+   
+    collection:
+      type: object
+      properties:
+        message:
+          $ref: '../common/fields.yaml#/schemas/message_ok'
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/collection-item'
+        metadata:
+          type: object
+          properties:
+            count:
+              type: array
+              items:
+                type: object
+                properties:
+                  count:
+                    type: string
+                    example: '198'
+    createBodyRequest:
+      type: object
+      properties:
+        states:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                $ref: '../common/fields.yaml#/schemas/id'          
+              estado_actual_id:
+                $ref: '../common/fields.yaml#/schemas/id'
+              siguiente_estado_id:
+                $ref: '../common/fields.yaml#/schemas/id'
+        flujo_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        status:
+          $ref: '../common/fields.yaml#/schemas/status'
+    updateBodyRequest:
+      type: object
+      properties:
+        flujo_id:
+          $ref: '../common/fields.yaml#/schemas/id'
+        status:
+          $ref: '../common/fields.yaml#/schemas/status'
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: estado_actual_id
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                format: uuid
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

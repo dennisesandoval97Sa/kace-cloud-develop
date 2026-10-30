@@ -1,0 +1,282 @@
+ans:
+  get:
+    tags:
+      - Ans
+    summary: Get all ans
+    description: Get all ans
+    operationId: getAns
+    responses:
+      '200':
+        description: A list of ans
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnsCollection'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Ans
+    summary: Create an Ans instance
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateAns'
+    responses:
+      '201':
+        description: Ans instance created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/created_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+ans-id:
+  get:
+    tags:
+      - Ans
+    summary: Fetch an Ans instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Ans instance fetched successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ans'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+  post:
+    tags:
+      - Ans
+    summary: Update an Ans instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateAns'
+    responses:
+      '200':
+        description: Ans deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+ans-delete:
+  get:
+    tags:
+      - Ans
+    summary: Delete an Ans instance by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Ans deleted successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../common/fields.yaml#/schemas/success_response'
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+ans-search:
+  post:
+    tags:
+      - Ans
+    summary: Search ans instances by a specific field and value
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchCollection"
+    responses:
+      '200':
+        description: Returns a list of ans which match with the search
+        content:
+          application/json:
+            schema:
+              $ref:  "#/components/schemas/AnsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+components:
+  schemas:
+    nombre:
+      type: string
+      example: ans name
+    intermedio:
+      type: integer
+      example: 2
+    vencido:
+      type: integer
+      example: 3
+    color_ans_inicial:
+      type: string
+      example: "#ff5733"
+    color_ans_intermedio:
+      type: string
+      example: "#86ff33"
+    color_ans_final:
+      type: string
+      example: "#185fec"
+    medicion_ans_id:
+      type: string
+      enum: [ 'Days','Hours','Minutes' ]
+    status:
+      type: integer
+      example: 1
+    AnsBase:
+      type: object
+      properties:
+        nombre:
+          $ref: "#/components/schemas/nombre"
+        intermedio:
+          $ref: "#/components/schemas/intermedio"
+        vencido:
+          $ref: "#/components/schemas/vencido"
+        color_ans_inicial:
+          $ref: "#/components/schemas/color_ans_inicial"
+        color_ans_intermedio:
+          $ref: "#/components/schemas/color_ans_intermedio"
+        color_ans_final:
+          $ref: "#/components/schemas/color_ans_final"
+        medicion_ans_id:
+          $ref: "#/components/schemas/medicion_ans_id"
+        status:
+          $ref: "#/components/schemas/status"
+    Ans:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Success
+        data:
+          type: object
+          allOf:
+            - type: object
+              properties:
+                id:
+                  $ref: "../common/fields.yaml#/schemas/id"
+            - $ref: "#/components/schemas/AnsBase"
+            - type: object
+              properties:
+                created_at:
+                  type: string
+                  format: date-time
+                created_by:
+                  type: string
+                  format: uuid
+                updated_at:
+                  type: string
+                  format: date-time
+                updated_by:
+                  type: string
+                  format: uuid
+        metadata:
+          type: object
+    AnsCollection:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Success
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Ans"
+        metadata:
+          type: object
+          properties:
+            count:
+              type: array
+              items:
+                type: object
+                properties:
+                  count:
+                    type: string
+                    example: '198'
+    CreateAns:
+      allOf:
+        - type: object  
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/AnsBase"
+    UpdateAns:
+      allOf:
+        - $ref: "#/components/schemas/AnsBase"
+    SearchCollection:
+      type: object
+      properties:
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: nombre
+              operator:
+                type: string
+                example: like
+              value:
+                type: string
+                example: example name
+              type:
+                type: string
+                example: AND
+        relationship:
+          type: array
+          items:
+        limit:
+          type: integer
+          example: 10
+        offset:
+          type: integer
+          example: 0

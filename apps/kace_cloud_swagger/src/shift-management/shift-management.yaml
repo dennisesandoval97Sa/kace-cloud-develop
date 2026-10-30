@@ -1,0 +1,306 @@
+shift-management:
+    get:
+        tags:
+            - Shift Management
+        summary: Get Shift Management collection
+        description: Get all Shift Management of database
+        operationId: getshift-management
+        responses:
+            '200':
+                description: A list of Shift Management
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/collection'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+    post:
+        tags:
+            - Shift Management
+        summary: Create an Shift Management instance
+        description: Registers a Shift Management in database
+        operationId: postshift-management
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/createBodyRequest'
+        responses:
+            '201':
+                description: Shift Management instance created successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/created_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+shift-management_id:
+    get:
+        tags:
+            - Shift Management
+        summary: Fetch an Shift Management instance by ID
+        description: Get detail of one single Shift Management  of database
+        operationId: getshift-management_id
+        parameters:
+            - name: id
+              in: path
+              required: true
+              description: an existing Shift Management id
+        responses:
+            '200':
+                description: Shift Management instance fetched successfully
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                message:
+                                    $ref: '../common/fields.yaml#/schemas/message_ok'
+                                data:
+                                    $ref: '#/components/schemas/collection-item'
+                                metadata:
+                                    type: object
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+    post:
+        tags:
+            - Shift Management
+        summary: Update an Shift Management instance by ID
+        parameters:
+            - name: id
+              in: path
+              required: true
+              description: an existing Shift Management id
+        requestBody:
+            description: In this JSON body use only the properties that will be modified
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/updateBodyRequest'
+        responses:
+            '200':
+                description: Shift Management instance updated successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+shift-management_delete:
+    get:
+        tags:
+            - Shift Management
+        summary: Delete an Shift Management instance by ID
+        description: A schedule used by non-deleted groups is not deleted; it answers 400 with `SHIFT_MANAGEMENT_IN_USE_BY_GROUPS` (`0x030072`).
+        parameters:
+            - name: id
+              in: path
+              required: true
+              description: an existing Shift Management id
+        responses:
+            '200':
+                description: Shift Management instance deleted successfully
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../common/fields.yaml#/schemas/success_response'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '409':
+                $ref: '../common/fields.yaml#/schemas/schedule_lock_conflict_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+shift-management_search:
+    post:
+        tags:
+            - Shift Management
+        summary: Get Shift Management whit advanced filters
+        operationId: searchShift
+        requestBody:
+            description: In this JSON body use only the properties that you need search
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/SearchCollection'
+        responses:
+            '200':
+                description: A list of Shift Management
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/collection'
+            '400':
+                $ref: '../common/fields.yaml#/schemas/bad_status_response'
+            '404':
+                $ref: '../common/fields.yaml#/schemas/not_found_response'
+            '500':
+                $ref: '../common/fields.yaml#/schemas/custom_error_response'
+components:
+    schemas:
+        description:
+            type: string
+            example: Descripción aleatoria
+        holiday_dates:
+            type: array
+            items:
+                type: string
+                format: date
+                example: '2024-10-13'
+        work_days:
+            type: object
+            properties:
+                monday:
+                    type: object
+                    properties:
+                        start:
+                            type: string
+                            format: time
+                            example: 08:00
+                        end:
+                            type: string
+                            example: '06:30'
+                tuesday:
+                    type: object
+                    properties:
+                        start:
+                            type: string
+                            example: 08:00
+                        end:
+                            type: string
+                            example: '06:30'
+                wednesday:
+                    type: object
+                    properties:
+                        start:
+                            type: string
+                            example: 08:00
+                        end:
+                            type: string
+                            example: '06:30'
+                thursday:
+                    type: object
+                    properties:
+                        start:
+                            type: string
+                            example: 08:00
+                        end:
+                            type: string
+                            example: '06:30'
+                friday:
+                    type: object
+                    properties:
+                        start:
+                            type: string
+                            example: 08:00
+                        end:
+                            type: string
+                            example: '06:30'
+        collection-item:
+            type: object
+            properties:
+                id:
+                    $ref: '../common/fields.yaml#/schemas/id'
+                description:
+                    $ref: '#/components/schemas/description'
+                holiday_dates:
+                    $ref: '#/components/schemas/holiday_dates'
+                work_days:
+                    $ref: '#/components/schemas/work_days'
+                created_at:
+                    $ref: '../common/fields.yaml#/schemas/created_at'
+                created_by:
+                    $ref: '../common/fields.yaml#/schemas/created_by'
+                updated_at:
+                    $ref: '../common/fields.yaml#/schemas/updated_at'
+                updated_by:
+                    $ref: '../common/fields.yaml#/schemas/updated_by'
+                deleted_at:
+                    $ref: '../common/fields.yaml#/schemas/deleted_at'
+                deleted_by:
+                    $ref: '../common/fields.yaml#/schemas/deleted_by'
+        collection:
+            type: object
+            properties:
+                message:
+                    $ref: '../common/fields.yaml#/schemas/message_ok'
+                data:
+                    type: object
+                    properties:
+                        items:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/collection-item'
+                metadata:
+                    type: object
+                    properties:
+                        count:
+                            type: string
+                            example: '198'
+        createBodyRequest:
+            type: object
+            properties:
+                id:
+                    $ref: '../common/fields.yaml#/schemas/id'
+                description:
+                    $ref: '#/components/schemas/description'
+                holiday_dates:
+                    $ref: '#/components/schemas/holiday_dates'
+                work_days:
+                    $ref: '#/components/schemas/work_days'
+        updateBodyRequest:
+            type: object
+            properties:
+                description:
+                    $ref: '#/components/schemas/description'
+                holiday_dates:
+                    $ref: '#/components/schemas/holiday_dates'
+                work_days:
+                    $ref: '#/components/schemas/work_days'
+        SearchCollection:
+            type: object
+            properties:
+                filter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            field:
+                                type: string
+                                example: description
+                            operator:
+                                type: string
+                                example: like
+                            value:
+                                type: string
+                                example: example description
+                            type:
+                                type: string
+                                example: AND
+                relationship:
+                    type: array
+                    items:
+                limit:
+                    type: integer
+                    example: 10
+                offset:
+                    type: integer
+                    example: 0

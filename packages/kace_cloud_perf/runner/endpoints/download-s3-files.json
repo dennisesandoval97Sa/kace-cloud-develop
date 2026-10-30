@@ -1,0 +1,5 @@
+{
+    "service": "download-s3-files",
+    "postmanFolder": "S3 files Download",
+    "endpoints": []
+}

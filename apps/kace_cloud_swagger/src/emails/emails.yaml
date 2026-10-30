@@ -1,0 +1,451 @@
+emails:
+    post:
+        tags:
+            - Emails
+        summary: Create email
+        description: Creates a new email with body and attachments
+        operationId: createEmail
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/EmailCreate'
+        responses:
+            '201':
+                description: Email created successfully
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+    get:
+        tags:
+            - Emails
+        summary: List emails
+        description: Returns a paginated list of emails
+        operationId: listEmails
+        responses:
+            '200':
+                description: Emails list
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/EmailSearchResponse'
+            '403':
+                description: Forbidden
+            '500':
+                description: Internal server error
+emails_id:
+    get:
+        tags:
+            - Emails
+        summary: Get email
+        description: Returns an email by id
+        operationId: getEmail
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+        responses:
+            '200':
+                description: Email data
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Email'
+            '400':
+                description: Invalid id
+            '403':
+                description: Forbidden
+            '404':
+                description: Not found
+            '500':
+                description: Internal server error
+    post:
+        tags:
+            - Emails
+        summary: Update email
+        description: Updates an existing email
+        operationId: updateEmail
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/EmailUpdate'
+        responses:
+            '200':
+                description: Email updated successfully
+            '400':
+                description: Invalid id
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+emails_id_delete:
+    post:
+        tags:
+            - Emails
+        summary: Delete email
+        description: Deletes an email (soft delete)
+        operationId: deleteEmail
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+        responses:
+            '200':
+                description: Email deleted successfully
+            '400':
+                description: Invalid id
+            '403':
+                description: Forbidden
+            '500':
+                description: Internal server error
+emails_id_body:
+    get:
+        tags:
+            - Emails
+        summary: Read full email body part
+        description: Returns the full text or HTML body. Inline bodies are read from the database; external bodies are fetched from tenant S3 using internal storage metadata.
+        operationId: readEmailBodyPart
+        parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+            - name: part
+              in: query
+              required: true
+              schema:
+                  type: string
+                  enum: [text, html]
+        responses:
+            '200':
+                description: Full email body part
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/EmailBodyContentResponse'
+            '400':
+                description: Invalid id or body part
+            '403':
+                description: Forbidden
+            '404':
+                description: Email or body not found
+            '500':
+                description: Internal server error
+emails_search:
+    post:
+        tags:
+            - Emails
+        summary: Search emails
+        description: Search emails using filters and pagination
+        operationId: searchEmails
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Search'
+        responses:
+            '200':
+                description: Search result
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/EmailSearchResponse'
+            '403':
+                description: Forbidden
+            '422':
+                description: Validation error
+            '500':
+                description: Internal server error
+components:
+    schemas:
+        EmailRecipient:
+            type: object
+            required: [name, email]
+            properties:
+                name:
+                    type: string
+                    maxLength: 100
+                email:
+                    type: string
+                    format: email
+
+        EmailBodyStorageMetadata:
+            type: object
+            properties:
+                s3_url:
+                    type: string
+                    format: uri
+                    nullable: true
+                    description: Request-only canonical tenant S3 object URL created through /upload-s3-files. The API stores only the extracted internal key.
+                mode:
+                    type: string
+                    enum: [inline, external]
+                    description: Whether the full body is embedded in this response or must be loaded from bodyUrl.
+                size_bytes:
+                    type: integer
+                    nullable: true
+                    description: Full body size in bytes.
+                content_type:
+                    type: string
+                    nullable: true
+                sha256:
+                    type: string
+                    nullable: true
+                    description: Request-only SHA-256 hex digest for the external body object.
+                preview_truncated:
+                    type: boolean
+                    description: True when `body` contains only a preview of the full body.
+                bodyUrl:
+                    type: string
+                    nullable: true
+                    description: Relative API URL for loading the full body when mode is external.
+
+        EmailBody:
+            type: object
+            required: [id, body]
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                email_id:
+                    type: string
+                    format: uuid
+                body:
+                    type: string
+                    description: Full plain text when inline; preview text when the text body is external.
+                body_html:
+                    type: string
+                    nullable: true
+                    description: Full HTML when inline; null when the HTML body is external. Do not send body_html together with html.s3_url.
+                text:
+                    $ref: '#/components/schemas/EmailBodyStorageMetadata'
+                html:
+                    $ref: '#/components/schemas/EmailBodyStorageMetadata'
+                created_at:
+                    type: string
+                    format: date-time
+                updated_at:
+                    type: string
+                    format: date-time
+                deleted_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                created_by:
+                    type: string
+                    format: uuid
+                updated_by:
+                    type: string
+                    format: uuid
+                deleted_by:
+                    type: string
+                    format: uuid
+                    nullable: true
+
+        EmailBodyContentResponse:
+            type: object
+            properties:
+                data:
+                    type: object
+                    properties:
+                        email_id:
+                            type: string
+                            format: uuid
+                        part:
+                            type: string
+                            enum: [text, html]
+                        mode:
+                            type: string
+                            enum: [inline, external]
+                        content:
+                            type: string
+                            description: Full body content for the requested part.
+                        content_type:
+                            type: string
+
+        EmailAttachment:
+            type: object
+            required: [id]
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                email_id:
+                    type: string
+                    format: uuid
+                url:
+                    type: string
+                    format: uri
+                size:
+                    type: integer
+                created_at:
+                    type: string
+                    format: date-time
+                updated_at:
+                    type: string
+                    format: date-time
+                deleted_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                created_by:
+                    type: string
+                    format: uuid
+                updated_by:
+                    type: string
+                    format: uuid
+                deleted_by:
+                    type: string
+                    format: uuid
+                    nullable: true
+
+        Email:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                s3_key:
+                    type: string
+                    format: uri
+                subject:
+                    type: string
+                    maxLength: 255
+                sender:
+                    type: string
+                    format: email
+                to:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/EmailRecipient'
+                cc:
+                    type: array
+                    nullable: true
+                    items:
+                        $ref: '#/components/schemas/EmailRecipient'
+                bcc:
+                    type: array
+                    nullable: true
+                    items:
+                        $ref: '#/components/schemas/EmailRecipient'
+                priority:
+                    type: string
+                workspace_id:
+                    type: string
+                    format: uuid
+                message_id:
+                    type: string
+                account_id:
+                    type: string
+                    format: uuid
+                received_at:
+                    type: string
+                    format: date-time
+                body:
+                    $ref: '#/components/schemas/EmailBody'
+                attachments:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/EmailAttachment'
+                created_at:
+                    type: string
+                    format: date-time
+                updated_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                deleted_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                created_by:
+                    type: string
+                    format: uuid
+                updated_by:
+                    type: string
+                    format: uuid
+                deleted_by:
+                    type: string
+                    format: uuid
+                    nullable: true
+
+        EmailCreate:
+            allOf:
+                - $ref: '#/components/schemas/Email'
+
+        EmailUpdate:
+            allOf:
+                - $ref: '#/components/schemas/Email'
+
+        EmailSearchResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Email'
+                total:
+                    type: integer
+                limit:
+                    type: integer
+                offset:
+                    type: integer
+        Search:
+            type: object
+            properties:
+                filter:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            field:
+                                type: string
+                            operator:
+                                type: string
+                            value:
+                                nullable: true
+                            type:
+                                type: string
+                                enum: [AND, OR]
+                relationships:
+                    type: array
+                    items:
+                        type: string
+                limit:
+                    type: integer
+                    example: 10
+                offset:
+                    type: integer
+                    example: 0
+                order:
+                    type: object
+                    properties:
+                        field:
+                            type: string
+                        direction:
+                            type: string
+                            enum: [asc, desc]

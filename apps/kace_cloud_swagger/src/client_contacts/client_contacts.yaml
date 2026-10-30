@@ -1,0 +1,187 @@
+client_contacts_id:
+  get:
+    tags:
+      - Clients Contacts
+    summary: Fetch contacts instance by clientId
+    description: | 
+      Para llenar estos parametros, usa los IDs correspondientes a registros existentes en el sistema: 
+      - id -> ID de un cliente (Clients)
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':  
+        description: Returns a list of clients
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientsCollection"
+      '400':
+        $ref: '../common/fields.yaml#/schemas/bad_status_response'
+      '404':
+        $ref: '../common/fields.yaml#/schemas/not_found_response'
+      '500':
+        $ref: '../common/fields.yaml#/schemas/custom_error_response'
+
+
+components:
+  schemas:
+    message:
+      type: string
+      example: Success
+    tipo_cliente:
+      type: string
+      enum: ["Natural","Comercial"]
+    tipo_documento:
+      type: string
+      example: Cedula
+    documento:
+      type: string
+      example: 1121231231
+    nombres:
+      type: string
+      example: Daniel
+    apellido1:
+      type: string
+      example: Gonzales
+    apellido2:
+      type: string
+      example: Gonzales
+    nombre_empresa:
+      type: string
+      example: Google
+    sexo:
+      type: string
+      example: Masculino
+    estado_civil:
+      type: string
+      example: Soltero
+    fecha_nacimiento:
+      type: string
+      format: date
+    email:
+      type: string
+      example: example@example.com
+    email_alterno:
+      type: string
+      example: example2@example.com
+    telefono:
+      type: string
+      example: 323777333
+    telefono_alterno:
+      type: string
+      example: 222666737
+    campos_extra1:
+      type: string
+    campos_extra2:
+      type: string
+    campos_extra3:
+      type: string
+    status:
+      type: number
+    padre_id:
+      type: string
+      format: uuid
+    habeas_data:
+      type: string
+      example: si
+    contactos:
+      type: array
+    created_by:
+      type: string
+      format: uuid
+    updated_by:
+      type: string
+      format: uuid
+    Created:
+      type: object
+      properties:
+        created_at:
+          $ref: "../common/fields.yaml#/schemas/created_at"
+        created_by:
+          $ref: "../common/fields.yaml#/schemas/created_by"
+    Updated:
+      type: object
+      properties:
+        updated_at:
+          $ref: "../common/fields.yaml#/schemas/updated_at"
+        updated_by:
+          $ref: "../common/fields.yaml#/schemas/updated_by"
+    ClientsBase:
+      type: object
+      properties:
+        tipo_cliente:
+          $ref: "#/components/schemas/tipo_cliente"
+        tipo_documento:
+          $ref: "#/components/schemas/tipo_documento"
+        documento:
+          $ref: "#/components/schemas/documento"
+        nombres:
+          $ref: "#/components/schemas/nombres"
+        apellido1:
+          $ref: "#/components/schemas/apellido1"
+        apellido2:
+          $ref: "#/components/schemas/apellido2"
+        nombre_empresa:
+          $ref: "#/components/schemas/nombre_empresa"
+        sexo:
+          $ref: "#/components/schemas/sexo"
+        estado_civil:
+          $ref: "#/components/schemas/estado_civil"
+        fecha_nacimiento:
+          $ref: "#/components/schemas/fecha_nacimiento"
+        email:
+          $ref: "#/components/schemas/email"
+        email_alterno:
+          $ref: "#/components/schemas/email_alterno"
+        telefono:
+          $ref: "#/components/schemas/telefono"
+        telefono_alterno:
+          $ref: "#/components/schemas/telefono_alterno"
+        campos_extra1:
+          $ref: "#/components/schemas/campos_extra1"
+        campos_extra2:
+          $ref: "#/components/schemas/campos_extra2"
+        campos_extra3:
+          $ref: "#/components/schemas/campos_extra3"
+        status:
+          $ref: "#/components/schemas/status"
+        padre_id:
+          $ref: "#/components/schemas/padre_id"
+        habeas_data:
+          $ref: "#/components/schemas/habeas_data"
+        contactos:
+          $ref: "#/components/schemas/contactos"
+    Client:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: "../common/fields.yaml#/schemas/id"
+        - $ref: "#/components/schemas/ClientsBase"
+        - $ref: "#/components/schemas/Created"
+        - $ref: "#/components/schemas/Updated"
+    ClientsCollection:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Client"
+        metadata:
+          type: object
+          properties:
+            count: 
+              type: object
+              properties:
+                count:
+                  type: string
+                  example: "1"
