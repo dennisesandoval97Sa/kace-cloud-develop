@@ -456,6 +456,24 @@ export const RolePermisionList = (granted = false) => {
                 description: 'Eliminar adaptador',
             },
             {
+                name: 'QuickLinksRead',
+                granted,
+                module_id: 'quick_links',
+                description: 'Ver enlaces rápidos',
+            },
+            {
+                name: 'QuickLinksCreate',
+                granted,
+                module_id: 'quick_links',
+                description: 'Crear enlace rápido',
+            },
+            {
+                name: 'QuickLinksDelete',
+                granted,
+                module_id: 'quick_links',
+                description: 'Eliminar enlace rápido',
+            },
+            {
                 name: 'BrokerAdaptersRead',
                 granted,
                 module_id: 'broker_adapters',
