@@ -213,6 +213,9 @@ export class ListPermissions {
                 new Permissions('BannerUpdate', 'Actualizar banner', false, 'banners'),
                 new Permissions('BannerDelete', 'Eliminar banner', false, 'banners'),
                 new Permissions('BannerRead', 'Ver banners', false, 'banners'),
+                new Permissions('QuickLinksRead', 'Ver enlaces rápidos', false, 'quick_links'),
+                new Permissions('QuickLinksCreate', 'Crear enlace rápido', false, 'quick_links'),
+                new Permissions('QuickLinksDelete', 'Eliminar enlace rápido', false, 'quick_links'),
 
                 new Permissions('CasesRead', 'Ver casos', false, 'cases'),
                 new Permissions('CaseClose', 'cerrar caso', false, 'cases'),

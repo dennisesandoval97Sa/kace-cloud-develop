@@ -9,6 +9,7 @@ export class ModulesEnums {
     static AUX_CLIENTS = new ModulesEnums('AUX-CLIENTS', 'aux-clients');
     static AUX_USERS = new ModulesEnums('AUX-USERS', 'aux-users');
     static BANNERS = new ModulesEnums('BANNERS', 'banners');
+    static QUICK_LINKS = new ModulesEnums('QUICK_LINKS', 'quick_links');
     static CASES = new ModulesEnums('CASES', 'cases');
     static CASE_ATTACHMENTS = new ModulesEnums('CASE-ATTACHMENTS', 'case-attachments');
     static CASE_COUNT = new ModulesEnums('CASE-COUNT', 'case-count');
@@ -131,6 +132,7 @@ export class ModulesEnums {
             'aux-cases',
             'aux-clients',
             'banners',
+            'quick_links',
             'secrets-vault',
             'case-attachments',
             'cases',
