@@ -19,15 +19,14 @@ export class QuickLinkCreator {
      * @returns {Promise<QuickLink>}
      */
     async execute(dto) {
-        const position =
-            dto.position === undefined || dto.position === null ? await this.#repository.nextPosition() : dto.position;
+        //const position =
+        //dto.position === undefined || dto.position === null ? await this.#repository.nextPosition() : dto.position;
 
         const quickLink = QuickLink.create({
             id: randomUUID(),
             title: dto.title,
             url: dto.url,
-            position,
-            created_at: new Date(),
+            position: dto.position,
             created_by: dto.created_by,
             updated_at: null,
             updated_by: null,
