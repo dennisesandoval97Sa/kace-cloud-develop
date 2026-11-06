@@ -1,4 +1,29 @@
 {
+    "quick_links": {
+        "heading": "Enlaces rápidos",
+        "noRead": "No tienes permiso para consultar enlaces rápidos.",
+        "add": "Agregar enlace",
+        "formTitle": "Nuevo enlace rápido",
+        "title": "Título",
+        "url": "URL",
+        "position": "Posición (opcional)",
+        "save": "Guardar",
+        "saving": "Guardando…",
+        "cancel": "Cancelar",
+        "delete": "Eliminar",
+        "actions": "Acciones",
+        "empty": "No hay enlaces registrados.",
+        "loading": "Cargando enlaces…",
+        "listError": "No se pudo obtener el listado de enlaces.",
+        "createError": "No se pudo crear el enlace.",
+        "deleteError": "No se pudo eliminar el enlace.",
+        "confirmDelete": "¿Eliminar este enlace rápido?",
+        "titleRequired": "El título es obligatorio.",
+        "titleMax": "El título no puede superar 100 caracteres.",
+        "urlRequired": "La URL es obligatoria.",
+        "urlInvalid": "Ingresa una URL HTTP o HTTPS válida (máximo 500 caracteres).",
+        "positionInvalid": "La posición debe ser un entero mayor o igual a cero."
+    },
     "app": {
         "title": {
             "updateModel": "Actualización de modelo",

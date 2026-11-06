@@ -1,4 +1,29 @@
 {
+    "quick_links": {
+        "heading": "Quick links",
+        "noRead": "You do not have permission to view quick links.",
+        "add": "Add link",
+        "formTitle": "New quick link",
+        "title": "Title",
+        "url": "URL",
+        "position": "Position (optional)",
+        "save": "Save",
+        "saving": "Saving…",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "actions": "Actions",
+        "empty": "No links registered.",
+        "loading": "Loading links…",
+        "listError": "Could not load quick links.",
+        "createError": "Could not create the link.",
+        "deleteError": "Could not delete the link.",
+        "confirmDelete": "Delete this quick link?",
+        "titleRequired": "Title is required.",
+        "titleMax": "Title must be 100 characters or fewer.",
+        "urlRequired": "URL is required.",
+        "urlInvalid": "Enter a valid HTTP or HTTPS URL (up to 500 characters).",
+        "positionInvalid": "Position must be an integer greater than or equal to zero."
+    },
     "app": {
         "title": {
             "updateModel": "Model update",
@@ -3346,6 +3371,7 @@
         }
     },
     "event_logs": {
+        "closeReason": "Reason for closure",
         "changeView": "View {{type}}",
         "clearFilters": "Clear filters",
         "current": "current",

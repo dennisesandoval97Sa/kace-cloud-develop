@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { DashboardSectionCard } from "@/components/core/Cards/DashboardSectionCard";
 import useUserInformation from "@kace/hooks/useUserInformation";
 import useQuickLinks from "../hooks/useQuickLinks.hook";
@@ -8,6 +9,7 @@ const hasPermission = (permissions, name) => permissions.some((entry) => entry.n
 const valueOf = (value) => (value && typeof value === "object" && "value" in value ? value.value : value);
 
 export default function QuickLinksList() {
+    const { t } = useTranslation();
     const { permissionsAdmin } = useUserInformation();
     const canRead = hasPermission(permissionsAdmin, "QuickLinksRead");
     const canCreate = hasPermission(permissionsAdmin, "QuickLinksCreate");
@@ -17,19 +19,19 @@ export default function QuickLinksList() {
     const { list, create, remove } = useQuickLinks(canRead);
 
     const handleDelete = async (id) => {
-        if (!window.confirm("¿Eliminar este enlace rápido?")) return;
+        if (!window.confirm(t("quick_links.confirmDelete"))) return;
         setActionError("");
         try {
             await remove.mutateAsync(id);
         } catch (error) {
-            setActionError(error?.response?.data?.message ?? "No se pudo eliminar el enlace.");
+            setActionError(error?.response?.data?.message ?? t("quick_links.deleteError"));
         }
     };
 
     return (
-        <DashboardSectionCard title="Enlaces rápidos">
+        <DashboardSectionCard title={t("quick_links.heading")}>
             {!canRead ? (
-                <p>No tienes permiso para consultar enlaces rápidos.</p>
+                <p>{t("quick_links.noRead")}</p>
             ) : (
                 <div className="space-y-4">
                     <div className="flex justify-end">
@@ -39,7 +41,7 @@ export default function QuickLinksList() {
                                 onClick={() => setCreating(true)}
                                 className="rounded bg-blue-700 px-4 py-2 text-white"
                             >
-                                Agregar enlace
+                                {t("quick_links.add")}
                             </button>
                         )}
                     </div>
@@ -58,17 +60,17 @@ export default function QuickLinksList() {
                             {actionError}
                         </p>
                     )}
-                    {list.isPending && <p>Cargando enlaces…</p>}
-                    {list.isError && <p role="alert">No se pudo obtener el listado de enlaces.</p>}
+                    {list.isPending && <p>{t("quick_links.loading")}</p>}
+                    {list.isError && <p role="alert">{t("quick_links.listError")}</p>}
                     {list.isSuccess && (
                         <div className="overflow-x-auto rounded-lg border border-slate-200">
                             <table className="w-full text-left">
                                 <thead className="bg-slate-100">
                                     <tr>
-                                        <th className="px-3 py-2">Título</th>
-                                        <th className="px-3 py-2">URL</th>
-                                        <th className="px-3 py-2">Posición</th>
-                                        {canDelete && <th className="px-3 py-2">Acciones</th>}
+                                        <th className="px-3 py-2">{t("quick_links.title")}</th>
+                                        <th className="px-3 py-2">{t("quick_links.url")}</th>
+                                        <th className="px-3 py-2">{t("quick_links.position")}</th>
+                                        {canDelete && <th className="px-3 py-2">{t("quick_links.actions")}</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -108,7 +110,7 @@ export default function QuickLinksList() {
                                     {!list.data.length && (
                                         <tr>
                                             <td className="px-3 py-4 text-center" colSpan={canDelete ? 4 : 3}>
-                                                No hay enlaces registrados.
+                                                {t("quick_links.empty")}
                                             </td>
                                         </tr>
                                     )}
