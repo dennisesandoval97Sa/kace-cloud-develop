@@ -40,10 +40,6 @@ export class QuickLinkUrl {
             if (!['http:', 'https:'].includes(parsed.protocol)) {
                 throw new Error('Protocolo inválido');
             }
-
-            if (!parsed.hostname) {
-                throw new Error('Dominio inválido');
-            }
         } catch {
             throw new Error('La URL debe ser válida y utilizar HTTP o HTTPS');
         }
@@ -188,12 +184,12 @@ export class QuickLink extends AggregateRoot {
             title: this.#title.value,
             url: this.#url.value,
             position: this.#position.value,
-            created_at: this.created_at?.value ?? null,
-            created_by: this.created_by?.value ?? null,
-            updated_at: this.updated_at?.value ?? null,
-            updated_by: this.updated_by?.value ?? null,
-            deleted_at: this.deleted_at?.value ?? null,
-            deleted_by: this.deleted_by?.value ?? null,
+            created_at: this.created_at.value,
+            created_by: this.created_by.value,
+            updated_at: this.updated_at.value,
+            updated_by: this.updated_by.value,
+            deleted_at: this.deleted_at.value,
+            deleted_by: this.deleted_by.value,
         };
     }
 }

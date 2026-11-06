@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { knexConfig } from '../knexfile.js';
+import { QueryDBError } from '../../src/shared/errors/QueryDBError.js';
+import { knexConfig, buildWriterConfig } from '../knexfile.js';
 import { QuickLinkCreator } from '../../src/quick-links/application/create/QuickLinkCreator.js';
 import { QuickLinksSearcher } from '../../src/quick-links/application/search/QuickLinksSearcher.js';
 import { QuickLinkDeleter } from '../../src/quick-links/application/delete/QuickLinkDeleter.js';
@@ -100,5 +101,65 @@ describe('Quick Links - Integration', () => {
         const result = await deleter.execute(missingId, randomUUID());
 
         expect(result).toBe(false);
+    });
+
+    it('encuentra un enlace activo por identificador', async () => {
+        const created = await createLink();
+
+        const found = await repository.find(created.id.value);
+
+        expect(found).not.toBeNull();
+        expect(found.id.value).toBe(created.id.value);
+        expect(found.title.value).toBe(created.title.value);
+    });
+
+    it('devuelve cero como posición siguiente cuando la tabla no tiene enlaces activos', async () => {
+        const next = await repository.nextPosition();
+
+        expect(next).toBe(0);
+    });
+
+    it('calcula la siguiente posición a partir de la máxima registrada', async () => {
+        const maximum = 999999;
+        await createLink({ position: maximum });
+
+        const next = await repository.nextPosition();
+
+        expect(next).toBe(maximum + 1);
+    });
+
+    it('no vuelve a listar un enlace que fue eliminado lógicamente', async () => {
+        const created = await createLink();
+        const deleter = new QuickLinkDeleter(repository);
+        await deleter.execute(created.id.value, randomUUID());
+
+        const found = await repository.find(created.id.value);
+
+        expect(found).toBeNull();
+    });
+
+    it.each([
+        ['save', async (broken, link) => broken.save(link)],
+        ['findAll', async (broken) => broken.findAll()],
+        ['find', async (broken, link) => broken.find(link.id.value)],
+        ['nextPosition', async (broken) => broken.nextPosition()],
+        ['delete', async (broken, link) => broken.delete(link)],
+    ])('transforma un error PostgreSQL en QueryDBError al ejecutar %s', async (name, operation) => {
+        const link = await createLink();
+        const broken = new KnexQuickLinksRepository({
+            ...buildWriterConfig(),
+            schema: 'quick_links_schema_inexistente',
+        });
+
+        let error;
+        try {
+            await operation(broken, link);
+        } catch (caught) {
+            error = caught;
+        } finally {
+            await broken.destroyConnection();
+        }
+
+        expect(error).toBeInstanceOf(QueryDBError);
     });
 });

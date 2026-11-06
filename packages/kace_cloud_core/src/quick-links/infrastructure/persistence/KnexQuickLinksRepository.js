@@ -23,12 +23,12 @@ export class KnexQuickLinksRepository extends KnexRepository {
                 title: quickLink.title.value,
                 url: quickLink.url.value,
                 position: quickLink.position.value,
-                created_at: quickLink.created_at?.value ?? null,
-                created_by: quickLink.created_by?.value ?? null,
-                updated_at: quickLink.updated_at?.value ?? null,
-                updated_by: quickLink.updated_by?.value ?? null,
-                deleted_at: quickLink.deleted_at?.value ?? null,
-                deleted_by: quickLink.deleted_by?.value ?? null,
+                created_at: quickLink.created_at.value,
+                created_by: quickLink.created_by.value,
+                updated_at: quickLink.updated_at.value,
+                updated_by: quickLink.updated_by.value,
+                deleted_at: quickLink.deleted_at.value,
+                deleted_by: quickLink.deleted_by.value,
             });
         } catch (error) {
             Helper.logError('Error saving quick link:', error);
@@ -87,7 +87,7 @@ export class KnexQuickLinksRepository extends KnexRepository {
                 .max('position as max_position')
                 .first();
 
-            return Number(result?.max_position ?? -1) + 1;
+            return Number(result.max_position ?? -1) + 1;
         } catch (error) {
             Helper.logError('Error calculating quick link position:', error);
             throw new QueryDBError('nextPosition');

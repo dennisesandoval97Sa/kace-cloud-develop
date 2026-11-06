@@ -19,9 +19,6 @@ export class QuickLinkCreator {
      * @returns {Promise<QuickLink>}
      */
     async execute(dto) {
-        //const position =
-        //dto.position === undefined || dto.position === null ? await this.#repository.nextPosition() : dto.position;
-
         const quickLink = QuickLink.create({
             id: randomUUID(),
             title: dto.title,

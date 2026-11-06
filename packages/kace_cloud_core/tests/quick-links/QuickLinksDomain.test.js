@@ -96,4 +96,90 @@ describe('QuickLink - Domain', () => {
         expect(result.position).toBe(0);
         expect(result.created_at).toBe(quickLink.created_at.value);
     });
+
+    it.each([null, undefined, 45])('rechaza títulos de tipo inválido: %s', (title) => {
+        const createTitle = () => new QuickLinkTitle(title);
+
+        expect(createTitle).toThrow('El título es obligatorio');
+    });
+
+    it('acepta un título de exactamente 100 caracteres y elimina espacios externos', () => {
+        const title = 'A'.repeat(100);
+
+        const result = new QuickLinkTitle(`  ${title}  `);
+
+        expect(result.value).toBe(title);
+    });
+
+    it.each([null, undefined, 7, '   '])('rechaza una URL vacía o no textual: %s', (url) => {
+        const createUrl = () => new QuickLinkUrl(url);
+
+        expect(createUrl).toThrow('La URL es obligatoria');
+    });
+
+    it('acepta URL de 500 caracteres y elimina espacios externos', () => {
+        const url = `https://example.com/${'a'.repeat(480)}`;
+
+        const result = new QuickLinkUrl(` ${url} `);
+
+        expect(result.value).toBe(url);
+        expect(result.value).toHaveLength(500);
+    });
+
+    it('rechaza una URL HTTP sin un dominio válido', () => {
+        const url = 'https://';
+
+        const createUrl = () => new QuickLinkUrl(url);
+
+        expect(createUrl).toThrow('La URL debe ser válida y utilizar HTTP o HTTPS');
+    });
+
+    it.each([null, undefined])('conserva como nula una posición ausente: %s', (position) => {
+        const result = new QuickLinkPosition(position);
+
+        expect(result.value).toBeNull();
+    });
+
+    it.each(['1', 0.5, {}, -1])('rechaza una posición fuera del contrato: %s', (position) => {
+        const createPosition = () => new QuickLinkPosition(position);
+
+        expect(createPosition).toThrow('La posición debe ser un entero mayor o igual a cero');
+    });
+
+    it('permite modificar título, URL y posición registrando atributos modificados', () => {
+        const quickLink = QuickLinkMother.create();
+
+        quickLink.title = '  Nuevo título  ';
+        quickLink.url = ' https://example.org/actualizado ';
+        quickLink.position = 3;
+
+        expect(quickLink.title.value).toBe('Nuevo título');
+        expect(quickLink.url.value).toBe('https://example.org/actualizado');
+        expect(quickLink.position.value).toBe(3);
+        expect(quickLink.changedAttributes).toEqual(
+            expect.objectContaining({
+                title: 'Nuevo título',
+                url: 'https://example.org/actualizado',
+                position: 3,
+            })
+        );
+    });
+
+    it('serializa la auditoría después de una modificación y eliminación lógica', () => {
+        const quickLink = QuickLinkMother.create();
+        const updatedAt = new Date('2026-11-01T10:00:00.000Z');
+        const deletedAt = new Date('2026-11-02T10:00:00.000Z');
+        const updatedBy = quickLink.created_by.value;
+        const deletedBy = quickLink.created_by.value;
+
+        quickLink.updated_at = updatedAt;
+        quickLink.updated_by = updatedBy;
+        quickLink.delete({ deleted_at: deletedAt, deleted_by: deletedBy });
+        const result = quickLink.toPrimitives();
+
+        expect(result.updated_at).toBe(updatedAt.toISOString());
+        expect(result.updated_by).toBe(updatedBy);
+        expect(result.deleted_at).toBe(deletedAt.toISOString());
+        expect(result.deleted_by).toBe(deletedBy);
+    });
 });
