@@ -127,35 +127,30 @@ describe('Quick Links Controller', () => {
         expect(controller.repository.find).toHaveBeenCalled();
         expect(controller.repository.delete).not.toHaveBeenCalled();
     });
-});
 
-it('retorna 201 al crear un enlace válido', async () => {
-    const controller = createController();
+    it('retorna 201 al crear un enlace válido', async () => {
+        const controller = createController();
 
-    const response = await controller.actionCreate();
+        const response = await controller.actionCreate();
 
-    expect(response.statusCode).toBe(201);
-    expect(controller.repository.save).toHaveBeenCalledTimes(1);
-});
+        expect(response.statusCode).toBe(201);
+        expect(controller.repository.save).toHaveBeenCalledTimes(1);
+    });
 
-it('retorna 200 al eliminar un enlace existente', async () => {
-    const controller = createController();
+    it('retorna 200 al eliminar un enlace existente', async () => {
+        const controller = createController();
+        controller.pathParameters = () => ({ id: LINK_ID });
+        const existingLink = {
+            id: { value: LINK_ID },
+            delete: jest.fn(),
+            changedAttributes: { deleted_at: new Date().toISOString() },
+        };
+        controller.repository.find.mockResolvedValue(existingLink);
 
-    controller.pathParameters = () => ({ id: LINK_ID });
+        const response = await controller.actionDelete();
 
-    const existingLink = {
-        id: { value: LINK_ID },
-        delete: jest.fn(),
-        changedAttributes: {
-            deleted_at: new Date().toISOString(),
-        },
-    };
-
-    controller.repository.find.mockResolvedValue(existingLink);
-
-    const response = await controller.actionDelete();
-
-    expect(response.statusCode).toBe(200);
-    expect(existingLink.delete).toHaveBeenCalledTimes(1);
-    expect(controller.repository.delete).toHaveBeenCalledTimes(1);
+        expect(response.statusCode).toBe(200);
+        expect(existingLink.delete).toHaveBeenCalledTimes(1);
+        expect(controller.repository.delete).toHaveBeenCalledTimes(1);
+    });
 });

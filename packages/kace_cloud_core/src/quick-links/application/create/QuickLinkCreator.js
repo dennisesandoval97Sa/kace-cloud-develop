@@ -27,6 +27,7 @@ export class QuickLinkCreator {
             title: dto.title,
             url: dto.url,
             position: dto.position,
+            created_at: dto.created_at ?? new Date(),
             created_by: dto.created_by,
             updated_at: null,
             updated_by: null,
